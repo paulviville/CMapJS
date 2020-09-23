@@ -20,15 +20,6 @@ function Attribute(array, attributes_container, name, length)
 /// Attributes containers handle attributes and index setting
 function Attributes_Container()
 {
-	/// Currently unused ids
-	let free_indices = new Set();
-	/// All attributes contained by this container
-	let attributes = {};
-	/// id counter
-	let max_id = 0;
-	/// attribute counting number of references to each element
-	let refs;
-
 	/// creates and stores a new attribute of given name
 	this.create_attribute = function(name = "")
 	{
@@ -48,7 +39,7 @@ function Attributes_Container()
 	}
 
 	/// gets reference to attribute of given name
-	/// returns undefined if attribut doesn't exist
+	/// returns undefined if attribute doesn't exist
 	this.get_attribute = function(name)
 	{
 		if(!attributes[name])
@@ -122,7 +113,14 @@ function Attributes_Container()
 		Object.keys(this).forEach(key => delete this[key]);
 	}
 
-	refs = this.create_attribute("<refs>");
+	/// Currently unused ids
+	const free_indices = new Set();
+	/// All attributes contained by this container
+	const attributes = {};
+	/// id counter
+	let max_id = 0;
+	/// attribute counting number of references to each element
+	const refs = this.create_attribute("<refs>");
 };
 
 export default Attributes_Container;

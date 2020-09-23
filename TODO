@@ -1,0 +1,7 @@
+- check remove attribute, redundant or useless with attrib.delete()
+- nb darts probably redundant ?
+- maybe rename emb to celltype ?
+- document:
+	CMap_Base
+	CMap0
+	Renderer
