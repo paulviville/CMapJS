@@ -79,7 +79,9 @@ function Renderer(cmap){
 
 				const material = new THREE.LineBasicMaterial({
 					color: params.color || 0x000000,
-					linewidth: params.width || 2
+					linewidth: params.width || 2,
+					polygonOffset: true,
+					polygonOffsetFactor: -0.05
 				});
 
 				this.mesh = new THREE.LineSegments(geometry, material);

@@ -9,7 +9,7 @@ function Attribute(array, attributes_container, name, length){
 		this.length = 0;
 		delete this.delete;
 		delete this.name;
-	}
+	};
 
 	return array;
 };
@@ -26,12 +26,12 @@ function Attributes_Container(){
 		attributes[name] = attribute;
 		
 		return attribute;
-	}
+	};
 
 	/// deletes reference to attribute of given name
 	this.remove_attribute = function(name){
 		delete attributes[name];
-	}
+	};
 
 	/// gets reference to attribute of given name
 	/// returns undefined if attribute doesn't exist
@@ -40,7 +40,7 @@ function Attributes_Container(){
 			console.warn("No attribute named: ", name);
 
 		return attributes[name];
-	}
+	};
 
 	/// creates an index for new element in all attributes
 	this.new_element = function(){
@@ -58,28 +58,28 @@ function Attributes_Container(){
 		}
 		refs[index] = 0;
 		return index;
-	}
+	};
 
 	/// frees given index
 	this.delete_element = function(index){
 		refs[index] = null;
 		free_indices.add(index);
-	}
+	};
 
 	/// returns number of referenced elements
 	this.nb_elements = function(){
 		return max_id - free_indices.size;
-	}
+	};
 
 	/// returns number of attributes in the container
 	this.nb_attributes = function(){
 		return Object.keys(attributes).length;
-	}
+	};
 
 	/// increases reference counter of given index
 	this.ref = function(index){
 		++refs[index];
-	}
+	};
 
 	/// decreases reference counter of given index
 	/// deletes element of given index if counter reaches 0
@@ -88,7 +88,7 @@ function Attributes_Container(){
 			return; 
 		if(!(--refs[index])) 
 			this.delete_element(index);
-	}
+	};
 
 	/// clears attribute container of all data
 	this.delete = function(){
@@ -96,7 +96,7 @@ function Attributes_Container(){
 		max_id = 0;
 		Object.keys(attributes).forEach(attr => attributes[attr].delete());
 		Object.keys(this).forEach(key => delete this[key]);
-	}
+	};
 
 	/// Currently unused ids
 	const free_indices = new Set();

@@ -6,6 +6,10 @@
 	CMap0
 	Renderer
 
+- check embedding settings in ALL CMaps functions
+	careful with chaining cmap0 -> 1 -> 2 orbits
 - remove Marker from inside CMap_Base
 - add foreach_incident
 - enable casting (eg: CMap2.call(cmap1) && if(nb_dart != 0) -> fill in new topological relations to identity)
+
+-STOP PROCRASTINATING DOCUMENTATION
