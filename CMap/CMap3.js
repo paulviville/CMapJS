@@ -19,6 +19,7 @@ function CMap3(){
 	const vertex = this.vertex;
 	const edge = this.edge;
 	const face = this.face;
+	const volume = this.volume;
 	const connex = this.connex;
 
 	this.sew_phi3 = function(d0, d1){
@@ -32,9 +33,72 @@ function CMap3(){
 		this.phi3[d1] = d1;
 	};
 
+	this.close_hole2 = this.close_hole;
+	this.close_hole = function(d0, boundary = false, set_embeddings = true) {
+		if(this.phi3[d0] != d0)
+			return;
+
+		let marker = this.new_marker();
+		let faces = [d0];
+		
+		do {
+			let fd0 = faces.shift();
+			if(this.phi3[d0] != d0)
+				continue;
+
+			// codegree of face... to be written 
+			let codegree = 0;
+			this.foreach_dart_of(face2, fd, d => {
+				++codegree;
+			});
+
+			let fd1 = this.add_face(codegree, false);
+			let 
+
+		} while (faces.length);
+
+		marker.delete();
+
+		let wd = this.phi3[d0];
+		if(boundary)
+			this.mark_cell_as_boundary(volume, wd);
+
+		if(set_embeddings){
+			if(this.is_embedded(vertex2)){
+
+			}
+			if(this.is_embedded(edge2)){
+
+			}
+			if(this.is_embedded(face2)){
+
+			}
+			if(this.is_embedded(volume)){
+
+			}
+			if(this.is_embedded(vertex)){
+
+			}
+			if(this.is_embedded(edge)){
+
+			}
+			if(this.is_embedded(face)){
+				
+			}
+			if(this.is_embedded(connex)){
+
+			}
+		}
+
+		return wd;
+	};
+
+
 	this.close2 = this.close;
 	this.close = function(boundary = false, set_embeddings = true){
-
+		this.foreach_dart(d0 => {
+			this.close_hole(d0, boundary, set_embeddings);
+		});
 	};
 
 	/// Traverses and applies func to all darts of face 3

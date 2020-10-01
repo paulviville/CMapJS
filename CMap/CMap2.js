@@ -388,59 +388,103 @@ function CMap2(){
 	// }
 
 	this.add_prism = function(size = 3, set_embeddings = true) {
-		let d0 = add_face(4, false);
-		let d = d0;
+		let d0 = this.add_face(4, false);
+		let d1 = d0;
 		for(let i = 1; i < size; ++i){
-			let fd = add_face(4, false);
-			this.sew_phi2(this.phi1[d], this.phi_1[fd]);
-			d = fd;
+			let fd = this.add_face(4, false);
+			this.sew_phi2(this.phi1[d1], this.phi_1[fd]);
+			d1 = fd;
 		}
-		this.sew_phi2(this.phi_1[d0], this.phi1[d]);
+		this.sew_phi2(this.phi_1[d0], this.phi1[d1]);
 		let d_base = this.close_hole(d0, false, false);
 		this.close_hole(this.phi1[this.phi1[d0]]);
 
 		if(set_embeddings){
-			if(this.is_embedded(vertex)){
-				
-			}
-			if(this.is_embedded(edge)){
-			
-			}
-			if(this.is_embedded(face)){
-			
-			}
-			if(this.is_embedded(volume)){
-			
-			}
+			this.foreach_dart_of(volume, d_base, d => {
+				if(this.is_embedded(vertex)){
+					if(this.cell(vertex, d) == undefined){
+						let vid = this.new_cell(vertex);
+						this.foreach_dart_of(vertex, d, d2 => {
+							this.set_embedding(vertex, d2, vid);
+						});
+					}
+				}
+				if(this.is_embedded(edge)){
+					if(this.cell(edge, d) == undefined){
+						let eid = this.new_cell(edge);
+						this.foreach_dart_of(edge, d, d2 => {
+							this.set_embedding(edge, d2, eid);
+						});
+					}
+				}
+				if(this.is_embedded(face)){
+					if(this.cell(face, d) == undefined){
+						let fid = this.new_cell(face);
+						this.foreach_dart_of(face, d, d2 => {
+							this.set_embedding(face, d2, fid);
+						});
+					}
+				}
+				if(this.is_embedded(volume)){
+					if(this.cell(volume, d) == undefined){
+						let wid = this.new_cell(volume);
+						this.foreach_dart_of(volume, d, d2 => {
+							this.set_embedding(volume, d2, wid);
+						});
+					}
+				}
+			});
 		}
 
 		return d_base;
 	};
 
 	this.add_pyramid = function(size = 3, set_embeddings = true) {
-		let d0 = add_face(3, false);
-		let d = d0;
+		let d0 = this.add_face(3, false);
+		let d1 = d0;
 		for(let i = 1; i < size; ++i){
-			let fd = add_face(3, false);
-			this.sew_phi2(this.phi1[d], this.phi_1[fd]);
-			d = fd;
+			let fd = this.add_face(3, false);
+			this.sew_phi2(this.phi1[d1], this.phi_1[fd]);
+			d1 = fd;
 		}
 		this.sew_phi2(this.phi_1[d0], this.phi1[d]);
 		let d_base = this.close_hole(d0, false, false);
 
 		if(set_embeddings){
-			if(this.is_embedded(vertex)){
-			
-			}
-			if(this.is_embedded(edge)){
-			
-			}
-			if(this.is_embedded(face)){
-			
-			}
-			if(this.is_embedded(volume)){
-			
-			}
+			this.foreach_dart_of(volume, d_base, d => {
+				if(this.is_embedded(vertex)){
+					if(this.cell(vertex, d) == undefined){
+						let vid = this.new_cell(vertex);
+						this.foreach_dart_of(vertex, d, d2 => {
+							this.set_embedding(vertex, d2, vid);
+						});
+					}
+				}
+				if(this.is_embedded(edge)){
+					if(this.cell(edge, d) == undefined){
+						let eid = this.new_cell(edge);
+						this.foreach_dart_of(edge, d, d2 => {
+							this.set_embedding(edge, d2, eid);
+						});
+					}
+				}
+				if(this.is_embedded(face)){
+					if(this.cell(face, d) == undefined){
+						let fid = this.new_cell(face);
+						this.foreach_dart_of(face, d, d2 => {
+							this.set_embedding(face, d2, fid);
+						});
+					}
+				}
+				if(this.is_embedded(volume)){
+					if(this.cell(volume, d) == undefined){
+						let wid = this.new_cell(volume);
+						this.foreach_dart_of(volume, d, d2 => {
+							this.set_embedding(volume, d2, wid);
+						});
+					}
+				}
+			});
 		}
 
 		return d_base;

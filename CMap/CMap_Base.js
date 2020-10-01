@@ -224,6 +224,7 @@ function CMap_Base(){
 		return boundary_marker.marked_cell(emb, cd);
 	};
 
+	// Garbage to fix
 	this.degree = function(emb, cd){
 		let deg = 0;
 		this.foreach_dart_of(emb, cd, d => {
