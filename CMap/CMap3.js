@@ -52,9 +52,18 @@ function CMap3(){
 				++codegree;
 			});
 
-			let fd1 = this.add_face(codegree, false);
-			let 
+			let fdh = this.add_face(codegree, false);
+			let fd = fd0;
+			do {
+				this.sew_phi3(fd, fdh);
 
+				// do {
+
+				// } while ()
+
+				fdh = this.phi_1[fdh];
+				fd = this.phi1[fd];
+			} while (fd != fd0);
 		} while (faces.length);
 
 		marker.delete();
