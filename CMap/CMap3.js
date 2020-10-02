@@ -6,7 +6,7 @@ function CMap3(){
 	this.phi3 = this.add_topology_relation("phi3");
 	
 	this.vertex2 = this.vertex;
-	this.face2 = this.face2;
+	this.face2 = this.face;
 	this.edge2 = this.edge;
 	this.vertex = this.add_celltype();
 	this.edge = this.add_celltype();
@@ -38,7 +38,8 @@ function CMap3(){
 		if(this.phi3[d0] != d0)
 			return;
 
-		let marker = this.new_marker();
+		let visited = this.new_marker();
+		let hole = this.new_marker();
 		let faces = [d0];
 		
 		do {
@@ -48,7 +49,7 @@ function CMap3(){
 
 			// codegree of face... to be written 
 			let codegree = 0;
-			this.foreach_dart_of(face2, fd, d => {
+			this.foreach_dart_of(face2, fd0, d => {
 				++codegree;
 			});
 
@@ -58,16 +59,32 @@ function CMap3(){
 				this.sew_phi3(fd, fdh);
 				
 				let done = false;
+				let d = this.phi3[this.phi2[fd]];
 				do {
+					if(this.phi3[d] == d){
+						done = true;
 
-				} while (done);
+					}
+					else{
+						if(this.phi2[d] == d){
+							done = true;
+							this.sew_phi2(d, fdh);
+						}
+						else{
+							d = this.phi3[this.phi2[d]];
+						}
+
+
+					}
+				} while (!done);
 
 				fdh = this.phi_1[fdh];
 				fd = this.phi1[fd];
 			} while (fd != fd0);
 		} while (faces.length);
 
-		marker.delete();
+		visited.delete();
+		hole.delete();
 
 		let wd = this.phi3[d0];
 		if(boundary)
@@ -105,7 +122,7 @@ function CMap3(){
 
 
 	this.close2 = this.close;
-	this.close = function(boundary = false, set_embeddings = true){
+	this.close = function(boundary = true, set_embeddings = true){
 		this.foreach_dart(d0 => {
 			this.close_hole(d0, boundary, set_embeddings);
 		});
@@ -142,17 +159,16 @@ function CMap3(){
 		let stop;
 		while(volumes.length && !stop){
 			let wd = volumes.shift();
-			this.foreach_dart_phi12(wd, d => {
+			this.foreach_dart_phi21(wd, d => {
 				if(!marker.marked(d)){
 					marker.mark(d);
 					stop = func(d);
-				}							
-				if(!marker.marked(this.phi3[d]))
-					volumes.push(this.phi3[d]);
+				}						
+				if(!marker.marked(this.phi1[this.phi3[d]]))
+				volumes.push(this.phi1[this.phi3[d]]);
 				return stop;
 			});
 		}
-
 		marker.delete();
 	};
 
@@ -185,7 +201,7 @@ function CMap3(){
 
 		this.foreach(vertex, vd => {
 			let vid = this.new_cell(vertex);
-			this.foreach_dart_phi21_phi31(vd, d => {
+				this.foreach_dart_phi21_phi31(vd, d => {
 				this.set_embedding(vertex, d, vid);
 			});
 		});
@@ -198,11 +214,11 @@ function CMap3(){
 		}
 
 		let marker = this.new_marker();
-		this.foreach_dart(d => {
+			this.foreach_dart(d => {
 			if(marker.marked(d))
 				return;
 
-			this.foreach_dart_phi21_phi31(d, d1 => { marker.mark(d1) });
+			this.foreach_dart_phi21_phi31(d, d1 => { marker.mark(d1); });
 			return func(d);
 		});
 

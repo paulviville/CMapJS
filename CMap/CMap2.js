@@ -23,12 +23,6 @@ function CMap2(){
 		this.phi2[d1] = d1;
 	};
 
-	this.close = function(boundary = false, set_embeddings = true){
-		this.foreach_dart(d0 => {
-			this.close_hole(d0, boundary, set_embeddings);
-		});
-	};
-
 	this.close_hole = function(d0, boundary = false, set_embeddings = true) {
 		if(this.phi2[d0] != d0)
 			return;
@@ -67,6 +61,13 @@ function CMap2(){
 
 		return fd;
 	}
+	const close_hole = this.close_hole.bind(this);
+
+	this.close = function(boundary = false, set_embeddings = true){
+		this.foreach_dart(d0 => {
+			close_hole(d0, boundary, set_embeddings);
+		});
+	};
 
 	// ORBITS
 	/// Traverses and applies func to all darts of edge 2
@@ -76,7 +77,7 @@ function CMap2(){
 	};
 
 	/// Traverses and applies func to all darts of vertex 2
-	this.foreach_dart_phi12 = function(d0, func){
+	this.foreach_dart_phi21 = function(d0, func){
 		let d = d0;
 		do {
 			if(func(d)) break;
@@ -112,7 +113,7 @@ function CMap2(){
 
 		this.foreach(vertex, vd => {
 			let vid = this.new_cell(vertex);
-			this.foreach_dart_phi12(vd, d => {
+			this.foreach_dart_phi21(vd, d => {
 				this.set_embedding(vertex, d, vid);
 			});
 		});
@@ -129,7 +130,7 @@ function CMap2(){
 			if(marker.marked(d))
 				return;
 
-			this.foreach_dart_phi12(d, d1 => { marker.mark(d1) });
+			this.foreach_dart_phi21(d, d1 => { marker.mark(d1) });
 			return func(d);
 		});
 
@@ -137,7 +138,7 @@ function CMap2(){
 	};
 
 	this.funcs_foreach_dart_of[vertex] = function(vd, func){
-		this.foreach_dart_phi12(vd, func);
+		this.foreach_dart_phi21(vd, func);
 	};
 
 
@@ -259,7 +260,7 @@ function CMap2(){
 			if(this.is_embedded(vertex)){
 				let vid0 = this.cell(vertex, d1);
 				let vid1 = this.cell(vertex, e1);
-				this.foreach_dart_phi12(e1,d => {
+				this.foreach_dart_phi21(e1,d => {
 					this.set_embedding(vertex, d, vid0);
 				});
 				this.delete_cell(vertex, vid1); // should remove this and test
@@ -396,8 +397,8 @@ function CMap2(){
 			d1 = fd;
 		}
 		this.sew_phi2(this.phi_1[d0], this.phi1[d1]);
-		let d_base = this.close_hole(d0, false, false);
-		this.close_hole(this.phi1[this.phi1[d0]]);
+		let d_base = close_hole(d0, false, false);
+		close_hole(this.phi1[this.phi1[d0]]);
 
 		if(set_embeddings){
 			this.foreach_dart_of(volume, d_base, d => {
