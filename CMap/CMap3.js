@@ -56,10 +56,11 @@ function CMap3(){
 			let fd = fd0;
 			do {
 				this.sew_phi3(fd, fdh);
+				
+				let done = false;
+				do {
 
-				// do {
-
-				// } while ()
+				} while (done);
 
 				fdh = this.phi_1[fdh];
 				fd = this.phi1[fd];
