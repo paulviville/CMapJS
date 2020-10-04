@@ -194,7 +194,6 @@ function CMap3(){
 		marker.delete();
 	};
 
-
 	this.funcs_set_embeddings[vertex] = function(){
 		if(!this.is_embedded(vertex))
 			this.create_embedding(vertex);
