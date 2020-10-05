@@ -31,7 +31,11 @@ function CMap_Base(){
 	};
 	
 	/// Adds an attribute to given embedding
-	this.add_attribute = function(emb, name){	
+	this.add_attribute = function(emb, name){
+		// if(!embeddings[emb]){
+		// 	this.create_embedding(emb);
+		// 	this.set_embeddings(emb);
+		// }
 		return attributes_containers[emb].create_attribute(name)	
 	};
 
