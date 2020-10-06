@@ -41,8 +41,10 @@ function CMap3(){
 		let visited = this.new_marker();
 		let hole = this.new_marker();
 		let faces = [d0];
-		
+		visited.mark_cell(face2, d0);
+		console.log("main loop close hole")
 		do {
+			// console.log(faces.length);
 			let fd0 = faces.shift();
 			if(this.phi3[d0] != d0)
 				continue;
@@ -56,14 +58,17 @@ function CMap3(){
 			let fdh = this.add_face(codegree, false);
 			let fd = fd0;
 			do {
-				this.sew_phi3(fd, fdh);
+				// this.sew_phi3(fd, fdh);
 				
 				let done = false;
 				let d = this.phi3[this.phi2[fd]];
 				do {
 					if(this.phi3[d] == d){
 						done = true;
-
+						if(!visited.marked(d)){
+							faces.push(d);
+							visited.mark_cell(this.face2, d);
+						}
 					}
 					else{
 						if(this.phi2[d] == d){
@@ -73,11 +78,10 @@ function CMap3(){
 						else{
 							d = this.phi3[this.phi2[d]];
 						}
-
-
 					}
 				} while (!done);
 
+				this.sew_phi3(fdh, fd);
 				fdh = this.phi_1[fdh];
 				fd = this.phi1[fd];
 			} while (fd != fd0);
