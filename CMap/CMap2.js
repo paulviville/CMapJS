@@ -87,26 +87,24 @@ function CMap2(){
 
 	/// Traverses and applies func to all darts of volume
 	this.foreach_dart_phi1_phi2 = function(d0, func){
-		let marker = this.new_marker();
+		let marker = {};
 		let faces = [d0];
-
+		marker[d0] = true;
 		do {
 			let fd = faces.shift();
-			if(!marker.marked(fd)){
-				let d = fd;
-				do {
-					if(func(d))
-						return;
-					marker.mark(d);
-					let adj = this.phi2[d];
-					if(!marker.marked(adj))
-						faces.push(adj);
-					d = this.phi1[d];
-				} while (d != fd);
-			}
+			let d = fd;
+			do {
+				if(func(d))
+					return;
+				marker[d];
+				let adj = this.phi2[d];
+				if(!marker[adj]){
+					faces.push(adj);
+					marker[adj] = true;
+				}
+				d = this.phi1[d];
+			} while (d != fd);
 		} while(faces.length);
-
-		marker.delete();
 	};
 
 	this.funcs_set_embeddings[vertex] = function(){

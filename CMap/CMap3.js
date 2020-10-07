@@ -157,23 +157,24 @@ function CMap3(){
 
 	/// Traverses and applies func to all darts of vertex 3
 	this.foreach_dart_phi21_phi31 = function(d0, func){
-		let marker = this.new_marker();
+		let marker = [];
 		let volumes = [d0];
-
-		let stop;
+		marker[d0] = true;
 		do {
-			let wd = volumes.shift();
-			this.foreach_dart_phi21(wd, d => {
-				if(!marker.marked(d)){
-					marker.mark(d);
-					stop = func(d);
-				}						
-				if(!marker.marked(this.phi1[this.phi3[d]]))
-					volumes.push(this.phi1[this.phi3[d]]);
-				return stop;
-			});
-		}while(volumes.length && !stop);
-		marker.delete();
+			let d = volumes.shift();
+			let d_1 = this.phi_1[d];
+			let d2 = this.phi2[d_1];
+			if(marker[d2]){
+				marker[d2] = true;
+				volumes.push(d2)
+			}
+			d2 = this.phi3[d_1];
+			if(marker[d2]){
+				marker[d2] = true;
+				volumes.push(d2)
+			}
+
+		}while(volumes.length);
 	};
 
 	// Traverses and applies func to all darts of connex
