@@ -35,31 +35,29 @@ function CMap3(){
 
 	this.close_hole2 = this.close_hole;
 	this.close_hole = function(d0, boundary = false, set_embeddings = true) {
-		if(this.phi3[d0] != d0)
-			return;
+		// if(this.phi3[d0] != d0)
+		// 	return;
 
 		let visited = this.new_marker();
 		let hole = this.new_marker();
 		let faces = [d0];
 		visited.mark_cell(face2, d0);
-		console.log("main loop close hole")
+
 		do {
-			// console.log(faces.length);
 			let fd0 = faces.shift();
-			if(this.phi3[d0] != d0)
-				continue;
 
 			// codegree of face... to be written 
 			let codegree = 0;
 			this.foreach_dart_of(face2, fd0, d => {
 				++codegree;
+				visited.mark(d);
 			});
 
-			let fdh = this.add_face(codegree, false);
+			let fd_h = this.add_face(codegree, false);
+			hole.mark_cell(face2, fd_h)
+
 			let fd = fd0;
 			do {
-				// this.sew_phi3(fd, fdh);
-				
 				let done = false;
 				let d = this.phi3[this.phi2[fd]];
 				do {
@@ -71,9 +69,9 @@ function CMap3(){
 						}
 					}
 					else{
-						if(this.phi2[d] == d){
+						if(hole.marked(d)){
 							done = true;
-							this.sew_phi2(d, fdh);
+							this.sew_phi2(d, fd_h);
 						}
 						else{
 							d = this.phi3[this.phi2[d]];
@@ -81,8 +79,8 @@ function CMap3(){
 					}
 				} while (!done);
 
-				this.sew_phi3(fdh, fd);
-				fdh = this.phi_1[fdh];
+				this.sew_phi3(fd_h, fd);
+				fd_h = this.phi_1[fd_h];
 				fd = this.phi1[fd];
 			} while (fd != fd0);
 		} while (faces.length);
@@ -91,6 +89,7 @@ function CMap3(){
 		hole.delete();
 
 		let wd = this.phi3[d0];
+
 		if(boundary)
 			this.mark_cell_as_boundary(volume, wd);
 
@@ -128,7 +127,8 @@ function CMap3(){
 	this.close2 = this.close;
 	this.close = function(boundary = true, set_embeddings = true){
 		this.foreach_dart(d0 => {
-			this.close_hole(d0, boundary, set_embeddings);
+			if(this.phi3[d0] == d0)
+				this.close_hole(d0, boundary, set_embeddings);
 		});
 	};
 
@@ -161,7 +161,7 @@ function CMap3(){
 		let volumes = [d0];
 
 		let stop;
-		while(volumes.length && !stop){
+		do {
 			let wd = volumes.shift();
 			this.foreach_dart_phi21(wd, d => {
 				if(!marker.marked(d)){
@@ -169,10 +169,10 @@ function CMap3(){
 					stop = func(d);
 				}						
 				if(!marker.marked(this.phi1[this.phi3[d]]))
-				volumes.push(this.phi1[this.phi3[d]]);
+					volumes.push(this.phi1[this.phi3[d]]);
 				return stop;
 			});
-		}
+		}while(volumes.length && !stop);
 		marker.delete();
 	};
 
@@ -181,19 +181,24 @@ function CMap3(){
 		let marker = this.new_marker();
 		let volumes = [d0];
 
-		let stop;
-		while(volumes.length && !stop){
+		do {
 			let wd = volumes.shift();
-			this.foreach_dart_phi1_phi2(wd, d => {
-				if(!marker.marked(d)){
+			if(!marker.marked(wd)){
+				let d = wd;
+				do {
+					if(func(d))
+						return;
 					marker.mark(d);
-					stop = func(d);
-				}							
-				if(!marker.marked(this.phi3[d]))
-					volumes.push(this.phi3[d]);
-				return stop;
-			});
-		}
+					let adj2 = this.phi2[d];
+					if(!marker.marked(adj2))
+						volumes.push(adj2);
+					d = this.phi1[d];
+				} while (d != wd);
+				let adj3 = this.phi3[d];
+				if(!marker.marked(adj3))
+					volumes.push(adj3);
+			}
+		} while(volumes.length);
 
 		marker.delete();
 	};

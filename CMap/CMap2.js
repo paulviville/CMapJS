@@ -90,19 +90,21 @@ function CMap2(){
 		let marker = this.new_marker();
 		let faces = [d0];
 
-		let stop;
-		while(faces.length && !stop){
+		do {
 			let fd = faces.shift();
-			this.foreach_dart_phi1(fd, d => {
-				if(!marker.marked(d)){
+			if(!marker.marked(fd)){
+				let d = fd;
+				do {
+					if(func(d))
+						return;
 					marker.mark(d);
-					stop = func(d);
-				}							
-				if(!marker.marked(this.phi2[d]))
-					faces.push(this.phi2[d]);
-				return stop;
-			});
-		}
+					let adj = this.phi2[d];
+					if(!marker.marked(adj))
+						faces.push(adj);
+					d = this.phi1[d];
+				} while (d != fd);
+			}
+		} while(faces.length);
 
 		marker.delete();
 	};

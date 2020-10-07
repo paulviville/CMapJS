@@ -156,24 +156,27 @@ function Renderer(cmap){
 				cmap.set_embeddings(cmap.vertex2);
 
 				let v2_id = cmap.add_attribute(cmap.vertex2, "v2_id");
-
+				let mesh_center = new THREE.Vector3();
+				let marker_vertices = cmap.new_marker();
+				let marker_faces = cmap.new_marker();
+				let id = 0;
+				let center = new THREE.Vector3();
 				cmap.foreach(volume, wd => {
+					let nb_darts = 0;
 					if(cmap.is_boundary(wd))
 						return;
 
 					const geometry = new THREE.Geometry();
-
-					let marker_vertices = cmap.new_marker();
+					center.set(0, 0, 0);
 					/// replace with foreach incident vertex2
-					let id = 0;
-					let center = new THREE.Vector3();
+					id = 0;
 					cmap.foreach_dart_of(volume, wd, v2d => {
 						if(marker_vertices.marked(v2d))
 							return;
 
 						v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
 						
-						center.add(position[cmap.cell(vertex, v2d)].clone())
+						center.add(position[cmap.cell(vertex, v2d)]);
 						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
 						cmap.foreach_dart_phi21(v2d, vd => {
 							marker_vertices.mark(vd);
@@ -185,8 +188,6 @@ function Renderer(cmap){
 						geometry.vertices[i].sub(center);
 					}
 				
-					marker_vertices.delete();
-					let marker_faces = cmap.new_marker();
 					/// replace with foreach incident face
 					cmap.foreach_dart_of(volume, wd, fd => {
 						if(marker_faces.marked(fd))
@@ -207,14 +208,19 @@ function Renderer(cmap){
 						}
 
 					});
-					marker_faces.delete();
 
 					geometry.computeFaceNormals();
 					let vol = new THREE.Mesh(geometry, material);
-					this.mesh.add(vol);
 					vol.position.copy(center);
+					this.mesh.add(vol);
+					mesh_center.add(center);
 				});
-
+				marker_faces.delete();
+				marker_vertices.delete();
+				v2_id.delete();
+				mesh_center.divideScalar(this.mesh.children.length);
+				// this.mesh.position.copy(mesh_center.negate());
+				this.mesh.children.forEach(vol => vol.position.sub(mesh_center));
 				return this;
 			},
 

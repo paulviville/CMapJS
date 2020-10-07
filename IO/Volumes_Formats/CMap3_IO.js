@@ -4,7 +4,6 @@ import {load_mesh, export_mesh} from './Mesh.js';
 
 export function load_cmap3(format, file_str){
 	let geometry = geometry_from_str(format, file_str);
-	console.log(geometry);
 	let map = map_from_geometry(geometry);
 	return map;
 }
@@ -109,14 +108,10 @@ function map_from_geometry(geometry){
 			open_map |= target_d != undefined;
 		}
 	});
-	map.debug();
 
-	console.log("closing map");
+	if(open_map)
+		map.close(true);
 
-	// if(open_map)
-		// map.close(true);
-	console.log("map");
-	map.debug();
 	dart_per_vertex.delete();
 
 	return map;
