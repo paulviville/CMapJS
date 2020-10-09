@@ -9,9 +9,6 @@ function CMap0()
 	const vertex = this.vertex;
 
 	this.funcs_set_embeddings[vertex] = function(){
-		if(!this.is_embedded(vertex))
-			this.create_embedding(vertex);
-
 		this.foreach_dart(d => {
 			this.set_embedding(vertex, d, this.new_cell(vertex));
 		});

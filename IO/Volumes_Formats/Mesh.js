@@ -41,9 +41,9 @@ export function load_mesh(mesh_str) {
 	for(let i = 0; i < nb_quads; ++i)
 	{
 		line = lines.shift();
-		line = line.split(" ");
-		line.length = 4;
-		quads.push(line);
+		// line = line.split(" ");
+		// line.length = 4;
+		// quads.push(line);
 	}   
 
 	// get hex id
@@ -61,9 +61,9 @@ export function load_mesh(mesh_str) {
 	}   
 
 	hexes = hexes.map(x => x.map(y => parseInt(y) - 1));
-	quads = quads.map(x => x.map(y => parseInt(y) - 1));
+	// quads = quads.map(x => x.map(y => parseInt(y) - 1));
 	vertices = vertices.map(x => x.map(y => parseFloat(y)));
-	console.log("file loaded: " + vertices.length + " vertices, " + hexes.length + " faces");
+	// console.log("file loaded: " + vertices.length + " vertices, " + hexes.length + " faces");
 	return {v: vertices, quad: quads, hex:hexes};
 }
 

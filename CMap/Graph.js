@@ -55,9 +55,6 @@ function Graph()
 	this.vertex = this.add_celltype();
 
 	this.funcs_set_embeddings[this.vertex] = function(){
-		if(!this.is_embedded(this.vertex))
-			this.create_embedding(this.vertex);
-
 		this.foreach(this.vertex, vd => {
 			let vid = this.new_cell(this.vertex);
 			this.foreach_dart_alpha1(vd, d => {
@@ -91,9 +88,6 @@ function Graph()
 	this.edge = this.add_celltype();
 
 	this.funcs_set_embeddings[this.edge] = function(){
-		if(!this.is_embedded(this.edge))
-			this.create_embedding(this.edge);
-
 		this.foreach(this.edge, ed => {
 			let eid = this.new_cell(this.edge);
 			this.foreach_dart_alpha0(ed, d => {

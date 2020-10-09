@@ -16,11 +16,14 @@ function CMap_Base(){
 	this.funcs_foreach = [];
 	/// All cell types dart traversor functions
 	this.funcs_foreach_dart_of = [];
+	/// All cell types incident traversors functions
+	this.funcs_foreach_incident = [];
 
 	/// Creates a new cell type by adding an attribute container to the map
 	this.add_celltype = function(){
 		const emb = attributes_containers.length;
 		attributes_containers[emb] = new Attributes_Container();
+		this.funcs_foreach_incident[emb] = [];
 		return emb;
 	};
 	
@@ -32,10 +35,6 @@ function CMap_Base(){
 	
 	/// Adds an attribute to given embedding
 	this.add_attribute = function(emb, name){
-		// if(!embeddings[emb]){
-		// 	this.create_embedding(emb);
-		// 	this.set_embeddings(emb);
-		// }
 		return attributes_containers[emb].create_attribute(name)	
 	};
 
@@ -93,6 +92,9 @@ function CMap_Base(){
 
 	/// Sets all dart embeddings for a given cell type
 	this.set_embeddings = function(emb){
+		if(!this.is_embedded(emb))
+			this.create_embedding(emb);
+
 		this.funcs_set_embeddings[emb].call(this);
 	};
 
@@ -135,6 +137,12 @@ function CMap_Base(){
 		this.funcs_foreach_dart_of[emb].call(this, cell, func);
 	};
 
+	this.foreach_incident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
+		console.log(this.funcs_foreach_incident);
+		console.log(this.funcs_foreach_incident[cell_emb]);
+		console.log(this.funcs_foreach_incident[cell_emb][inc_emb]);
+	};
+
 	/// Stores all cells of given type in an array
 	this.cache = function(emb, cond){
 		let cache = [];
@@ -158,9 +166,6 @@ function CMap_Base(){
 
 	this.dart = this.add_celltype();
 	this.funcs_set_embeddings[this.dart] = function(){
-		if(!this.is_embedded(this.dart))
-			this.create_embedding(this.dart);
-
 		this.foreach_dart(d => {
 			this.set_embedding(this.dart, d, d);
 		});
@@ -179,6 +184,7 @@ function CMap_Base(){
 		func(d);
 	};
 	
+
 	this.d = this.add_topology_relation("d");
 
 	this.new_marker = function(name = ""){

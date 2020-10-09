@@ -205,9 +205,6 @@ function CMap3(){
 	};
 
 	this.funcs_set_embeddings[vertex] = function(){
-		if(!this.is_embedded(vertex))
-			this.create_embedding(vertex);
-
 		this.foreach(vertex, vd => {
 			let vid = this.new_cell(vertex);
 				this.foreach_dart_phi21_phi31(vd, d => {
@@ -239,9 +236,6 @@ function CMap3(){
 	};
 
 	this.funcs_set_embeddings[edge] = function(){
-		if(!this.is_embedded(edge))
-			this.create_embedding(edge);
-
 		this.foreach(edge, ed => {
 			let eid = this.new_cell(edge);
 			this.foreach_dart_phi2_phi3(ed, d => {
@@ -273,9 +267,6 @@ function CMap3(){
 	};
 
 	this.funcs_set_embeddings[face] = function(){
-		if(!this.is_embedded(face))
-			this.create_embedding(face);
-
 		this.foreach(face, fd => {
 			let fid = this.new_cell(face);
 			this.foreach_dart_phi1_phi3(fd, d => {
@@ -307,9 +298,6 @@ function CMap3(){
 	};
 
 	this.funcs_set_embeddings[connex] = function(){
-		if(!this.is_embedded(connex))
-			this.create_embedding(connex);
-
 		this.foreach(connex, cd => {
 			let cid = this.new_cell(connex);
 			this.foreach_dart_phi1_phi2_phi3(cd, d => {
@@ -339,6 +327,125 @@ function CMap3(){
 	this.funcs_foreach_dart_of[connex] = function(wd, func){
 		this.foreach_dart_phi1_phi2_phi3(wd, func);
 	};
+
+
+
+
+	this.funcs_foreach_incident[vertex][vertex2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][edge2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][face2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][volume] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][edge] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][face] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][connex] = function(fd, func, use_embeddings = false){
+
+	}
+
+
+	this.funcs_foreach_incident[edge][vertex2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][edge2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][face2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][volume] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][vertex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][face] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][connex] = function(fd, func, use_embeddings = false){
+
+	}
+
+
+	this.funcs_foreach_incident[face][vertex2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][edge2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][face2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][volume] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][vertex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][edge] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][connex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][vertex2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][edge2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][face2] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][volume] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][vertex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][edge] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[connex][connex] = function(fd, func, use_embeddings = false){
+
+	}
+
+
 
 	/// OPERATIONS
 	this.cut_edge2 = this.cut_edge;

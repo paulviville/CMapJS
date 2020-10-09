@@ -44,9 +44,6 @@ function CMap1()
 	this.edge = this.add_celltype();
 	const edge = this.edge;
 	this.funcs_set_embeddings[edge] = function(){
-		if(!this.is_embedded(edge))
-			this.create_embedding(edge);
-
 		this.foreach_dart(d => {
 			this.set_embedding(edge, d, this.new_cell(edge));
 		});
@@ -63,13 +60,9 @@ function CMap1()
 
 	this.funcs_foreach_dart_of[edge] = function(ed, func) {func(ed)};
 
-
 	this.face = this.add_celltype();
 	const face = this.face;
 	this.funcs_set_embeddings[face] = function(){
-		if(!this.is_embedded(face))
-			this.create_embedding(face);
-
 		this.foreach(face, fd => {
 			let fid = this.new_cell(face);
 			this.foreach_dart_phi1(fd, d => {
@@ -97,11 +90,35 @@ function CMap1()
 		marker.delete();
 	};
 
+
 	this.funcs_foreach_dart_of[face] = function(fd, func){
 		this.foreach_dart_phi1(fd, d => func(d));
 	};
 
-	
+	this.funcs_foreach_incident[vertex][edge] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[vertex][face] = function(fd, func, use_embeddings = false){
+
+	}
+
+
+	this.funcs_foreach_incident[edge][vertex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[edge][face] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][vertex] = function(fd, func, use_embeddings = false){
+
+	}
+
+	this.funcs_foreach_incident[face][edge] = function(fd, func, use_embeddings = false){
+		
+	}
 
 	// OPERATIONS
 	this.add_face = function(nb_sides, set_embeddings = true){

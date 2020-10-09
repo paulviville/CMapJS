@@ -152,8 +152,7 @@ function Renderer(cmap){
 				this.mesh = new THREE.Group();
 
 				if(!cmap.is_embedded(cmap.vertex2))
-					cmap.create_embedding(cmap.vertex2);
-				cmap.set_embeddings(cmap.vertex2);
+					cmap.set_embeddings(cmap.vertex2);
 
 				let v2_id = cmap.add_attribute(cmap.vertex2, "v2_id");
 				let mesh_center = new THREE.Vector3();
@@ -162,7 +161,6 @@ function Renderer(cmap){
 				let id = 0;
 				let center = new THREE.Vector3();
 				cmap.foreach(volume, wd => {
-					let nb_darts = 0;
 					if(cmap.is_boundary(wd))
 						return;
 
