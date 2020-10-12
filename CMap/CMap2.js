@@ -202,41 +202,72 @@ function CMap2(){
 	};
 
 
-	this.funcs_foreach_incident[vertex][edge] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[vertex][edge] = function(vd, func, use_embeddings = false){
+		this.foreach_dart_phi21(vd, func);
 	}
 
-	this.funcs_foreach_incident[vertex][face] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[vertex][face] = function(vd, func, use_embeddings = false){
+		this.foreach_dart_phi21(vd, func);
 	}
 
-	this.funcs_foreach_incident[vertex][volume] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[vertex][volume] = function(vd, func, use_embeddings = false){
+		func(vd);
 	}
 
-	this.funcs_foreach_incident[edge][face] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[edge][face] = function(ed, func, use_embeddings = false){
+		if(!func(ed))
+			func(this.phi2[ed]);
 	}
 
-	this.funcs_foreach_incident[edge][volume] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[edge][volume] = function(ed, func, use_embeddings = false){
+		func(ed);
 	}
 
 
 	this.funcs_foreach_incident[face][volume] = function(fd, func, use_embeddings = false){
-
+		func(fd);
 	}
 
-	this.funcs_foreach_incident[volume][vertex] = function(fd, func, use_embeddings = false){
+	this.funcs_foreach_incident[volume][vertex] = function(wd, func, use_embeddings = false){
+		let marker = {};
+		this.foreach_dart_of(volume, wd, vd => {
+			if(!marker[use_embeddings? this.cell(vertex, vd) : vd]){
+				if(use_embeddings)
+					marker[this.cell(vertex, vd)] = true;
+				else
+					this.foreach_dart_phi21(vd, d => marker[d] = true);
 
+				return func(vd);
+			}
+		});
 	}
 
-	this.funcs_foreach_incident[volume][edge] = function(fd, func, use_embeddings = false){
+	this.funcs_foreach_incident[volume][edge] = function(wd, func, use_embeddings = false){
+		let marker = {};
+		this.foreach_dart_of(volume, wd, ed => {
+			if(!marker[use_embeddings? this.cell(edge, ed) : ed]){
+				if(use_embeddings)
+					marker[this.cell(edge, ed)] = true;
+				else
+					this.foreach_dart_phi2(ed, d => marker[d] = true);
 
+				return func(ed);
+			}
+		});
 	}
 
-	this.funcs_foreach_incident[volume][face] = function(fd, func, use_embeddings = false){
+	this.funcs_foreach_incident[volume][face] = function(wd, func, use_embeddings = false){
+		let marker = {};
+		this.foreach_dart_of(volume, wd, fd => {
+			if(!marker[use_embeddings? this.cell(face, fd) : fd]){
+				if(use_embeddings)
+					marker[this.cell(edge, fd)] = true;
+				else
+					this.foreach_dart_phi1(fd, d => marker[d] = true);
 
+				return func(fd);
+			}
+		});
 	}
 
 	// OPERATIONS

@@ -138,9 +138,10 @@ function CMap_Base(){
 	};
 
 	this.foreach_incident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
-		console.log(this.funcs_foreach_incident);
-		console.log(this.funcs_foreach_incident[cell_emb]);
-		console.log(this.funcs_foreach_incident[cell_emb][inc_emb]);
+		// console.log(this.funcs_foreach_incident);
+		// console.log(this.funcs_foreach_incident[cell_emb]);
+		// console.log(this.funcs_foreach_incident[cell_emb][inc_emb]);
+		this.funcs_foreach_incident[cell_emb][inc_emb].call(this, cd, func, use_embeddings);
 	};
 
 	/// Stores all cells of given type in an array

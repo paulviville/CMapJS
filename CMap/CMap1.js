@@ -92,32 +92,34 @@ function CMap1()
 
 
 	this.funcs_foreach_dart_of[face] = function(fd, func){
-		this.foreach_dart_phi1(fd, d => func(d));
+		this.foreach_dart_phi1(fd, func);
 	};
 
-	this.funcs_foreach_incident[vertex][edge] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[vertex][edge] = function(vd, func, use_embeddings = false){
+		if(!func(vd))
+			func(this.phi_1[vd]);
 	}
 
-	this.funcs_foreach_incident[vertex][face] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[vertex][face] = function(vd, func, use_embeddings = false){
+		func(vd);
 	}
 
 
-	this.funcs_foreach_incident[edge][vertex] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[edge][vertex] = function(ed, func, use_embeddings = false){
+		if(!func(ed))
+			func(this.phi_1[ed]);
 	}
 
-	this.funcs_foreach_incident[edge][face] = function(fd, func, use_embeddings = false){
-
+	this.funcs_foreach_incident[edge][face] = function(ed, func, use_embeddings = false){
+		func(ed);
 	}
 
 	this.funcs_foreach_incident[face][vertex] = function(fd, func, use_embeddings = false){
-
+		this.foreach_dart_phi1(fd, func);
 	}
 
 	this.funcs_foreach_incident[face][edge] = function(fd, func, use_embeddings = false){
-		
+		this.foreach_dart_phi1(fd, func);
 	}
 
 	// OPERATIONS
