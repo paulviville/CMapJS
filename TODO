@@ -5,7 +5,7 @@
 	CMap_Base
 	CMap0
 	Renderer
-
+	All
 
 -renderer volumes : foreach_incident_vertex2 
 	-> create index in volumes
@@ -14,9 +14,7 @@
 	careful with chaining cmap0 -> 1 -> 2 orbits
 - add set_cell_embedding(emb, c, id);
 - add degree and codegree functions for each embedding
-- add embed[emb] -> create_embedding + set_embeddings
 - change close hole with add_face1 + cut_edges & sew_phi2
-- add foreach_incident
 - add this.phis = {-1: this.phi_1 [...]} + this.phi([<path>], d);
 - add is incident to boundary(emb, cd)
 - add dartmakerstore (marker = [] + .mark .unmark)

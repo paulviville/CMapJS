@@ -137,14 +137,19 @@ function CMap_Base(){
 		this.funcs_foreach_dart_of[emb].call(this, cell, func);
 	};
 
+	/// Traverses incident cells of  given type
+	/// inc_emb : incident cell type
+	/// cell_emb : targete cell type
+	/// cd : target cell
+	/// Use_embedding switches to cell marker instead of darts
 	this.foreach_incident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
-		let marker = {};
+		let marker = this.new_marker(use_embeddings ? inc_emb : undefined);
 		this.foreach_dart_of(cell_emb, cd, d0 => {
-			if(!marker[use_embeddings? this.cell(inc_emb, d0) : d0]){
+			if(!marker.marked(d0)){
 				if(use_embeddings)
-					marker[this.cell(inc_emb, d0)] = true;
+					marker.mark(d0);
 				else
-					this.foreach_dart_of(inc_emb, d0, d1 => marker[d1] = true);
+					marker.mark_cell(inc_emb, d0);
 
 				return func(d0);
 			}
@@ -195,29 +200,36 @@ function CMap_Base(){
 
 	this.d = this.add_topology_relation("d");
 
-	this.new_marker = function(name = ""){
+	this.new_marker = function(used_emb){
 		const cmap = this;
-		function Marker(name = ""){
-			let marker = cmap.add_attribute(cmap.dart, "<marker_" + name + ">");
-			marker.mark = function(d) {this[d] = true};
-			marker.unmark = function(d) {this[d] = false};
-			marker.marked = function(d) {return this[d]};
-			marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
-			marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
-			marker.marked_cell = function(emb, cd) {
-				let marked = true;
-				cmap.foreach_dart_of(emb, cd, d => { 
-					marked &= marker.marked(d);
-				});
-				return marked;
+		function Marker(){
+			let marker = cmap.add_attribute(used_emb || cmap.dart, "<marker>");
+			if(used_emb){
+				marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
+				marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
+				marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
+			}
+			else {
+				marker.mark = function(d) {this[d] = true};
+				marker.unmark = function(d) {this[d] = false};
+				marker.marked = function(d) {return this[d]};
+				marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
+				marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
+				marker.marked_cell = function(emb, cd) {
+					let marked = true;
+					cmap.foreach_dart_of(emb, cd, d => { 
+						marked &= marker.marked(d);
+					});
+					return marked;
+				}
 			}
 			return marker;
 		}
 
-		return new Marker(name);
+		return new Marker();
 	};
 
-	let boundary_marker = this.new_marker("boundary");
+	let boundary_marker = this.new_marker();
 	this.mark_as_boundary = function(d){
 		boundary_marker.mark(d);
 	};

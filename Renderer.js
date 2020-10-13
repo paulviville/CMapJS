@@ -156,7 +156,7 @@ function Renderer(cmap){
 
 				let v2_id = cmap.add_attribute(cmap.vertex2, "v2_id");
 				let mesh_center = new THREE.Vector3();
-				let marker_vertices = cmap.new_marker();
+				let marker_vertices = cmap.new_marker(cmap.vertex2);
 				let marker_faces = cmap.new_marker();
 				let id = 0;
 				let center = new THREE.Vector3();
@@ -176,9 +176,9 @@ function Renderer(cmap){
 						
 						center.add(position[cmap.cell(vertex, v2d)]);
 						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
-						cmap.foreach_dart_phi21(v2d, vd => {
-							marker_vertices.mark(vd);
-						});
+						// cmap.foreach_dart_phi21(v2d, vd => {
+							marker_vertices.mark(v2d);
+						// });
 
 					});
 					center.divideScalar(id);
