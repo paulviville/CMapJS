@@ -138,10 +138,17 @@ function CMap_Base(){
 	};
 
 	this.foreach_incident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
-		// console.log(this.funcs_foreach_incident);
-		// console.log(this.funcs_foreach_incident[cell_emb]);
-		// console.log(this.funcs_foreach_incident[cell_emb][inc_emb]);
-		this.funcs_foreach_incident[cell_emb][inc_emb].call(this, cd, func, use_embeddings);
+		let marker = {};
+		this.foreach_dart_of(cell_emb, cd, d0 => {
+			if(!marker[use_embeddings? this.cell(inc_emb, d0) : d0]){
+				if(use_embeddings)
+					marker[this.cell(inc_emb, d0)] = true;
+				else
+					this.foreach_dart_of(inc_emb, d0, d1 => marker[d1] = true);
+
+				return func(d0);
+			}
+		});
 	};
 
 	/// Stores all cells of given type in an array
