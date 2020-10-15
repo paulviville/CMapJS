@@ -9,7 +9,9 @@ function CMap_Base(){
 	const topology = {};
 	/// Dart cell embeddings
 	const embeddings = [];
-	
+	/// stored markers
+	this.stored_markers = [];
+
 	/// All cell types embedding functions
 	this.funcs_set_embeddings = [];
 	/// All cell types traversor functions
@@ -24,6 +26,7 @@ function CMap_Base(){
 		const emb = attributes_containers.length;
 		attributes_containers[emb] = new Attributes_Container();
 		this.funcs_foreach_incident[emb] = [];
+		this.stored_markers[emb] = [];
 		return emb;
 	};
 	
@@ -154,6 +157,7 @@ function CMap_Base(){
 				return func(d0);
 			}
 		});
+		marker.remove();
 	};
 
 	/// Stores all cells of given type in an array
@@ -200,11 +204,16 @@ function CMap_Base(){
 
 	this.d = this.add_topology_relation("d");
 
-	this.new_marker = function(used_emb){
+	/// Returns a dart marker or a cell marker of given embedding 
+	this.new_marker = function(used_emb = this.dart){
+		if(this.stored_markers[used_emb].length)
+			return this.stored_markers[used_emb].pop();
+
 		const cmap = this;
 		function Marker(){
+			// console.log(this);
 			let marker = cmap.add_attribute(used_emb || cmap.dart, "<marker>");
-			if(used_emb){
+			if(used_emb != cmap.dart){
 				marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
 				marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
 				marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
@@ -223,6 +232,11 @@ function CMap_Base(){
 					return marked;
 				}
 			}
+			marker.remove = function(){
+				marker.fill(null);
+				cmap.stored_markers[used_emb].push(marker);
+			}
+
 			return marker;
 		}
 

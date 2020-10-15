@@ -168,19 +168,25 @@ function Renderer(cmap){
 					center.set(0, 0, 0);
 					/// replace with foreach incident vertex2
 					id = 0;
-					cmap.foreach_dart_of(volume, wd, v2d => {
-						if(marker_vertices.marked(v2d))
-							return;
-
+					cmap.foreach_incident(cmap.vertex2, volume, wd, v2d => {
 						v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
 						
 						center.add(position[cmap.cell(vertex, v2d)]);
-						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
-						// cmap.foreach_dart_phi21(v2d, vd => {
-							marker_vertices.mark(v2d);
-						// });
+						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());}
+						, true);
+					// cmap.foreach_dart_of(volume, wd, v2d => {
+					// 	if(marker_vertices.marked(v2d))
+					// 		return;
 
-					});
+					// 	v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
+						
+					// 	center.add(position[cmap.cell(vertex, v2d)]);
+					// 	geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
+					// 	// cmap.foreach_dart_phi21(v2d, vd => {
+					// 		marker_vertices.mark(v2d);
+					// 	// });
+
+					// });
 					center.divideScalar(id);
 					for(let i = 0; i < geometry.vertices.length; ++i){
 						geometry.vertices[i].sub(center);
@@ -213,8 +219,8 @@ function Renderer(cmap){
 					this.mesh.add(vol);
 					mesh_center.add(center);
 				});
-				marker_faces.delete();
-				marker_vertices.delete();
+				marker_faces.remove();
+				marker_vertices.remove();
 				v2_id.delete();
 				mesh_center.divideScalar(this.mesh.children.length);
 				// this.mesh.position.copy(mesh_center.negate());

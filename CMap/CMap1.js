@@ -87,7 +87,7 @@ function CMap1()
 			func(d0);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 

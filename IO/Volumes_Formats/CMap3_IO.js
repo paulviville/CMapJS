@@ -108,7 +108,8 @@ function map_from_geometry(geometry){
 			open_map |= target_d != undefined;
 		}
 	});
-
+	marker.remove();
+	
 	if(open_map)
 		map.close(true);
 

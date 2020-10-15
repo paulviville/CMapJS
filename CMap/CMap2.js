@@ -131,7 +131,7 @@ function CMap2(){
 			return func(d);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[vertex] = function(vd, func){
@@ -163,7 +163,7 @@ function CMap2(){
 
 			func(d);
 		});
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[edge] = function(ed, func){
@@ -194,7 +194,7 @@ function CMap2(){
 			this.foreach_dart_phi1_phi2(d0, d1 => marker.mark(d1));
 			func(d0);
 		});
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[volume] = function(wd, func){

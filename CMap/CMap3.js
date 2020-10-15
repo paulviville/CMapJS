@@ -201,7 +201,7 @@ function CMap3(){
 			}
 		} while(volumes.length);
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_set_embeddings[vertex] = function(){
@@ -228,7 +228,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[vertex] = function(wd, func){
@@ -259,7 +259,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[edge] = function(wd, func){
@@ -290,7 +290,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[face] = function(wd, func){
@@ -321,29 +321,12 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.delete();
+		marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[connex] = function(wd, func){
 		this.foreach_dart_phi1_phi2_phi3(wd, func);
 	};
-
-
-
-
-	this.funcs_foreach_incident[vertex][vertex2] = function(vd, func, use_embeddings = false){
-		let marker = {};
-		this.foreach_dart_of(vertex, vd, v2d => {
-			if(!marker[use_embeddings? this.cell(edge, ed) : ed]){
-				if(use_embeddings)
-					marker[this.cell(edge, ed)] = true;
-				else
-					this.foreach_dart_phi2(ed, d => marker[d] = true);
-
-				return func(ed);
-			}
-		});
-	}
 
 	/// OPERATIONS
 	this.cut_edge2 = this.cut_edge;
