@@ -162,6 +162,9 @@ function CMap3(){
 		marker[d0] = true;
 		do {
 			let d = volumes.shift();
+			
+			if(func(d))	
+				break;
 			let d_1 = this.phi_1[d];
 			let d2 = this.phi2[d_1];
 			if(marker[d2]){
