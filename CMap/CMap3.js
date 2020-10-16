@@ -349,6 +349,7 @@ function CMap3(){
 			this.sew_phi3(d3, this.phi1[d0]);
 		}
 		d3 = this.phi3[ed];
+		this.unsew_phi3(ed);
 		this.sew_phi3(ed, this.phi1[d3]);
 		this.sew_phi3(d3, this.phi1[ed]);
 
