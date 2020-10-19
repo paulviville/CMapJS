@@ -94,33 +94,63 @@ function CMap3(){
 			this.mark_cell_as_boundary(volume, wd);
 
 		if(set_embeddings){
-			this.foreach_dart_of(volumee, wd, d0 => {
-				if(this.is_embedded(vertex2)){
+			let wid, ccid;
+			if(this.is_embedded(volume))
+				wid = this.new_cell(volume);
+			if(this.is_embedded(connex))
+				ccid = this.cell(connex, d0);
 
+			this.foreach_dart_of(volume, wd, d0 => {
+				if(this.is_embedded(vertex2)){
+					if(!Number.isInteger(this.cell(vertex2, d0))){
+					// if(this.cell(vertex2, d0) != undefined && this.cell(vertex2, d0) != null){
+						let v2id = this.new_cell(vertex2);
+						this.foreach_dart_of(vertex2, d0, d1 => this.set_embedding(vertex2, d1, v2id));
+					}
 				}
 				if(this.is_embedded(edge2)){
-
+					if(!Number.isInteger(this.cell(edge2, d0))){
+						// if(this.cell(edge2, d0) != undefined && this.cell(edge2, d0) != null){
+						let e2id = this.new_cell(edge2);
+						this.foreach_dart_of(edge2, d0, d1 => this.set_embedding(edge2, d1, e2id));
+					}
 				}
 				if(this.is_embedded(face2)){
-
+					if(!Number.isInteger(this.cell(face2, d0))){
+						// if(this.cell(face2, d0) != undefined && this.cell(face2, d0) != null){
+						let f2id = this.new_cell(face2);
+						this.foreach_dart_of(face2, d0, d1 => this.set_embedding(face2, d1, f2id));
+					}
 				}
-				if(this.is_embedded(volume)){
-
+				if(wid != undefined){
+					this.set_embedding(volume, d0, wid);
 				}
 				if(this.is_embedded(vertex)){
-					
+					if(!Number.isInteger(this.cell(vertex, d0))){
+						// if(this.cell(vertex, d0) != undefined && this.cell(vertex, d0) != null){
+						let vid = this.cell(vertex, this.phi3[d0]);
+						this.foreach_dart_of(vertex2, d0, d1 => this.set_embedding(vertex, d1, vid));
+					}
 				}
 				if(this.is_embedded(edge)){
-
+					if(!Number.isInteger(this.cell(edge, d0))){
+						// if(this.cell(edge, d0) != undefined && this.cell(edge, d0) != null){
+						let eid = this.cell(edge, this.phi3[d0]);
+						this.foreach_dart_of(edge, d0, d1 => this.set_embedding(edge, d1, eid));
+					}
 				}
 				if(this.is_embedded(face)){
-					
+					if(!Number.isInteger(this.cell(face, d0))){
+						// if(this.cell(face, d0) != undefined && this.cell(face, d0) != null){
+						let eid = this.cell(face, this.phi3[d0]);
+						this.foreach_dart_of(face, d0, d1 => this.set_embedding(face, d1, eid));
+					}
 				}
-				if(this.is_embedded(connex)){
-
+				if(ccid != undefined){
+					this.set_embedding(connex, d0, ccid);
 				}
 			});
-			}
+		}
 
 		return wd;
 	};
@@ -159,9 +189,10 @@ function CMap3(){
 
 	/// Traverses and applies func to all darts of vertex 3
 	this.foreach_dart_phi21_phi31 = function(d0, func){
-		let marker = [];
+		let marker = this.new_marker();
 		let volumes = [d0];
-		marker[d0] = true;
+		marker.mark(d0);
+		// marker[d0] = true;
 		do {
 			let d = volumes.shift();
 			
@@ -169,13 +200,15 @@ function CMap3(){
 				break;
 			let d_1 = this.phi_1[d];
 			let d2 = this.phi2[d_1];
-			if(marker[d2]){
-				marker[d2] = true;
+			if(!marker.marked(d2)){
+				marker.mark(d2);
+		// marker[d2] = true;
 				volumes.push(d2)
 			}
 			d2 = this.phi3[d_1];
-			if(marker[d2]){
-				marker[d2] = true;
+			if(!marker.marked(d2)){
+				marker.mark(d2);
+		// marker[d2] = true;
 				volumes.push(d2)
 			}
 
@@ -225,7 +258,7 @@ function CMap3(){
 		}
 
 		let marker = this.new_marker();
-			this.foreach_dart(d => {
+		this.foreach_dart(d => {
 			if(marker.marked(d))
 				return;
 
@@ -382,7 +415,7 @@ function CMap3(){
 			}
 			if(this.is_embedded(vertex)){
 				let vid = this.new_cell(vertex);
-				this.foreach_dart_of(vertex, vd, d => this.set_embedding(vertex, d, vid));
+				this.foreach_dart_of(vertex, vd, d => {this.set_embedding(vertex, d, vid)});
 			}
 			if(this.is_embedded(edge)){
 
@@ -395,6 +428,7 @@ function CMap3(){
 		}
 		return vd;
 	};
+	
 	this.cut_face2 = this.cut_face;
 	this.cut_face;
 	this.cut_volume;
