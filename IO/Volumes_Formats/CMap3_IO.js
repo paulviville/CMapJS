@@ -110,8 +110,8 @@ function map_from_geometry(geometry){
 	});
 	marker.remove();
 	
-	if(open_map)
-		map.close(true);
+	// if(open_map)
+		map.close();
 
 	dart_per_vertex.delete();
 
