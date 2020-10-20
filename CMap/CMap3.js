@@ -1,3 +1,4 @@
+import { Vertex } from '../three.module.js';
 import CMap2 from './CMap2.js';
 
 function CMap3(){
@@ -428,10 +429,98 @@ function CMap3(){
 		}
 		return vd;
 	};
-	
+
 	this.cut_face2 = this.cut_face;
-	this.cut_face;
-	this.cut_volume;
+	this.cut_face = function(fd0, fd1, set_embeddings = true){
+		let d0 = this.phi1[this.phi3[fd0]];
+		let d1 = this.phi1[this.phi3[fd1]];
+
+		this.cut_face2(fd0, fd1, false);
+		this.cut_face2(d0, d1, false);
+
+		this.sew_phi3(this.phi_1[fd0], this.phi_1[d1])
+		this.sew_phi3(this.phi_1[fd1], this.phi_1[d0])
+
+		let ed = this.phi_1[d0];
+
+		if(set_embeddings){
+			if(this.is_embedded(vertex2)){
+
+			}
+			if(this.is_embedded(edge2)){
+
+			}
+			if(this.is_embedded(face2)){
+
+			}
+			if(this.is_embedded(volume)){
+
+			}
+			if(this.is_embedded(vertex)){
+				this.set_embedding(vertex, this.phi_1[d1], this.cell(vertex, fd0))
+				this.set_embedding(vertex, this.phi_1[fd1], this.cell(vertex, fd0))
+				this.set_embedding(vertex, this.phi_1[d0], this.cell(vertex, fd1))
+				this.set_embedding(vertex, this.phi_1[fd0], this.cell(vertex, fd1))
+			}
+			if(this.is_embedded(edge)){
+
+			}
+			if(this.is_embedded(face)){
+
+			}
+			if(this.is_embedded(connex)){
+			}
+		}
+		return ed;
+	};
+
+	this.cut_volume = function(path, set_embeddings = true){
+		let fd0 = this.add_face(path.length, false);
+		let fd1 = this.add_face(path.length, false);
+
+		let d0, d1;
+		for(let i = 0; i < path.length; ++i){
+			d0 = path[i];
+			d1 = this.phi2[d0];
+			this.unsew_phi2(d0);
+
+			this.sew_phi2(d0, fd0);
+			this.sew_phi2(d1, fd1);
+			this.sew_phi3(fd0, fd1);
+
+			fd0 = this.phi_1[fd0];
+			fd1 = this.phi1[fd1];
+		}
+		fd0 = this.phi_1[fd0];
+
+		if(set_embeddings){
+			if(this.is_embedded(vertex2)){
+
+			}
+			if(this.is_embedded(edge2)){
+
+			}
+			if(this.is_embedded(face2)){
+
+			}
+			if(this.is_embedded(volume)){
+
+			}
+			if(this.is_embedded(vertex)){
+				this.foreach_dart_of(face, fd0, d => {
+					this.set_embedding(vertex, d, this.cell(vertex, this.phi1[this.phi2[d]]));
+				});
+			}
+			if(this.is_embedded(edge)){
+
+			}
+			if(this.is_embedded(face)){
+
+			}
+			if(this.is_embedded(connex)){
+			}
+		}
+	};
 
 	this.collapse_edge;
 	this.merge_faces;
