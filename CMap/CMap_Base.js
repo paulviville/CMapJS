@@ -210,37 +210,13 @@ function CMap_Base(){
 			return this.stored_markers[used_emb].pop();
 
 		const cmap = this;
-		function Marker(){
-			// console.log(this);
-			let marker = cmap.add_attribute(used_emb || cmap.dart, "<marker>");
-			if(used_emb != cmap.dart){
-				marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
-				marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
-				marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
-			}
-			else {
-				marker.mark = function(d) {this[d] = true};
-				marker.unmark = function(d) {this[d] = false};
-				marker.marked = function(d) {return this[d]};
-				marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
-				marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
-				marker.marked_cell = function(emb, cd) {
-					let marked = true;
-					cmap.foreach_dart_of(emb, cd, d => { 
-						marked &= marker.marked(d);
-					});
-					return marked;
-				}
-			}
-			marker.remove = function(){
-				marker.fill(null);
-				cmap.stored_markers[used_emb].push(marker);
-			}
+		
 
-			return marker;
-		}
+		return new Marker(this, used_emb);
+	};
 
-		return new Marker();
+	this.new_fast_marker = function(used_emb = this.dart){
+		return new FastMarker(this, used_emb);
 	};
 
 	let boundary_marker = this.new_marker();
@@ -281,5 +257,65 @@ function CMap_Base(){
 		console.log(attributes_containers, topology, embeddings);
 	}
 }
+
+function Marker(cmap, used_emb){
+	let marker = cmap.add_attribute(used_emb || cmap.dart, "<marker>");
+	if(used_emb != cmap.dart){
+		marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
+		marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
+		marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
+	}
+	else {
+		marker.mark = function(d) {this[d] = true};
+		marker.unmark = function(d) {this[d] = false};
+		marker.marked = function(d) {return this[d]};
+		marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
+		marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
+		marker.marked_cell = function(emb, cd) {
+			let marked = true;
+			cmap.foreach_dart_of(emb, cd, d => { 
+				marked &= marker.marked(d);
+			});
+			return marked;
+		}
+	}
+	marker.remove = function(){
+		marker.fill(null);
+		cmap.stored_markers[used_emb].push(marker);
+	}
+
+	return marker;
+}
+
+function FastMarker(cmap, used_emb){
+	let marker = {};
+	if(used_emb != cmap.dart){
+		marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
+		marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
+		marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
+	}
+	else {
+		marker.mark = function(d) {this[d] = true};
+		marker.unmark = function(d) {this[d] = false};
+		marker.marked = function(d) {return this[d]};
+		marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
+		marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
+		marker.marked_cell = function(emb, cd) {
+			let marked = true;
+			cmap.foreach_dart_of(emb, cd, d => { 
+				marked &= marker.marked(d);
+			});
+			return marked;
+		}
+	}
+	// marker.remove = function(){
+	// 	marker.fill(null);
+	// 	cmap.stored_markers[used_emb].push(marker);
+	// }
+
+	return marker;
+}
+
+
 
 export default CMap_Base;

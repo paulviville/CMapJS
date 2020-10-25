@@ -51,7 +51,7 @@ function Renderer(cmap){
 				cmap.foreach(vertex, vd => {
 					geometry.vertices.push(position[cmap.cell(vertex, vd)])
 				});
-
+				console.log(geometry);
 				let material = new THREE.PointsMaterial({
 					color: params.color || 0xFF0000,
 					size: params.size || 0.0025
@@ -161,6 +161,7 @@ function Renderer(cmap){
 				let id = 0;
 				let center = new THREE.Vector3();
 				cmap.foreach(volume, wd => {
+					// console.log(0);
 					if(cmap.is_boundary(wd))
 						return;
 
@@ -168,25 +169,25 @@ function Renderer(cmap){
 					center.set(0, 0, 0);
 					/// replace with foreach incident vertex2
 					id = 0;
-					cmap.foreach_incident(cmap.vertex2, volume, wd, v2d => {
-						v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
-						
-						center.add(position[cmap.cell(vertex, v2d)]);
-						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());}
-						, true);
-					// cmap.foreach_dart_of(volume, wd, v2d => {
-					// 	if(marker_vertices.marked(v2d))
-					// 		return;
-
+					// cmap.foreach_incident(cmap.vertex2, volume, wd, v2d => {
 					// 	v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
 						
 					// 	center.add(position[cmap.cell(vertex, v2d)]);
-					// 	geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
-					// 	// cmap.foreach_dart_phi21(v2d, vd => {
-					// 		marker_vertices.mark(v2d);
-					// 	// });
+					// 	geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());}
+					// 	, true);
+					cmap.foreach_dart_of(volume, wd, v2d => {
+						if(marker_vertices.marked(v2d))
+							return;
 
-					// });
+						v2_id[cmap.cell(cmap.vertex2, v2d)] = id++;
+						
+						center.add(position[cmap.cell(vertex, v2d)]);
+						geometry.vertices.push(position[cmap.cell(vertex, v2d)].clone());
+						// cmap.foreach_dart_phi21(v2d, vd => {
+							marker_vertices.mark(v2d);
+						// });
+
+					});
 					center.divideScalar(id);
 					for(let i = 0; i < geometry.vertices.length; ++i){
 						geometry.vertices[i].sub(center);

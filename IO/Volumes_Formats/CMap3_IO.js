@@ -105,7 +105,7 @@ function map_from_geometry(geometry){
 				} while(d1 != d0);
 
 			}
-			open_map |= target_d != undefined;
+			open_map |= (target_d != undefined);
 		}
 	});
 	marker.remove();
