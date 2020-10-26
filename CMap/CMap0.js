@@ -14,7 +14,7 @@ function CMap0()
 		});
 	};
 
-	this.funcs_foreach[vertex] = function(func, cache){
+	this.funcs_foreach[vertex] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;

@@ -121,22 +121,29 @@ function CMap2(){
 		});
 	};
 
-	this.funcs_foreach[vertex] = function(func, cache){
+	this.funcs_foreach[vertex] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 
-		let marker = this.new_marker();
-		this.foreach_dart(d => {
-			if(marker.marked(d))
-				return;
+		let marker = this.new_fast_marker(use_emb? vertex : undefined);
+		if(use_emb)
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-			this.foreach_dart_phi21(d, d1 => { marker.mark(d1) });
-			return func(d);
-		});
+				marker.mark(d);
+				return func(d);
+			});
+		else
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-		marker.remove();
+				marker.mark_cell(vertex, d);
+				return func(d);
+			});
 	};
 
 	this.funcs_foreach_dart_of[vertex] = function(vd, func){
@@ -152,23 +159,31 @@ function CMap2(){
 		});
 	};
 
-	this.funcs_foreach[edge] = function(func, cache){
+	this.funcs_foreach[edge] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.forEach(ed => func(ed));
 			return;
 		}
 
-		let marker = this.new_marker();
-		this.foreach_dart(d => {
-			if(marker.marked(d))
-				return;
+		let marker = this.new_fast_marker(use_emb? edge : undefined);
+		if(use_emb)
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-			marker.mark(d);
-			marker.mark(this.phi2[d]);
+				marker.mark(d);
+				return func(d);
+			});
+		else
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-			return func(d);
-		});
-		marker.remove();
+				marker.mark(d);
+				marker.mark(this.phi2[d]);
+
+				return func(d);
+			});
 	};
 
 	this.funcs_foreach_dart_of[edge] = function(ed, func){
@@ -178,28 +193,35 @@ function CMap2(){
 	this.funcs_set_embeddings[volume] = function(){
 		this.foreach(volume, wd => {
 			let wid = this.new_cell(volume);
-			console.log("wid: ", wid)
 			this.foreach_dart_phi1_phi2(wd, d => {
 				this.set_embedding(volume, d, wid);
 			});
 		});
 	};
 
-	this.funcs_foreach[volume] = function(func, cache){
+	this.funcs_foreach[volume] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.forEach(wd => func(wd));
 			return;
 		}
 
-		let marker = this.new_marker();
-		this.foreach_dart(d0 => {
-			if(marker.marked(d0))
-				return;
+		let marker = this.new_fast_marker(use_emb? volume : undefined);
+		if(use_emb)
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-			this.foreach_dart_phi1_phi2(d0, d1 => {marker.mark(d1)});
-			return func(d0);
-		});
-		marker.remove();
+				marker.mark(d);
+				return func(d);
+			});
+		else
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
+
+				marker.mark_cell(volume, d);
+				return func(d);
+			});
 	};
 
 	this.funcs_foreach_dart_of[volume] = function(wd, func){
@@ -244,7 +266,7 @@ function CMap2(){
 	this.collapse_edge = function(ed, set_embeddings = true){
 		let d0 = ed;
 		let e0 = this.phi2[ed];
-		let eid = this.cell(edge, ed);
+		// let eid = this.cell(edge, ed);
 		
 		this.unsew_phi2(d0);
 		let d1 = this.collapse_edge1(d0, false);

@@ -231,8 +231,6 @@ function CMap3(){
 					volumes.push(adj3);
 			}
 		} while(volumes.length);
-
-		// marker.remove();
 	};
 
 	this.funcs_set_embeddings[vertex] = function(){
@@ -244,22 +242,29 @@ function CMap3(){
 		});
 	};
 
-	this.funcs_foreach[vertex] = function(func, cache){
+	this.funcs_foreach[vertex] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 
-		let marker = this.new_marker();
-		this.foreach_dart(d => {
-			if(marker.marked(d))
-				return;
+		let marker = this.new_fast_marker(use_emb? vertex : undefined);
+		if(use_emb)
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-			this.foreach_dart_phi21_phi31(d, d1 => { marker.mark(d1); });
-			return func(d);
-		});
+				marker.mark(d);
+				return func(d);
+			});
+		else
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
 
-		marker.remove();
+				marker.mark_cell(vertex, d);
+				return func(d);
+			});
 	};
 
 	this.funcs_foreach_dart_of[vertex] = function(wd, func){
@@ -275,13 +280,13 @@ function CMap3(){
 		});
 	};
 
-	this.funcs_foreach[edge] = function(func, cache){
+	this.funcs_foreach[edge] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 
-		let marker = this.new_marker();
+		let marker = this.new_fast_marker();
 		this.foreach_dart(d => {
 			if(marker.marked(d))
 				return;
@@ -290,7 +295,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.remove();
+		// marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[edge] = function(wd, func){
@@ -306,13 +311,13 @@ function CMap3(){
 		});
 	};
 
-	this.funcs_foreach[face] = function(func, cache){
+	this.funcs_foreach[face] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 
-		let marker = this.new_marker();
+		let marker = this.new_fast_marker();
 		this.foreach_dart(d => {
 			if(marker.marked(d))
 				return;
@@ -321,7 +326,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.remove();
+		// marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[face] = function(wd, func){
@@ -337,13 +342,13 @@ function CMap3(){
 		});
 	};
 
-	this.funcs_foreach[connex] = function(func, cache){
+	this.funcs_foreach[connex] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 
-		let marker = this.new_marker();
+		let marker = this.new_fast_marker();
 		this.foreach_dart(d => {
 			if(marker.marked(d))
 				return;
@@ -352,7 +357,7 @@ function CMap3(){
 			return func(d);
 		});
 
-		marker.remove();
+		// marker.remove();
 	};
 
 	this.funcs_foreach_dart_of[connex] = function(wd, func){

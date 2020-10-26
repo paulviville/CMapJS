@@ -11,6 +11,7 @@ function CMap_Base(){
 	const embeddings = [];
 	/// stored markers
 	this.stored_markers = [];
+	this.stored_fast_markers = [];
 
 	/// All cell types embedding functions
 	this.funcs_set_embeddings = [];
@@ -78,7 +79,7 @@ function CMap_Base(){
 
 	/// Verifies cell type invading
 	this.is_embedded = function(emb){	
-		return (embeddings[emb]);
+		return (embeddings[emb]? true : false);
 	};
 
 	/// Gets dart embedding of the cell type
@@ -131,8 +132,33 @@ function CMap_Base(){
 	};
 	
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
-	this.foreach = function(emb, func, cache){
-		this.funcs_foreach[emb].call(this, func, cache);
+	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
+		// console.log(use_emb)
+		// // if(use_emb == undefined) use_emb = this.is_embedded(emb);
+		// this.funcs_foreach[emb].call(this, func, {cache, use_emb /*:(use_emb == undefined? this.is_embedded(emb) : undefined)*/});
+	
+		if(cache){
+			cache.forEach(cd => func(cd));
+			return;
+		}
+
+		let marker = this.new_fast_marker(use_emb? emb : undefined);
+		if(use_emb)
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
+
+				marker.mark(d);
+				return func(d);
+			});
+		else
+			this.foreach_dart(d => {
+				if(marker.marked(d))
+					return;
+
+				marker.mark_cell(emb, d);
+				return func(d);
+			});	
 	};
 
 	/// Traverses and applies func to all darts of a cell 
@@ -146,18 +172,22 @@ function CMap_Base(){
 	/// cd : target cell
 	/// Use_embedding switches to cell marker instead of darts
 	this.foreach_incident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
-		let marker = this.new_marker(use_embeddings ? inc_emb : undefined);
-		this.foreach_dart_of(cell_emb, cd, d0 => {
-			if(!marker.marked(d0)){
-				if(use_embeddings)
+		let marker = this.new_fast_marker(use_embeddings ? inc_emb : undefined);
+		if(use_embeddings)
+			this.foreach_dart_of(cell_emb, cd, d0 => {
+				if(!marker.marked(d0)){
 					marker.mark(d0);
-				else
+					return func(d0);
+				}
+			});
+		else
+			this.foreach_dart_of(cell_emb, cd, d0 => {
+				if(!marker.marked(d0)){
 					marker.mark_cell(inc_emb, d0);
-
-				return func(d0);
-			}
-		});
-		marker.remove();
+					return func(d0);
+				}
+			});
+		// marker.remove();
 	};
 
 	/// Stores all cells of given type in an array
@@ -165,9 +195,9 @@ function CMap_Base(){
 		let cache = [];
 
 		if(!cond)
-			this.foreach(emb, cd => { cache.push(cd) });
+			this.foreach(emb, cd => { cache.push(cd) },  {use_emb: this.is_embedded(emb)});
 		else
-			this.foreach(emb, cd => { if(cond(cd)) cache.push(cd) });
+			this.foreach(emb, cd => { if(cond(cd)) cache.push(cd) },  {use_emb: this.is_embedded(emb)});
 			
 		return cache;
 	};
@@ -258,60 +288,61 @@ function CMap_Base(){
 	}
 }
 
-function Marker(cmap, used_emb){
-	let marker = cmap.add_attribute(used_emb || cmap.dart, "<marker>");
-	if(used_emb != cmap.dart){
-		marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
-		marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
-		marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
-	}
-	else {
-		marker.mark = function(d) {this[d] = true};
-		marker.unmark = function(d) {this[d] = false};
-		marker.marked = function(d) {return this[d]};
-		marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
-		marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
-		marker.marked_cell = function(emb, cd) {
-			let marked = true;
-			cmap.foreach_dart_of(emb, cd, d => { 
-				marked &= marker.marked(d);
-			});
-			return marked;
-		}
-	}
-	marker.remove = function(){
-		marker.fill(null);
-		cmap.stored_markers[used_emb].push(marker);
-	}
+let Dart_Marker_Proto = {
+	cmap: undefined,
 
+	mark: function(d) {	this[d] = true;	},
+	unmark: function(d) { this[d] = true; },
+	marked: function(d) { return this[d]},
+	mark_cell: function(emb, cd) {this.cmap.foreach_dart_of(emb, cd, d => this.mark(d))},
+	unmark_cell: function(emb, cd) {this.cmap.foreach_dart_of(emb, cd, d => this.unmark(d))},
+	marked_cell: function(emb, cd) {
+		let marked = true;
+		this.cmap.foreach_dart_of(emb, cd, d => { 
+			marked &= this.marked(d);
+		});
+		return marked;
+	},
+};
+
+let Cell_Marker_Proto = {
+	cmap: undefined, 
+	emb: undefined,
+
+	mark: function(d) {this[this.cmap.cell(this.emb, d)] = true},
+	unmark: function(d) {this[this.cmap.cell(this.emb, d)] = false},
+	marked: function(d) {return this[this.cmap.cell(this.emb, d)]},
+};
+
+let Marker_remover = {
+	remove: function(){
+		this.fill(null);
+		this.cmap.stored_markers[this.emb || this.cmap.dart].push(this);
+	}
+};
+
+function Marker(cmap, used_emb){
+	let marker;
+	if(used_emb){
+		marker = Object.assign([], Cell_Marker_Proto);
+		marker.emb = used_emb;
+	}
+	else
+		marker = Object.assign([], Dart_Marker_Proto);
+	marker.cmap = cmap;
+	Object.assign(marker, Marker_remover);
 	return marker;
 }
 
 function FastMarker(cmap, used_emb){
-	let marker = {};
-	if(used_emb != cmap.dart){
-		marker.mark = function(d) {this[cmap.cell(used_emb, d)] = true};
-		marker.unmark = function(d) {this[cmap.cell(used_emb, d)] = false};
-		marker.marked = function(d) {return this[cmap.cell(used_emb, d)]};
+	let marker;
+	if(used_emb){
+		marker = Object.assign([], Cell_Marker_Proto);
+		marker.emb = used_emb;
 	}
-	else {
-		marker.mark = function(d) {this[d] = true};
-		marker.unmark = function(d) {this[d] = false};
-		marker.marked = function(d) {return this[d]};
-		marker.mark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.mark(d))};
-		marker.unmark_cell = function(emb, cd) {cmap.foreach_dart_of(emb, cd, d => marker.unmark(d))};
-		marker.marked_cell = function(emb, cd) {
-			let marked = true;
-			cmap.foreach_dart_of(emb, cd, d => { 
-				marked &= marker.marked(d);
-			});
-			return marked;
-		}
-	}
-	// marker.remove = function(){
-	// 	marker.fill(null);
-	// 	cmap.stored_markers[used_emb].push(marker);
-	// }
+	else
+		marker = Object.assign([], Dart_Marker_Proto);
+	marker.cmap = cmap;
 
 	return marker;
 }

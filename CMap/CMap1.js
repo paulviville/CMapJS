@@ -49,7 +49,7 @@ function CMap1()
 		});
 	};
 
-	this.funcs_foreach[edge] = function(func, cache){
+	this.funcs_foreach[edge] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
@@ -71,23 +71,29 @@ function CMap1()
 		});
 	};
 
-	this.funcs_foreach[face] = function(func, cache){
+	this.funcs_foreach[face] = function(func, {cache = undefined, use_emb = false}){
 		if(cache){
 			cache.some(d => func(d));
 			return;
 		}
 		
-		let marker = this.new_marker();
-		this.foreach_dart(d0 => {
-			if(marker.marked(d0))
-				return;
+		let marker = this.new_fast_marker(use_emb? face : undefined);
+		if(use_emb)
+			this.foreach_dart(d0 => {
+				if(marker.marked(d0))
+					return;
 
-			this.foreach_dart_phi1(d0, d1 => {marker.mark(d1)});
+				marker.mark(d0);
+				func(d0);
+			});
+		else
+			this.foreach_dart(d0 => {
+				if(marker.marked(d0))
+					return;
 
-			func(d0);
-		});
-
-		marker.remove();
+				marker.mark_cell(face, d0)
+				func(d0);
+			});
 	};
 
 
