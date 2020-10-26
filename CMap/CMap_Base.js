@@ -140,6 +140,8 @@ function CMap_Base(){
 		}
 
 		let marker = this.new_fast_marker(use_emb? emb : undefined);
+		// if(use_emb)
+		console.log("using emb", use_emb, emb);
 		if(use_emb)
 			this.foreach_dart(d => {
 				if(marker.marked(d))

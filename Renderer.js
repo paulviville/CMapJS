@@ -50,8 +50,8 @@ function Renderer(cmap){
 				const geometry = new THREE.Geometry();
 				cmap.foreach(vertex, vd => {
 					geometry.vertices.push(position[cmap.cell(vertex, vd)])
-				});
-				console.log(geometry);
+				}, {use_emb: cmap.is_embedded(vertex)});
+
 				let material = new THREE.PointsMaterial({
 					color: params.color || 0xFF0000,
 					size: params.size || 0.0025
@@ -75,7 +75,7 @@ function Renderer(cmap){
 				cmap.foreach(edge, ed => {
 					geometry.vertices.push(position[cmap.cell(vertex, ed)]);
 					geometry.vertices.push(position[cmap.cell(vertex, cmap.phi1[ed])]);
-				});
+				}, {use_emb: cmap.is_embedded(edge)});
 
 				const material = new THREE.LineBasicMaterial({
 					color: params.color || 0x000000,
@@ -115,7 +115,7 @@ function Renderer(cmap){
 						if(cmap.is_embedded(face))
 							f.id = cmap.cell(face, fd);
 					}
-				});
+				}, {use_emb: cmap.is_embedded(face)});
 				geometry.computeFaceNormals();
 
 				let material = new THREE.MeshLambertMaterial({
@@ -207,7 +207,7 @@ function Renderer(cmap){
 					vol.position.copy(center);
 					this.mesh.add(vol);
 					mesh_center.add(center);
-				});
+				}, {use_emb: cmap.is_embedded(volume)});
 				marker_faces.remove();
 				marker_vertices.remove();
 				v2_id.delete();
