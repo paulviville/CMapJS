@@ -13,10 +13,6 @@ function CMap_Base(){
 	this.stored_markers = [];
 	this.stored_fast_markers = [];
 
-	/// All cell types embedding functions
-	this.funcs_set_embeddings = [];
-	/// All cell types traversor functions
-	this.funcs_foreach = [];
 	/// All cell types dart traversor functions
 	this.funcs_foreach_dart_of = [];
 	/// All cell types incident traversors functions
@@ -60,7 +56,7 @@ function CMap_Base(){
 	/// Counts cells of given type
 	this.nb_cells = function(emb){
 		let i = 0;
-		this.foreach(emb, c => {++i});
+		this.foreach(emb, c => {++i}, {use_emb: this.is_embedded(emb)});
 		return i;
 	};
 
@@ -99,7 +95,10 @@ function CMap_Base(){
 		if(!this.is_embedded(emb))
 			this.create_embedding(emb);
 
-		this.funcs_set_embeddings[emb].call(this);
+		this.foreach(emb, cd => {
+			let cid = this.new_cell(emb);
+			this.foreach_dart_of(emb, cd, d => {this.set_embedding(emb, d, cid)});
+		})
 	};
 
 	/// Creates a new dart in the map
@@ -133,9 +132,7 @@ function CMap_Base(){
 	
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
 	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
-		// console.log(use_emb)
-		// // if(use_emb == undefined) use_emb = this.is_embedded(emb);
-		// this.funcs_foreach[emb].call(this, func, {cache, use_emb /*:(use_emb == undefined? this.is_embedded(emb) : undefined)*/});
+		// if(use_emb == undefined) use_emb = this.is_embedded(emb);
 	
 		if(cache){
 			cache.forEach(cd => func(cd));
@@ -187,7 +184,6 @@ function CMap_Base(){
 					return func(d0);
 				}
 			});
-		// marker.remove();
 	};
 
 	/// Stores all cells of given type in an array
@@ -212,40 +208,20 @@ function CMap_Base(){
 	this.close = function(){}
 
 	this.dart = this.add_celltype();
-	this.funcs_set_embeddings[this.dart] = function(){
-		this.foreach_dart(d => {
-			this.set_embedding(this.dart, d, d);
-		});
-	};
 
-	this.funcs_foreach[this.dart] = function(func, cache){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-
-		this.foreach_dart(func);
-	};
-
-	this.funcs_foreach_dart_of[this.dart] = function(d, func) {
-		func(d);
-	};
-	
+	this.funcs_foreach_dart_of[this.dart] = function(d, func) {func(d);};
 
 	this.d = this.add_topology_relation("d");
 
 	/// Returns a dart marker or a cell marker of given embedding 
-	this.new_marker = function(used_emb = this.dart){
-		if(this.stored_markers[used_emb].length)
-			return this.stored_markers[used_emb].pop();
-
-		const cmap = this;
-		
+	this.new_marker = function(used_emb){
+		if(this.stored_markers[used_emb? used_emb : this.dart].length)
+			return this.stored_markers[used_emb? used_emb : this.dart].pop();
 
 		return new Marker(this, used_emb);
 	};
 
-	this.new_fast_marker = function(used_emb = this.dart){
+	this.new_fast_marker = function(used_emb){
 		return new FastMarker(this, used_emb);
 	};
 

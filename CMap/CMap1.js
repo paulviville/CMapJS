@@ -43,63 +43,13 @@ function CMap1()
 
 	this.edge = this.add_celltype();
 	const edge = this.edge;
-	this.funcs_set_embeddings[edge] = function(){
-		this.foreach_dart(d => {
-			this.set_embedding(edge, d, this.new_cell(edge));
-		});
-	};
-
-	this.funcs_foreach[edge] = function(func, {cache = undefined, use_emb = false}){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-			
-		this.foreach_dart(func);
-	};
 
 	this.funcs_foreach_dart_of[edge] = function(ed, func) {func(ed)};
 
 	this.face = this.add_celltype();
 	const face = this.face;
-	this.funcs_set_embeddings[face] = function(){
-		this.foreach(face, fd => {
-			let fid = this.new_cell(face);
-			this.foreach_dart_phi1(fd, d => {
-				this.set_embedding(face, d, fid);
-			});
-		});
-	};
 
-	this.funcs_foreach[face] = function(func, {cache = undefined, use_emb = false}){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-		
-		let marker = this.new_fast_marker(use_emb? face : undefined);
-		if(use_emb)
-			this.foreach_dart(d0 => {
-				if(marker.marked(d0))
-					return;
-
-				marker.mark(d0);
-				func(d0);
-			});
-		else
-			this.foreach_dart(d0 => {
-				if(marker.marked(d0))
-					return;
-
-				marker.mark_cell(face, d0)
-				func(d0);
-			});
-	};
-
-
-	this.funcs_foreach_dart_of[face] = function(fd, func){
-		this.foreach_dart_phi1(fd, func);
-	};
+	this.funcs_foreach_dart_of[face] = this.foreach_dart_phi1;
 
 	// OPERATIONS
 	this.add_face = function(nb_sides, set_embeddings = true){

@@ -8,21 +8,6 @@ function CMap0()
 	this.vertex = this.add_celltype();
 	const vertex = this.vertex;
 
-	this.funcs_set_embeddings[vertex] = function(){
-		this.foreach_dart(d => {
-			this.set_embedding(vertex, d, this.new_cell(vertex));
-		});
-	};
-
-	this.funcs_foreach[vertex] = function(func, {cache = undefined, use_emb = false}){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-
-		this.foreach_dart(func);
-	};
-
 	this.funcs_foreach_dart_of[vertex] = function(vd, func) {func(vd)};
 }
 

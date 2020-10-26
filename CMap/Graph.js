@@ -54,68 +54,11 @@ function Graph()
 
 	this.vertex = this.add_celltype();
 
-	this.funcs_set_embeddings[this.vertex] = function(){
-		this.foreach(this.vertex, vd => {
-			let vid = this.new_cell(this.vertex);
-			this.foreach_dart_alpha1(vd, d => {
-				this.set_embedding(this.vertex, d, vid);
-			});
-		});
-	};
-
-	this.funcs_foreach[this.vertex] = function(func, cache){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-
-		let marker = this.new_marker();
-		this.foreach_dart(d => {
-			if(marker.marked(d))
-				return;
-
-			this.foreach_dart_alpha1(d, d1 => {marker.mark(d1)});
-			return func(d);
-		});
-		marker.delete();
-	};
-
-	this.funcs_foreach_dart_of[this.vertex] = function(vd, func) {
-		this.foreach_dart_alpha1(vd, d => {func(d)});
-	};
-
+	this.funcs_foreach_dart_of[this.vertex] = this.foreach_dart_alpha1;
 
 	this.edge = this.add_celltype();
 
-	this.funcs_set_embeddings[this.edge] = function(){
-		this.foreach(this.edge, ed => {
-			let eid = this.new_cell(this.edge);
-			this.foreach_dart_alpha0(ed, d => {
-				this.set_embedding(this.edge, d, eid);
-			});
-		});
-	};
-
-	this.funcs_foreach[this.edge] = function(func, cache){
-		if(cache){
-			cache.some(d => func(d));
-			return;
-		}
-
-		let marker = this.new_marker();
-		this.foreach_dart( d => {
-			if(this.alpha0[d] == d || marker.marked(d))
-				return;
-			console.log
-			this.foreach_dart_alpha0(d, d1 => {marker.mark(d1)});
-			return func(d);
-		});
-		marker.delete();
-	};
-
-	this.funcs_foreach_dart_of[this.edge] = function(ed, func) {
-		this.foreach_dart_alpha0(ed, d => {func(d)});
-	};
+	this.funcs_foreach_dart_of[this.edge] = this.foreach_dart_alpha0;
 
 	this.add_vertex = function(set_embeddings = true){
 		let d = this.new_dart();
