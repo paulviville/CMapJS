@@ -133,15 +133,13 @@ function CMap_Base(){
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
 	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
 		// if(use_emb == undefined) use_emb = this.is_embedded(emb);
-	
+
 		if(cache){
 			cache.forEach(cd => func(cd));
 			return;
 		}
 
 		let marker = this.new_fast_marker(use_emb? emb : undefined);
-		// if(use_emb)
-		console.log("using emb", use_emb, emb);
 		if(use_emb)
 			this.foreach_dart(d => {
 				if(marker.marked(d))
