@@ -98,7 +98,7 @@ function CMap_Base(){
 		this.foreach(emb, cd => {
 			let cid = this.new_cell(emb);
 			this.foreach_dart_of(emb, cd, d => {this.set_embedding(emb, d, cid)});
-		})
+		});
 	};
 
 	/// Creates a new dart in the map
