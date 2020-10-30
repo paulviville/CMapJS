@@ -81,7 +81,7 @@ function Renderer(cmap){
 					color: params.color || 0x000000,
 					linewidth: params.width || 2,
 					polygonOffset: true,
-					polygonOffsetFactor: -0.05
+					polygonOffsetFactor: -0.5
 				});
 
 				this.mesh = new THREE.LineSegments(geometry, material);
