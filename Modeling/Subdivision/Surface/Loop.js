@@ -12,8 +12,6 @@ export function loop(cmap){
 	const pos = cmap.get_attribute(vertex, "position");
 	const new_pos = cmap.add_attribute(vertex, "new_pos");
 
-	let vertex_cache = cmap.cache(vertex);
-	let edge_cache = cmap.cache(edge);
 	let face_cache = cmap.cache(face);
 
 	cmap.foreach(vertex, vd => {
