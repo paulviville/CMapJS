@@ -52,7 +52,7 @@ function Renderer(cmap){
 					geometry.vertices.push(position[cmap.cell(vertex, vd)])
 				}, {use_emb: cmap.is_embedded(vertex)});
 
-				let material = new THREE.PointsMaterial({
+				let material = params.material || new THREE.PointsMaterial({
 					color: params.color || 0xFF0000,
 					size: params.size || 0.0025
 				});
@@ -77,7 +77,7 @@ function Renderer(cmap){
 					geometry.vertices.push(position[cmap.cell(vertex, cmap.phi1[ed])]);
 				}, {use_emb: cmap.is_embedded(edge)});
 
-				const material = new THREE.LineBasicMaterial({
+				const material = params.material || new THREE.LineBasicMaterial({
 					color: params.color || 0x000000,
 					linewidth: params.width || 2,
 					polygonOffset: true,
@@ -108,17 +108,20 @@ function Renderer(cmap){
 						f_ids.push(cmap.cell(vertex, d));
 					});
 
+					let normal = params.normals? params.normals[cmap.cell(face, fd)] : undefined;
 					for(let i = 2; i < f_ids.length; i++){
-						let f = new THREE.Face3(f_ids[0],f_ids[i-1],f_ids[i]);
+						let f = new THREE.Face3(f_ids[0],f_ids[i-1],f_ids[i], normal);
 						geometry.faces.push(f);
 
 						if(cmap.is_embedded(face))
 							f.id = cmap.cell(face, fd);
 					}
 				}, {use_emb: cmap.is_embedded(face)});
-				geometry.computeFaceNormals();
 
-				let material = new THREE.MeshLambertMaterial({
+				if(!params.normals) 
+					geometry.computeFaceNormals();
+
+				let material = params.material || new THREE.MeshLambertMaterial({
 					color:params.color || 0xBBBBBB,
 					side: params.side || THREE.FrontSide,
 					transparent: params.transparent || false,
@@ -142,7 +145,7 @@ function Renderer(cmap){
 			create: function(params = {}){
 				this.params = params;
 
-				let material = new THREE.MeshLambertMaterial({
+				let material = params.material || new THREE.MeshLambertMaterial({
 					color:params.color || 0xBBBBBB,
 					side: params.side || THREE.FrontSide,
 					transparent: params.transparent || false,

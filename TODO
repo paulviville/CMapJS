@@ -7,8 +7,10 @@
 	Renderer
 	All
 
-- check embedding settings in ALL CMaps functions
-	careful with chaining cmap0 -> 1 -> 2 orbits
+
+- map.copy/clone
+
+
 - add set_cell_embedding(emb, c, id);
 - add degree and codegree functions for each embedding
 - change close hole with add_face1 + cut_edges & sew_phi2
@@ -16,6 +18,8 @@
 - add is incident to boundary(emb, cd)
 - enable casting? (eg: CMap2.call(cmap1) && if(nb_dart != 0) -> fill in new topological relations to identity)
 
-- remove redundant foreach(cell)
+Renderer:
+- compute face normals in mesh before triangulation
+- redo material parameters (pass material in parameters?)
 
 -STOP PROCRASTINATING DOCUMENTATION
