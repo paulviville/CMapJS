@@ -34,5 +34,18 @@ export function load_off(off_str) {
 }
 
 export function export_off(geometry){
-	
+	let str = "OFF\n";
+	str += geometry.v.length + " " + geometry.f.length + " 0\n";
+
+	geometry.v.forEach(
+		vert => {
+			str += vert[0] + " " + vert[1] + " " + vert[2] + "\n";
+	});
+	geometry.f.forEach(
+		face => {
+			str += face.length + " ";
+			face.forEach(vert => {str += vert + " "}); 
+			str += "\n";
+		});
+	return str;
 }

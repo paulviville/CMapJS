@@ -57,6 +57,7 @@ function Renderer(cmap){
 					size: params.size || 0.0025
 				});
 				this.mesh = new THREE.Points(geometry, material);
+				this.mesh.layers.set(params.layer || 0);
 				return this;
 			}
 		});
@@ -85,6 +86,7 @@ function Renderer(cmap){
 				});
 
 				this.mesh = new THREE.LineSegments(geometry, material);
+				this.mesh.layers.set(params.layer || 0);
 				return this;
 			}
 		});
@@ -130,6 +132,7 @@ function Renderer(cmap){
 				});
 
 				this.mesh = new THREE.Mesh(geometry, material);
+				this.mesh.layers.set(params.layer || 0);
 				return this;
 			}
 		});
@@ -208,9 +211,11 @@ function Renderer(cmap){
 					geometry.computeFaceNormals();
 					let vol = new THREE.Mesh(geometry, material);
 					vol.position.copy(center);
+					vol.layers.set(params.layer || 0);
 					this.mesh.add(vol);
 					mesh_center.add(center);
 				}, {use_emb: cmap.is_embedded(volume)});
+				this.mesh.layers.set(params.layer || 0);
 				marker_faces.remove();
 				marker_vertices.remove();
 				v2_id.delete();

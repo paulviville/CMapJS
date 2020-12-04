@@ -75,7 +75,7 @@ function str_from_geometry(format, geometry){
 		default:
 			break;
 	}
-	return geometry;
+	return file_str;
 }
 
 function geometry_from_map(map){
@@ -91,7 +91,7 @@ function geometry_from_map(map){
 	map.foreach(vertex, vd => {
 		vertex_id[map.cell(vertex, vd)] = id++;
 		const p = position[map.cell(vertex, vd)];
-		geometry.v.push(p.x, p.y, p.z);
+		geometry.v.push([p.x, p.y, p.z]);
 	});
 
 	// map.foreach(edge, ed => {
