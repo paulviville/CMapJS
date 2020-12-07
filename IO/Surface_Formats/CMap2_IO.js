@@ -5,6 +5,7 @@ import {load_off, export_off} from './Off.js';
 export function load_cmap2(format, file_str){
 	let geometry = geometry_from_str(format, file_str);
 	let map = map_from_geometry(geometry);
+	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", f:" + geometry.f.length + ")");
 	return map;
 }
 

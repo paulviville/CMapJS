@@ -5,6 +5,7 @@ import {load_mesh, export_mesh} from './Mesh.js';
 export function load_cmap3(format, file_str){
 	let geometry = geometry_from_str(format, file_str);
 	let map = map_from_geometry(geometry);
+	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", w:" + geometry.hex.length + ")");
 	return map;
 }
 
@@ -35,7 +36,7 @@ function map_from_geometry(geometry){
 		vertex_ids.push(i);
 		dart_per_vertex[i] = [];
 		position[i] = new Vector3(vert[0], vert[1], vert[2]);
-	})
+	});
 
 	map.create_embedding(vertex);
 

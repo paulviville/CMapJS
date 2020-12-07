@@ -29,7 +29,6 @@ export function load_off(off_str) {
 	vertices = vertices.map(x => x.map(y => parseFloat(y)));
 	faces = faces.map(x => x.map(y => parseInt(y)));
 	
-	console.log("file loaded: " + vertices.length + " vertices, " + faces.length + " faces");
 	return {v: vertices, f:faces};
 }
 

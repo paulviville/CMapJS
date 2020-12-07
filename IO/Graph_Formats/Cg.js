@@ -29,7 +29,6 @@ export function load_cg(cg_str){
 	vertices = vertices.map(x => x.map(y => parseFloat(y)));
 	edges = edges.map(x => x.map(y => (parseInt(y) - 1)));
 	
-	console.log("cg file loaded: " + vertices.length + " vertices, " + edges.length + " edges");
 	return {v: vertices, e:edges};
 };
 

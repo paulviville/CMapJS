@@ -36,8 +36,8 @@ function Attributes_Container(){
 	/// gets reference to attribute of given name
 	/// returns undefined if attribute doesn't exist
 	this.get_attribute = function(name){
-		if(!attributes[name])
-			console.warn("No attribute named: ", name);
+		// if(!attributes[name])
+		// 	console.warn("No attribute named: ", name);
 
 		return attributes[name];
 	};
