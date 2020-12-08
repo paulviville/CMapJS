@@ -148,13 +148,22 @@ function Renderer(cmap){
 			create: function(params = {}){
 				this.params = params;
 
-				let material = params.material || new THREE.MeshLambertMaterial({
-					color:params.color || 0xBBBBBB,
-					side: params.side || THREE.FrontSide,
-					transparent: params.transparent || false,
-					opacity: params.opacity || 1
-				});
-
+				let material;
+				const colors = params.volume_colors;
+				if(params.volume_colors){
+					material = new THREE.MeshLambertMaterial({
+						vertexColors: THREE.FaceColors,
+						side: params.side || THREE.FrontSide
+					});
+				}
+				else {
+					material = params.material || new THREE.MeshLambertMaterial({
+						color:params.color || 0xBBBBBB,
+						side: params.side || THREE.FrontSide,
+						transparent: params.transparent || false,
+						opacity: params.opacity || 1
+					});
+				}
 				this.mesh = new THREE.Group();
 
 				if(!cmap.is_embedded(cmap.vertex2))
@@ -207,6 +216,11 @@ function Renderer(cmap){
 						}
 
 					});
+
+					if(params.volume_colors){
+						geometry.faces.forEach(f => f.color = colors[f.id].clone());
+					}
+
 
 					geometry.computeFaceNormals();
 					let vol = new THREE.Mesh(geometry, material);
