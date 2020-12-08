@@ -1,5 +1,5 @@
 import {cut_all_edges} from '../../../Utils/Subdivision.js';
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 function beta(n){
 	return n == 3? 3/16 : 3/(8*n);

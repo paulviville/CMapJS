@@ -1,5 +1,5 @@
 import {cut_all_edges, quadrangulate_all_faces, quadrangulate_face} from '../../../Utils/Subdivision.js';
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 export function catmull_clark(cmap){
 	const vertex = cmap.vertex;

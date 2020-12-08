@@ -1,4 +1,4 @@
-import * as THREE from './three.module.js'
+import * as THREE from '../Dependencies/three.module.js'
 
 let Renderer_Cell_Proto = {
 	mesh: undefined,

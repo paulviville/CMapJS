@@ -1,4 +1,4 @@
-import {Vector3} from '../../three.module.js';
+import {Vector3} from '../../Dependencies/three.module.js';
 
 export function vertex_normal(map, vd, position){
 	let vertex_normal = new Vector3;

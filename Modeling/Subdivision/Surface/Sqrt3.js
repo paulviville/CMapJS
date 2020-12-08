@@ -1,5 +1,5 @@
 import {triangulate_all_faces} from '../../../Utils/Subdivision.js';
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 function alpha(n){
 	let alph = 4.0;

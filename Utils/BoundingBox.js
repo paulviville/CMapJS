@@ -1,4 +1,4 @@
-import { Vector3 } from '../three.module.js';
+import { Vector3 } from '../Dependencies/three.module.js';
 
 export function BoundingBox(position){
 	let min = position[0].clone();

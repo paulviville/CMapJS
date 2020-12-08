@@ -1,5 +1,5 @@
 import {triangulate_all_faces} from '../../../Utils/Subdivision.js';
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 export function sqrt2(cmap){
 	const vertex = cmap.vertex;

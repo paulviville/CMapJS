@@ -1,5 +1,5 @@
 import {Graph} from '../../CMap/CMap.js';
-import {Vector3} from '../../three.module.js';
+import {Vector3} from '../../Dependencies/three.module.js';
 import {load_cg, save_cg} from './Cg.js';
 
 export function load_graph(format, file_str){

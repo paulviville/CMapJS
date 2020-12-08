@@ -1,4 +1,4 @@
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 export function doo_sabin(cmap){
 	const vertex = cmap.vertex;

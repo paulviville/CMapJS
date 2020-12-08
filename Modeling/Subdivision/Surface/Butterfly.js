@@ -1,5 +1,5 @@
 import {cut_all_edges} from '../../../Utils/Subdivision.js';
-import {Vector3} from '../../../three.module.js';
+import {Vector3} from '../../../Dependencies/three.module.js';
 
 export function butterfly(cmap){
 	const vertex = cmap.vertex;

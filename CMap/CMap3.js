@@ -1,4 +1,3 @@
-import { Vertex } from '../three.module.js';
 import CMap2 from './CMap2.js';
 
 function CMap3(){
