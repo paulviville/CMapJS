@@ -26,13 +26,24 @@ function map_from_geometry(geometry){
 	let position = map.add_attribute(map.vertex, "position");
 	let dart_per_vertex = map.add_attribute(map.vertex, "dart_per_vertex");
 
+	// let mid = new Vector3(0.5001165, 0.4998135, 0.48038685);
+	// let str = "";
+	// let axisX = new Vector3(1, 0 ,0);
+	// let axisY = new Vector3(0, 1 ,0);
+
 	let vertex_ids = [];
 	geometry.v.forEach(vertex => {
 		let i = map.new_cell(map.vertex);
 		vertex_ids.push(i);
 		dart_per_vertex[i] = [];
 		position[i] = new Vector3(vertex[0], vertex[1], vertex[2]);
-	})
+
+		// let p = new Vector3(vertex[0], vertex[1], vertex[2]);
+		// p.sub(mid).applyAxisAngle(axisX, Math.PI / 2).applyAxisAngle(axisY, Math.Pi / 2);
+		// str += p.x + " " + p.y + " " + p.z + "\n";
+	});
+
+	// console.log(str);
 
 	map.set_embeddings(map.vertex);
 	geometry.f.forEach(face => {

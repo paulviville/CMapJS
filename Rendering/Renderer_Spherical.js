@@ -94,6 +94,4 @@ export default function Renderer_Spherical(cmap){
 
 	let face = cmap.face;
 	this.curved_faces = (!face) ? undefined : true;
-
-	console.log(this);
 }
