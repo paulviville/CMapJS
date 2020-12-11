@@ -30,7 +30,7 @@ function map_from_geometry(geometry){
 	let position = map.add_attribute(vertex, "position");
 	let dart_per_vertex = map.add_attribute(vertex, "dart_per_vertex");
 
-	// let mid = new Vector3(0.5001165, 0.4998135, 0.48038685);
+	// let mid = new Vector3(-0.007572453621172315, -0.025443793486150668, 51.21296078286694);
 	// let str = "";
 	// let axisX = new Vector3(1, 0 ,0);
 	// let axisY = new Vector3(0, 1 ,0);
@@ -44,8 +44,9 @@ function map_from_geometry(geometry){
 		dart_per_vertex[i] = [];
 		position[i] = new Vector3(vert[0], vert[1], vert[2]);
 
-		let p = new Vector3(vert[0], vert[1], vert[2]);
+		// let p = new Vector3(vert[0], vert[1], vert[2]);
 		// p.sub(mid)
+		// p.divideScalar(50);
 		// p.applyAxisAngle(axisY, -Math.PI / 2);
 		// p.applyAxisAngle(axisZ, -Math.PI / 2);
 		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + " 0\n";
