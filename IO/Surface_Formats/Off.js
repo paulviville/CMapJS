@@ -5,8 +5,10 @@ export function load_off(off_str) {
 		lines[i] = lines[i].replace(/\s\s+/g, ' ').trim();
 	}
 	let line;
+	let j = 0;
+
 	// skip header
-	while(!parseInt(line = lines.shift()) && lines.length)
+	while(!parseInt(line = lines[j++]) && lines.length)
 	{}
 	// get nb_vert nb_face nb_edge(=0)
 	let v_f_e = line.split(" ");
@@ -14,14 +16,14 @@ export function load_off(off_str) {
 	let vertices = [];
 	for(let i = 0; i < v_f_e[0]; i++)
 	{
-		line = lines.shift();
+		line = lines[j++];
 		vertices.push(line.split(" "));
 	}        
 	// get faces id
 	let faces = [];
 	for(let i = 0; i < v_f_e[1]; i++)
 	{
-		line = lines.shift();
+		line = lines[j++];
 		let face0 = line.split(" ");
 		let v_nb = face0.shift();
 		faces.push(face0);
