@@ -9,7 +9,7 @@ export function load_cmap2(format, file_str){
 	return map;
 }
 
-function geometry_from_str(format, file_str){
+export function geometry_from_str(format, file_str){
 	let geometry;
 	switch(format){
 		case 'off':
@@ -26,10 +26,11 @@ function map_from_geometry(geometry){
 	let position = map.add_attribute(map.vertex, "position");
 	let dart_per_vertex = map.add_attribute(map.vertex, "dart_per_vertex");
 
-	// let mid = new Vector3(0.5001165, 0.4998135, 0.48038685);
+	// let mid = new Vector3(-0.7710000000000008, 0.8262499999999999, 0.2458000000000009);
 	// let str = "";
 	// let axisX = new Vector3(1, 0 ,0);
 	// let axisY = new Vector3(0, 1 ,0);
+	// let axisZ = new Vector3(0, 0,1);
 
 	let vertex_ids = [];
 	geometry.v.forEach(vertex => {
@@ -39,8 +40,11 @@ function map_from_geometry(geometry){
 		position[i] = new Vector3(vertex[0], vertex[1], vertex[2]);
 
 		// let p = new Vector3(vertex[0], vertex[1], vertex[2]);
-		// p.sub(mid).applyAxisAngle(axisX, Math.PI / 2).applyAxisAngle(axisY, Math.Pi / 2);
-		// str += p.x + " " + p.y + " " + p.z + "\n";
+		// p.sub(mid)
+		// p.divideScalar(57);
+		// p.applyAxisAngle(axisY, Math.PI)
+		// .applyAxisAngle(axisY, Math.PI / 2);
+		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
 	});
 
 	// console.log(str);

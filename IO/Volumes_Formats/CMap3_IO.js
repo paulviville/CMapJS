@@ -9,7 +9,7 @@ export function load_cmap3(format, file_str){
 	return map;
 }
 
-function geometry_from_str(format, file_str){
+export function geometry_from_str(format, file_str){
 	let geometry;
 	switch(format){
 		case 'mesh':
@@ -30,8 +30,8 @@ function map_from_geometry(geometry){
 	let position = map.add_attribute(vertex, "position");
 	let dart_per_vertex = map.add_attribute(vertex, "dart_per_vertex");
 
-	// let mid = new Vector3(-0.007572453621172315, -0.025443793486150668, 51.21296078286694);
-	// let str = "";
+	let mid = new Vector3(-0.7710000000000008, 0.8262499999999999, 0.2458000000000009);
+	let str = "";
 	// let axisX = new Vector3(1, 0 ,0);
 	// let axisY = new Vector3(0, 1 ,0);
 	// let axisZ = new Vector3(0, 0 ,1);
@@ -44,14 +44,15 @@ function map_from_geometry(geometry){
 		dart_per_vertex[i] = [];
 		position[i] = new Vector3(vert[0], vert[1], vert[2]);
 
-		// let p = new Vector3(vert[0], vert[1], vert[2]);
+		let p = new Vector3(vert[0], vert[1], vert[2]);
 		// p.sub(mid)
-		// p.divideScalar(50);
+		// p.divideScalar(57);
 		// p.applyAxisAngle(axisY, -Math.PI / 2);
 		// p.applyAxisAngle(axisZ, -Math.PI / 2);
-		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + " 0\n";
+		p.y -= 0.002;
+		str += p.x.toFixed(5) + " " + p.y.toFixed(5) + " " + p.z.toFixed(5) + " 0\n";
 	});
-	// console.log(str);
+	console.log(str);
 
 	map.create_embedding(vertex);
 

@@ -6,7 +6,8 @@ export function load_cg(cg_str){
 	}
 
 	let line;
-	line = lines.shift();
+	let j = 0;
+	line = lines[j++];
 	let header = line.split(" ");
 	let nb_dims = parseInt(header[1].split(":")[1]);
 	let nb_verts = parseInt(header[2].split(":")[1]);
@@ -15,14 +16,14 @@ export function load_cg(cg_str){
 	let vertices = [];
 	for(let i = 0; i < nb_verts; ++i)
 	{
-		line = lines.shift();
+		line = lines[j++];
 		vertices.push(line.slice(2).split(" "));
 	}
 
 	let edges = [];
 	for(let i = 0; i < nb_edges; ++i)
 	{
-		line = lines.shift();
+		line = lines[j++];
 		edges.push(line.slice(2).split(" "));
 	}
 

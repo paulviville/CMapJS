@@ -136,3 +136,78 @@ export default function compute_scaled_jacobian(map){
 
 	return scaled_jacobian;
 }
+
+export function compute_hex_scaled_jacobian(P){
+	let U = new Vector3;
+	let V = new Vector3;
+	let W = new Vector3;
+	let F = new Matrix3;
+
+	let jacobian = Infinity;
+
+	U.sub(P[0]).sub(P[1]).sub(P[2]).sub(P[3]);
+	U.add(P[4]).add(P[5]).add(P[6]).add(P[7]);
+	
+	V.sub(P[0]).sub(P[3]).sub(P[4]).sub(P[7]);
+	V.add(P[1]).add(P[2]).add(P[5]).add(P[6]);
+
+	W.sub(P[0]).sub(P[1]).sub(P[4]).sub(P[5]);
+	W.add(P[2]).add(P[3]).add(P[6]).add(P[7]);
+
+	U.normalize(); V.normalize(); W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	let sj = F.determinant();
+
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[1], P[0]); V.subVectors(P[3], P[0]); W.subVectors(P[4], P[0]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[0], P[1]); V.subVectors(P[5], P[1]); W.subVectors(P[2], P[1]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[1], P[2]); V.subVectors(P[6], P[2]); W.subVectors(P[3], P[2]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[0], P[3]); V.subVectors(P[2], P[3]); W.subVectors(P[7], P[3]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[0], P[4]); V.subVectors(P[7], P[4]); W.subVectors(P[5], P[4]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	U.subVectors(P[1], P[5]); V.subVectors(P[4], P[5]); W.subVectors(P[6], P[5]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+	
+	U.subVectors(P[2], P[6]); V.subVectors(P[5], P[6]); W.subVectors(P[7], P[6]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+	
+	U.subVectors(P[3], P[7]); V.subVectors(P[6], P[7]); W.subVectors(P[4], P[7]);
+	U.normalize();V.normalize();W.normalize();
+	F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
+	sj = F.determinant();
+	if(sj < jacobian) jacobian = sj;
+
+	return jacobian;
+}
+
