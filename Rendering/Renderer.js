@@ -47,16 +47,33 @@ function Renderer(cmap){
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
-				const geometry = new THREE.Geometry();
+				const geometry = new THREE.SphereGeometry(1, 32, 32);	
+				
+				const material = params.material || new THREE.MeshLambertMaterial({
+					color: params.color || 0xFF0000,
+				});
+
+				/// to handle none contiguous embeddings
+				let max_id = -1;
 				cmap.foreach(vertex, vd => {
-					geometry.vertices.push(position[cmap.cell(vertex, vd)])
+					max_id = max_id < cmap.cell(vertex, vd) ? cmap.cell(vertex, vd) : max_id;
 				}, {use_emb: cmap.is_embedded(vertex)});
 
-				let material = params.material || new THREE.PointsMaterial({
-					color: params.color || 0xFF0000,
-					size: params.size || 0.0025
-				});
-				this.mesh = new THREE.Points(geometry, material);
+				this.mesh = new THREE.InstancedMesh(geometry, material, max_id + 1);
+				this.mesh.vid = []; 
+
+				const size = params.size || 0.00625;
+				let vec = new THREE.Vector3(size, size, size);
+				
+				let id = 0;
+				cmap.foreach(vertex, vd => {
+					const matrix = new THREE.Matrix4();
+					matrix.setPosition(position[cmap.cell(vertex, vd)]);
+					matrix.scale(vec);
+					this.mesh.vid[id] = cmap.cell(vertex, vd); 
+					this.mesh.setMatrixAt(id++, matrix);
+				}, {use_emb: cmap.is_embedded(vertex)});
+
 				this.mesh.layers.set(params.layer || 0);
 				return this;
 			}
@@ -72,21 +89,40 @@ function Renderer(cmap){
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
-				const geometry = new THREE.Geometry();
-				cmap.foreach(edge, ed => {
-					geometry.vertices.push(position[cmap.cell(vertex, ed)]);
-					geometry.vertices.push(position[cmap.cell(vertex, cmap.phi1[ed])]);
-				}, {use_emb: cmap.is_embedded(edge)});
 
-				const material = params.material || new THREE.LineBasicMaterial({
+
+				const geometry = new THREE.CylinderGeometry(0.001, 0.001, 1, 8);
+				const material = params.material || new THREE.MeshBasicMaterial({
 					color: params.color || 0x000000,
-					linewidth: params.width || 2,
-					polygonOffset: true,
-					polygonOffsetFactor: -0.5
 				});
 
-				this.mesh = new THREE.LineSegments(geometry, material);
+				this.mesh = new THREE.InstancedMesh(geometry, material, cmap.nb_cells(edge));
 				this.mesh.layers.set(params.layer || 0);
+
+				this.mesh.ed = [];
+				let id = 0;
+				cmap.foreach(edge, ed => {
+					let p0 = position[cmap.cell(vertex, ed)];
+					let p1 = position[cmap.cell(vertex, cmap.phi1[ed])];
+					let dir = new THREE.Vector3().subVectors(p0, p1);
+		
+					let len = dir.length();
+					let mid = new THREE.Vector3().addVectors(p0, p1).divideScalar(2);
+					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0,0,1));
+					let dirz = new THREE.Vector3().crossVectors(dirx, dir);
+
+					const matrix = new THREE.Matrix4().fromArray([
+						dirx.x, dir.x, dirz.x, mid.x,
+						dirx.y, dir.y, dirz.y, mid.y,
+						dirx.z, dir.z, dirz.z, mid.z,
+						0, 0, 0, 1]).transpose();
+					const matrix_scale = new THREE.Matrix4().makeScale(params.size || 1, len, params.size || 1);
+
+					matrix.multiply(matrix_scale)
+					this.mesh.setMatrixAt(id, matrix);
+					this.mesh.ed[id++] = ed;
+				}, {use_emb: cmap.is_embedded(edge)});
+
 				return this;
 			}
 		});
