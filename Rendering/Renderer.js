@@ -50,7 +50,7 @@ function Renderer(cmap){
 				const geometry = new THREE.SphereGeometry(1, 32, 32);	
 				
 				const material = params.material || new THREE.MeshLambertMaterial({
-					color: params.color || 0xFF0000,
+					// color: params.color || 0xFF0000,
 				});
 
 				/// to handle none contiguous embeddings
@@ -71,6 +71,7 @@ function Renderer(cmap){
 					matrix.setPosition(position[cmap.cell(vertex, vd)]);
 					matrix.scale(vec);
 					this.mesh.vid[id] = cmap.cell(vertex, vd); 
+					this.mesh.setColorAt(id, new THREE.Color(0xFF0000))
 					this.mesh.setMatrixAt(id++, matrix);
 				}, {use_emb: cmap.is_embedded(vertex)});
 
@@ -101,24 +102,29 @@ function Renderer(cmap){
 
 				this.mesh.ed = [];
 				let id = 0;
+				const pos = new THREE.Vector3();
+				const quat = new THREE.Quaternion();
+				const scale = new THREE.Vector3();
 				cmap.foreach(edge, ed => {
 					let p0 = position[cmap.cell(vertex, ed)];
 					let p1 = position[cmap.cell(vertex, cmap.phi1[ed])];
 					let dir = new THREE.Vector3().subVectors(p0, p1);
 		
 					let len = dir.length();
-					let mid = new THREE.Vector3().addVectors(p0, p1).divideScalar(2);
 					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0,0,1));
 					let dirz = new THREE.Vector3().crossVectors(dirx, dir);
 
 					const matrix = new THREE.Matrix4().fromArray([
-						dirx.x, dir.x, dirz.x, mid.x,
-						dirx.y, dir.y, dirz.y, mid.y,
-						dirx.z, dir.z, dirz.z, mid.z,
+						dirx.x, dir.x, dirz.x, 0,
+						dirx.y, dir.y, dirz.y, 0,
+						dirx.z, dir.z, dirz.z, 0,
 						0, 0, 0, 1]).transpose();
-					const matrix_scale = new THREE.Matrix4().makeScale(params.size || 1, len, params.size || 1);
+					
+					matrix.decompose(pos, quat, scale);
+					scale.set(params.size || 1, len, params.size || 1);
+					pos.addVectors(p0, p1).divideScalar(2);
+					matrix.compose(pos, quat, scale);
 
-					matrix.multiply(matrix_scale)
 					this.mesh.setMatrixAt(id, matrix);
 					this.mesh.ed[id++] = ed;
 				}, {use_emb: cmap.is_embedded(edge)});
