@@ -18,6 +18,7 @@ let Renderer_Cell_Proto = {
 
 	delete: function(){
 		this.remove();
+		// this.attributes.every(attrib => attrib.delete());
 		this.mesh.geometry.dispose();
 		delete this.mesh;
 		return this;
@@ -47,10 +48,16 @@ function Renderer(cmap){
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
+				// this.attributes = {};
+				
+				// this.attributes.instanceId = instanceId;
+				// console.log(Object.entries(this.attributes))
+				
 				const geometry = new THREE.SphereGeometry(1, 32, 32);	
 				
 				const material = params.material || new THREE.MeshLambertMaterial({
-					// color: params.color || 0xFF0000,
+					// opacity: 0.5,
+					// transparent: true
 				});
 
 				/// to handle none contiguous embeddings
@@ -60,24 +67,39 @@ function Renderer(cmap){
 				}, {use_emb: cmap.is_embedded(vertex)});
 
 				this.mesh = new THREE.InstancedMesh(geometry, material, max_id + 1);
-				this.mesh.vid = []; 
+				this.mesh.vd = []; 
+				this.mesh.instanceId = cmap.get_attribute(vertex, "instanceId")
+				|| cmap.add_attribute(vertex, "instanceId");
 
 				const size = params.size || 0.00625;
-				let vec = new THREE.Vector3(size, size, size);
+				const scale = new THREE.Vector3(size, size, size);
 				
 				let id = 0;
 				cmap.foreach(vertex, vd => {
 					const matrix = new THREE.Matrix4();
 					matrix.setPosition(position[cmap.cell(vertex, vd)]);
-					matrix.scale(vec);
-					this.mesh.vid[id] = cmap.cell(vertex, vd); 
-					this.mesh.setColorAt(id, new THREE.Color(0xFF0000))
+					matrix.scale(scale);
+					this.mesh.vd[id] = vd; 
+					this.mesh.instanceId[cmap.cell(vertex, vd)] = id;
+					this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
 					this.mesh.setMatrixAt(id++, matrix);
 				}, {use_emb: cmap.is_embedded(vertex)});
 
 				this.mesh.layers.set(params.layer || 0);
 				return this;
-			}
+			}, 
+
+			// resize: function(size) {
+			// 	const scale = new THREE.Vector3(size, size, size);
+			// 	cmap.foreach(vertex, vd => {
+			// 		const matrix = new THREE.Matrix4();
+			// 		matrix.setPosition(position[cmap.cell(vertex, vd)]);
+			// 		matrix.scale(vec);
+			// 		this.mesh.vd[id] = vd; 
+			// 		this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
+			// 		this.mesh.setMatrixAt(id++, matrix);
+			// 	}, {use_emb: cmap.is_embedded(vertex)});
+			// }
 		});
 
 	if(!this.vertices)
@@ -92,13 +114,20 @@ function Renderer(cmap){
 				this.params = params;
 
 
+
 				const geometry = new THREE.CylinderGeometry(0.001, 0.001, 1, 8);
 				const material = params.material || new THREE.MeshBasicMaterial({
-					color: params.color || 0x000000,
+					// color: params.color || 0x000000,
 				});
 
 				this.mesh = new THREE.InstancedMesh(geometry, material, cmap.nb_cells(edge));
 				this.mesh.layers.set(params.layer || 0);
+
+				if(!cmap.is_embedded(edge))
+					cmap.set_embeddings(edge);
+
+				this.mesh.instanceId = cmap.get_attribute(edge, "instanceId")
+					|| cmap.add_attribute(edge, "instanceId");
 
 				this.mesh.ed = [];
 				let id = 0;
@@ -126,6 +155,8 @@ function Renderer(cmap){
 					matrix.compose(pos, quat, scale);
 
 					this.mesh.setMatrixAt(id, matrix);
+					this.mesh.setColorAt(id, new THREE.Color(params.color || 0x000000));
+					this.mesh.instanceId[cmap.cell(edge, ed)] = id;
 					this.mesh.ed[id++] = ed;
 				}, {use_emb: cmap.is_embedded(edge)});
 
@@ -218,7 +249,6 @@ function Renderer(cmap){
 				let id = 0;
 				let center = new THREE.Vector3();
 				cmap.foreach(volume, wd => {
-					// console.log(0);
 					if(cmap.is_boundary(wd))
 						return;
 
