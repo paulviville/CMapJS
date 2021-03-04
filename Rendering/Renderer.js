@@ -113,8 +113,6 @@ function Renderer(cmap){
 			create: function(params = {}){
 				this.params = params;
 
-
-
 				const geometry = new THREE.CylinderGeometry(0.001, 0.001, 1, 8);
 				const material = params.material || new THREE.MeshBasicMaterial({
 					// color: params.color || 0x000000,
@@ -134,10 +132,13 @@ function Renderer(cmap){
 				const pos = new THREE.Vector3();
 				const quat = new THREE.Quaternion();
 				const scale = new THREE.Vector3();
+				const p = [0, 0];
 				cmap.foreach(edge, ed => {
-					let p0 = position[cmap.cell(vertex, ed)];
-					let p1 = position[cmap.cell(vertex, cmap.phi1[ed])];
-					let dir = new THREE.Vector3().subVectors(p0, p1);
+					let i = 0;
+					cmap.foreach_incident(vertex, edge, ed, vd => {
+						p[i++] = position[cmap.cell(vertex, vd)];
+					});
+					let dir = new THREE.Vector3().subVectors(p[0], p[1]);
 		
 					let len = dir.length();
 					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0,0,1));
@@ -151,9 +152,8 @@ function Renderer(cmap){
 					
 					matrix.decompose(pos, quat, scale);
 					scale.set(params.size || 1, len, params.size || 1);
-					pos.addVectors(p0, p1).divideScalar(2);
+					pos.addVectors(p[0], p[1]).divideScalar(2);
 					matrix.compose(pos, quat, scale);
-
 					this.mesh.setMatrixAt(id, matrix);
 					this.mesh.setColorAt(id, new THREE.Color(params.color || 0x000000));
 					this.mesh.instanceId[cmap.cell(edge, ed)] = id;
@@ -179,8 +179,8 @@ function Renderer(cmap){
 
 				cmap.foreach(face, fd => {
 					let f_ids = [];
-					cmap.foreach_dart_phi1(fd, d => {
-						f_ids.push(cmap.cell(vertex, d));
+					cmap.foreach_incident(vertex, face, fd, vd => {
+						f_ids.push(cmap.cell(vertex, vd));
 					});
 
 					let normal = params.normals? params.normals[cmap.cell(face, fd)] : undefined;
