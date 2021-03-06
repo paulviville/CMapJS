@@ -44,7 +44,7 @@ function Renderer(cmap){
 	const position = cmap.get_attribute(cmap.vertex, "position");
 
 	let vertex = cmap.vertex;
-	this.vertices = (!vertex) ? undefined :
+	this.vertices = (vertex == undefined) ? undefined :
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
@@ -108,7 +108,7 @@ function Renderer(cmap){
 		this.cells.push(this.vertices);
 
 	let edge = cmap.edge;
-	this.edges = (!edge) ? undefined :
+	this.edges = (edge == undefined) ? undefined :
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
@@ -170,7 +170,7 @@ function Renderer(cmap){
 		this.cells.push(this.edges);
 
 	let face = cmap.face;
-	this.faces = (!face) ? undefined :
+	this.faces = (face == undefined) ? undefined :
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;

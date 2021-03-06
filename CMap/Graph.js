@@ -7,7 +7,6 @@ function Graph()
 	this.alpha0 = this.add_topology_relation("alpha0");
 	this.alpha1 = this.add_topology_relation("alpha1");
 	this.alpha_1 = this.add_topology_relation("alpha_1");
-	this.phi1 = this.alpha0;
 
 	this.sew_alpha0 = function(d0, d1){
 		this.alpha0[d0] = d1;

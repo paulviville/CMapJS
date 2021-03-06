@@ -289,6 +289,7 @@ let Cell_Marker_Proto = {
 	unmark: function(d) {this[this.cmap.cell(this.emb, d)] = false},
 	marked: function(d) {return this[this.cmap.cell(this.emb, d)]},
 };
+/// Change for set -> mark == add, unmark == delete, marked == has
 
 let Marker_remover = {
 	remove: function(){

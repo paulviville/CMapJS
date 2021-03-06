@@ -55,7 +55,7 @@ export function load_mesh(mesh_str) {
 	let hexes = [];
 	for(let i = 0; i < nb_hexs; ++i)
 	{
-	line = lines[j++];
+		line = lines[j++];
 		line = line.split(" ");
 		line.length = 8;
 		hexes.push(line);
