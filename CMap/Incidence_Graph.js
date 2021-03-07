@@ -228,7 +228,9 @@ function Incidence_Graph(){
 	this.delete_edge = function(e) {
 		this.foreach_incident(this.face, this.edge, e, f => {
 			this.delete_face(f);
-			console.log(f);
+		});
+		this.foreach_incident(this.vertex, this.edge, e, v => {
+			incident_edges_to_vertex[v].delete(e);
 		});
 		this.delete_cell(this.edge, e);
 	};
@@ -243,8 +245,8 @@ function Incidence_Graph(){
 				const e = unsorted[i];
 				const evs = incident_vertices_to_edge[e];
 				const ev = ( evs.v0 == v ? 
-					evs.v1 : ( evs.v1 == v ? 
-						evs.v0 : undefined )
+					evs.v1 : ( evs.v1 == v ?
+						 evs.v0 : undefined )
 				);
 				if( ev != undefined ) {
 					v = ev;
