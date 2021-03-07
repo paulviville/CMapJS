@@ -205,7 +205,7 @@ function CMap_Base(){
 	};
 
 	/// Closes topology into manifold
-	this.close = function(){}
+	this.close = function() {}
 
 	this.dart = this.add_celltype();
 
@@ -214,44 +214,44 @@ function CMap_Base(){
 	this.d = this.add_topology_relation("d");
 
 	/// Returns a dart marker or a cell marker of given embedding 
-	this.new_marker = function(used_emb){
+	this.new_marker = function(used_emb) {
 		if(this.stored_markers[used_emb? used_emb : this.dart].length)
 			return this.stored_markers[used_emb? used_emb : this.dart].pop();
 
 		return new Marker(this, used_emb);
 	};
 
-	this.new_fast_marker = function(used_emb){
+	this.new_fast_marker = function(used_emb) {
 		return new FastMarker(this, used_emb);
 	};
 
 	let boundary_marker = this.new_marker();
-	this.mark_as_boundary = function(d){
+	this.mark_as_boundary = function(d) {
 		boundary_marker.mark(d);
 	};
 
-	this.unmark_as_boundary = function(d){
+	this.unmark_as_boundary = function(d) {
 		boundary_marker.unmark(d);
 	};
 
-	this.mark_cell_as_boundary = function(emb, cd){
+	this.mark_cell_as_boundary = function(emb, cd) {
 		boundary_marker.mark_cell(emb, cd)
 	};
 
-	this.unmark_cell_as_boundary = function(emb, cd){
+	this.unmark_cell_as_boundary = function(emb, cd) {
 		boundary_marker.unmark_cell(emb, cd);
 	};
 
-	this.is_boundary = function(d){
+	this.is_boundary = function(d) {
 		return boundary_marker.marked(d);
 	};
 
-	this.is_boundary_cell = function(emb, cd){
+	this.is_boundary_cell = function(emb, cd) {
 		return boundary_marker.marked_cell(emb, cd);
 	};
 
 	// Garbage to fix
-	this.degree = function(emb, cd){
+	this.degree = function(emb, cd) {
 		let deg = 0;
 		this.foreach_dart_of(emb, cd, d => {
 			++deg;
@@ -298,7 +298,7 @@ let Marker_remover = {
 	}
 };
 
-function Marker(cmap, used_emb){
+function Marker(cmap, used_emb) {
 	let marker;
 	if(used_emb){
 		marker = Object.assign([], Cell_Marker_Proto);

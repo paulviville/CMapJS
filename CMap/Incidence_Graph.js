@@ -186,14 +186,17 @@ function Incidence_Graph(){
 
 	this.funcs_foreach_incident[this.face][this.vertex] = function (f, func) {
 		let marker = new Set;
-		incident_edges_to_face[f].forEach(e => {
-			incident_vertices_to_edge[e].forEach(v => {
-				if(!marker.has(v)) {
-					marker.add(v);
-					func(v);
-				}
-			});
+		incident_edges_to_face[f].forEach(e => {	
+			if(!marker.has(incident_vertices_to_edge[e].v0)) {
+				marker.add(incident_vertices_to_edge[e].v0);
+				func(incident_vertices_to_edge[e].v0);
+			}
+			if(!marker.has(incident_vertices_to_edge[e].v1)) {
+				marker.add(incident_vertices_to_edge[e].v1);
+				func(incident_vertices_to_edge[e].v1);
+			}
 		});
+	
 	};
 
 	this.funcs_foreach_incident[this.face][this.edge] = function (f, func) {
@@ -223,12 +226,56 @@ function Incidence_Graph(){
 	};
 	
 	this.delete_edge = function(e) {
-
+		this.foreach_incident(this.face, this.edge, e, f => {
+			this.delete_face(f);
+			console.log(f);
+		});
+		this.delete_cell(this.edge, e);
 	};
 
-	this.create_face = function(...edges) {
-		console.log(edges);
+	function sort_edges(sorted, unsorted) {
+		sorted.push(unsorted.pop());
+		const v0 = incident_vertices_to_edge[sorted[0]].v0;
+		let v = incident_vertices_to_edge[sorted[0]].v1;
+		while(unsorted.length) {
+			let i, end;
+			for(i = 0, end = unsorted.length; i < unsorted.length; ++i) {
+				const e = unsorted[i];
+				const evs = incident_vertices_to_edge[e];
+				const ev = ( evs.v0 == v ? 
+					evs.v1 : ( evs.v1 == v ? 
+						evs.v0 : undefined )
+				);
+				if( ev != undefined ) {
+					v = ev;
+					sorted.push(unsorted[i]);
+					unsorted.splice(i, 1);
+					break;
+				}
+			}
+			if (v == v0 || i == end)
+				break;
+		}
+
+		return (unsorted.length == 0);
 	}
+
+	this.add_face = function(...edges) {
+		let sorted = []
+		if(sort_edges(sorted, edges)) {
+			let f = this.new_cell(this.face);
+			incident_edges_to_face[f] = sorted;
+			sorted.forEach(e => {incident_faces_to_edge[e].add(f);});
+			return f;
+		}
+	};
+
+	this.delete_face = function(f) {
+		this.foreach_incident(this.edge, this.face, f, e => {
+			incident_faces_to_edge[e].delete(f);
+		});
+		this.delete_cell(this.face, f);
+	};
 }
 
 // let Cell_Marker_Proto = {
