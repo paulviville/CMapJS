@@ -1,7 +1,7 @@
 import Attributes_Container from './Attribute_Container.js';
 
 /// Base Structure for CMaps, further extended and specialized later
-function Incidence_Graph(){
+function IncidenceGraph(){
 	/// Attribute containers for all cell types
 	const attributes_containers = [];
 	// /// Dart topological relations
@@ -78,13 +78,6 @@ function Incidence_Graph(){
 		return embeddings[emb][c];
 	};
 
-	// /// Sets given embedding to given dart
-	// this.set_embedding = function(emb, d, i){
-	// 	attributes_containers[emb].ref(i);
-	// 	attributes_containers[emb].unref(embeddings[emb][d]);	
-	// 	return embeddings[emb][d] = i;
-	// };
-
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
 	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
 		if(cache){
@@ -98,8 +91,7 @@ function Incidence_Graph(){
 	// /// Traverses incident cells of  given type
 	// /// inc_emb : incident cell type
 	// /// cell_emb : targete cell type
-	// /// cd : target cell
-	// /// Use_embedding switches to cell marker instead of darts
+	// /// c : target cell
 	this.foreach_incident = function(inc_emb, cell_emb, c, func){
 		this.funcs_foreach_incident[cell_emb][inc_emb](c, func);
 	};
@@ -307,7 +299,7 @@ function Incidence_Graph(){
 
 
 
-export default Incidence_Graph;
+export default IncidenceGraph;
 
 
 /// TODO:

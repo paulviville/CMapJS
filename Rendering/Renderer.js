@@ -4,15 +4,19 @@ let Renderer_Cell_Proto = {
 	mesh: undefined,
 	params: undefined,
 	create: undefined,
+	parent: undefined,
 
-	add: function(parent){
-		if(parent)
-			parent.add(this.mesh);
+	addTo: function(parent){
+		this.parent = parent ? parent : this.parent;
+		if(this.parent && this.mesh) {
+			this.parent.add(this.mesh);
+		}
 		return this;
 	},
 
 	remove: function(){
 		this.mesh.parent.remove(this.mesh);
+		this.parent = undefined;
 		return this;
 	},
 
@@ -25,10 +29,11 @@ let Renderer_Cell_Proto = {
 	},
 
 	update: function(params){
-		let parent = this.mesh.parent;
-		this.delete();
+		let parent = this.parent;
+		if(this.mesh) 
+			this.delete();
 		this.create(params || this.params);
-		this.add(parent);
+		this.addTo(parent);
 		return this;
 	},
 
@@ -113,7 +118,7 @@ function Renderer(cmap){
 			create: function(params = {}){
 				this.params = params;
 
-				const geometry = new THREE.CylinderGeometry(0.001, 0.001, 1, 8);
+				const geometry = new THREE.CylinderGeometry(0.0025, 0.0025, 1, 8);
 				const material = params.material || new THREE.MeshBasicMaterial({
 					// color: params.color || 0x000000,
 				});
@@ -174,8 +179,16 @@ function Renderer(cmap){
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
+				if(cmap.nb_cells(face) == 0)
+					return;
+
 				const geometry = new THREE.Geometry();
 				geometry.vertices = position;
+
+				// this.mesh.instanceId = cmap.get_attribute(edge, "instanceId")
+				// || cmap.add_attribute(edge, "instanceId");
+
+				const fds = [];
 
 				cmap.foreach(face, fd => {
 					let f_ids = [];
@@ -183,10 +196,13 @@ function Renderer(cmap){
 						f_ids.push(cmap.cell(vertex, vd));
 					});
 
+					let color = params.color || new THREE.Color(0x0099FF);
 					let normal = params.normals? params.normals[cmap.cell(face, fd)] : undefined;
 					for(let i = 2; i < f_ids.length; i++){
 						let f = new THREE.Face3(f_ids[0],f_ids[i-1],f_ids[i], normal);
+						f.color = color.clone();
 						geometry.faces.push(f);
+						fds.push(fd);
 
 						if(cmap.is_embedded(face))
 							f.id = cmap.cell(face, fd);
@@ -197,14 +213,16 @@ function Renderer(cmap){
 					geometry.computeFaceNormals();
 
 				let material = params.material || new THREE.MeshLambertMaterial({
-					color:params.color || 0xBBBBBB,
+					// color:params.color || 0xBBBBBB,
 					side: params.side || THREE.FrontSide,
 					transparent: params.transparent || false,
-					opacity: params.opacity || 1
+					opacity: params.opacity || 1,
+					vertexColors: THREE.FaceColors
 					// wireframe: true
 				});
 
 				this.mesh = new THREE.Mesh(geometry, material);
+				this.mesh.fd = fds;
 				this.mesh.layers.set(params.layer || 0);
 				return this;
 			}
