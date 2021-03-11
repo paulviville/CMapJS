@@ -146,7 +146,7 @@ function Renderer(cmap){
 					let dir = new THREE.Vector3().subVectors(p[0], p[1]);
 		
 					let len = dir.length();
-					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0,0,1));
+					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0.0001,0,1));
 					let dirz = new THREE.Vector3().crossVectors(dirx, dir);
 
 					const matrix = new THREE.Matrix4().fromArray([
@@ -189,18 +189,18 @@ function Renderer(cmap){
 				// || cmap.add_attribute(edge, "instanceId");
 
 				const fds = [];
+				let color = params.color || new THREE.Color(0x0099FF);
 
 				cmap.foreach(face, fd => {
 					let f_ids = [];
 					cmap.foreach_incident(vertex, face, fd, vd => {
 						f_ids.push(cmap.cell(vertex, vd));
 					});
-
-					let color = params.color || new THREE.Color(0x0099FF);
+					let fcolor = color.clone();
 					let normal = params.normals? params.normals[cmap.cell(face, fd)] : undefined;
 					for(let i = 2; i < f_ids.length; i++){
 						let f = new THREE.Face3(f_ids[0],f_ids[i-1],f_ids[i], normal);
-						f.color = color.clone();
+						f.color = fcolor;
 						geometry.faces.push(f);
 						fds.push(fd);
 

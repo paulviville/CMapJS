@@ -198,7 +198,7 @@ function IncidenceGraph(){
 	this.add_vertex = function () {
 		let v = this.new_cell(this.vertex);
 		incident_edges_to_vertex[v] = new Set;
-		
+		console.log(incident_edges_to_vertex[v]);
 		return v;
 	};
 
@@ -231,6 +231,7 @@ function IncidenceGraph(){
 		sorted.push(unsorted.pop());
 		const v0 = incident_vertices_to_edge[sorted[0]].v0;
 		let v = incident_vertices_to_edge[sorted[0]].v1;
+		let broken = false;
 		while(unsorted.length) {
 			let i, end;
 			for(i = 0, end = unsorted.length; i < unsorted.length; ++i) {
@@ -247,11 +248,12 @@ function IncidenceGraph(){
 					break;
 				}
 			}
-			if (v == v0 || i == end)
+			broken = v == v0 || i == end;
+			if (broken)
 				break;
 		}
 
-		return (unsorted.length == 0);
+		return (broken && unsorted.length == 0);
 	}
 
 	this.add_face = function(...edges) {
@@ -260,6 +262,7 @@ function IncidenceGraph(){
 			let f = this.new_cell(this.face);
 			incident_edges_to_face[f] = sorted;
 			sorted.forEach(e => {incident_faces_to_edge[e].add(f);});
+			console.log(incident_edges_to_face[f]);
 			return f;
 		}
 	};
