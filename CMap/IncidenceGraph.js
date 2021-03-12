@@ -132,9 +132,6 @@ function IncidenceGraph(){
 	// 	return deg;
 	// };
 
-	this.debug = function(){
-		console.log(attributes_containers, embeddings);
-	};
 
 	this.vertex = this.add_celltype();
 	this.create_embedding(this.vertex);
@@ -148,6 +145,13 @@ function IncidenceGraph(){
 	this.face = this.add_celltype();
 	this.create_embedding(this.face);
 	const incident_edges_to_face = this.add_attribute(this.face, "incident_edges"); 
+
+	this.debug = function(){
+		console.log(attributes_containers, embeddings);
+		console.log(incident_vertices_to_edge, incident_faces_to_edge,
+			incident_edges_to_face, incident_edges_to_vertex);
+	};
+
 
 	this.funcs_foreach_incident[this.vertex][this.edge] = function (v, func) {
 		incident_edges_to_vertex[v].forEach(e => {func(e);});
@@ -198,7 +202,6 @@ function IncidenceGraph(){
 	this.add_vertex = function () {
 		let v = this.new_cell(this.vertex);
 		incident_edges_to_vertex[v] = new Set;
-		console.log(incident_edges_to_vertex[v]);
 		return v;
 	};
 
@@ -210,7 +213,6 @@ function IncidenceGraph(){
 	this.add_edge = function(v0, v1) {
 		let e = this.new_cell(this.edge);
 		incident_vertices_to_edge[e] = {v0, v1};
-		console.log(incident_vertices_to_edge[e]);
 		incident_edges_to_vertex[v0].add(e);
 		incident_edges_to_vertex[v1].add(e);
 		incident_faces_to_edge[e] = new Set;
@@ -262,7 +264,6 @@ function IncidenceGraph(){
 			let f = this.new_cell(this.face);
 			incident_edges_to_face[f] = sorted;
 			sorted.forEach(e => {incident_faces_to_edge[e].add(f);});
-			console.log(incident_edges_to_face[f]);
 			return f;
 		}
 	};
@@ -272,6 +273,27 @@ function IncidenceGraph(){
 			incident_faces_to_edge[e].delete(f);
 		});
 		this.delete_cell(this.face, f);
+	};
+
+	this.cutEdge = function(e0) {
+		const v1 = this.add_vertex();
+		const e0vs = incident_vertices_to_edge[e0];
+		incident_edges_to_vertex[e0vs.v1].delete(e0);
+		const e1 = this.add_edge(v1, e0vs.v1);
+		e0vs.v1 = v1;
+		incident_edges_to_vertex[v1].add(e0);
+		this.foreach_incident(this.face, this.edge, e0, f => {
+			incident_faces_to_edge[e1].add(f);
+			incident_edges_to_face[f].push(e1);
+			let sorted = [];
+			sort_edges(sorted, incident_edges_to_face[f]);
+			incident_edges_to_face[f] = sorted;
+		});
+		return v1;
+	};
+
+	this.cutFace = function(f, v0, v1) {
+
 	};
 }
 
