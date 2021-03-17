@@ -261,6 +261,7 @@ function IncidenceGraph(){
 	this.add_face = function(...edges) {
 		let sorted = []
 		if(edges.length > 2 && sort_edges(sorted, edges)) {
+			console.log("here")
 			let f = this.new_cell(this.face);
 			incident_edges_to_face[f] = sorted;
 			sorted.forEach(e => {incident_faces_to_edge[e].add(f);});

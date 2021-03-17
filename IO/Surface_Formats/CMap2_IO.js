@@ -110,12 +110,6 @@ function geometry_from_map(map){
 		geometry.v.push([p.x, p.y, p.z]);
 	});
 
-	// map.foreach(edge, ed => {
-	// 	map.foreach_dart_of(edge, ed, d => {
-
-	// 	});
-	// });
-
 	map.foreach(face, fd => {
 		let f = [];
 		map.foreach_dart_of(face, fd, d => {

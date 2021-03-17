@@ -28,21 +28,12 @@ function graph_from_geometry(geometry){
 	graph.create_embedding(vertex);
 	const position = graph.add_attribute(vertex, "position");
 
-	// let mid = new Vector3(0.5266625, 0.27661535000000004, 0.14826565000000003);
-	// let str = "";
-
 	const vertex_ids = [];
 	geometry.v.forEach(v3 => {
 		let vd = graph.add_vertex(true);
 		vertex_ids.push(vd);
 		position[graph.cell(vertex, vd)] = new Vector3(v3[0], v3[1], v3[2]);
-
-		// let p = new Vector3(v3[0], v3[1], v3[2]);
-		// p.sub(mid);
-		// str += "v " + p.x.toFixed(6) + " " + (p.y  - 0.005).toFixed(6) + " " +p.z.toFixed(6) + "\n";
 	});
-
-	// console.log(str);
 
 	geometry.e.forEach(e => {
 		graph.connect_vertices(vertex_ids[e[0]], vertex_ids[e[1]]);
@@ -61,8 +52,8 @@ export function export_graph(graph, format){
 function str_from_geometry(format, geometry){
 	let file_str;
 	switch(format){
-		case 'off':
-			file_str = export_off(geometry);
+		case 'cg':
+			// file_str = export_cg(geometry);
 			break;
 		default:
 			break;
