@@ -1,6 +1,6 @@
 import IncidenceGraph from '../../CMap/IncidenceGraph.js';
 import {Vector3} from '../../Dependencies/three.module.js';
-import {importIG} from './Ig.js';
+import {importIG, exportIG} from './Ig.js';
 
 export function importIncidenceGraph(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
@@ -51,7 +51,7 @@ function incidenceGraphFromGeometry(geometry){
 
 export function exportIncidenceGraph(iGraph, format){
 	let geometry = geometryFromIncidenceGraph(iGraph);
-	console.log(geometry);
+	console.log(geometry); 
 	let str = strFromGeometry(format, geometry);
 	return str;
 }
@@ -65,40 +65,49 @@ function strFromGeometry(format, geometry){
 		default:
 			break;
 	}
-	return geometry;
+	return fileStr;
 }
 
-// function geometryFromIncidenceGraph(graph){
-// 	let geometry = {v: [], e: [], f: []};
-// 	const vertex = graph.vertex;
-// 	const edge = graph.edge;
-// 	const face = graph.face;
+function geometryFromIncidenceGraph(iGraph){
+	let geometry = {v: [], e: [], f: []};
+	const vertex = iGraph.vertex;
+	const edge = iGraph.edge;
+	const face = iGraph.face;
+	console.log(iGraph)
+	const position = iGraph.get_attribute(vertex, "position");
+	const vids = iGraph.add_attribute(vertex, "id");
+	const eids = iGraph.add_attribute(edge, "id");
+	const fids = iGraph.add_attribute(face, "id");
 
-// 	const position = graph.get_attribute(vertex, "position");
-// 	const vertex_id = graph.add_attribute(vertex, "id");
+	let id = 0;
+	iGraph.foreach(vertex, vd => {
+		vids[vd] = id++;
+		const p = position[iGraph.cell(vertex, vd)];
+		geometry.v.push(p.toArray());
+	});
 
-// 	let id = 0;
-// 	graph.foreach(vertex, vd => {
-// 		vertex_id[graph.cell(vertex, vd)] = id++;
-// 		const p = position[graph.cell(vertex, vd)];
-// 		geometry.v.push(p.x, p.y, p.z);
-// 	});
+	id = 0;
+	const verts = [];
+	iGraph.foreach(edge, ed => {
+		eids[ed] = id++;
+		const e = []
+		iGraph.foreach_incident(vertex, edge, ed, vd => {
+			e.push(vids[vd]);
+		});
+		geometry.e.push(e);
+	});
 
-// 	// graph.foreach(edge, ed => {
-// 	// 	graph.foreach_dart_of(edge, ed, d => {
+	iGraph.foreach(face, fd => {
+		let f = [];
+		iGraph.foreach_incident(edge, face, fd, ed => {
+			f.push(eids[ed]);
+		});
+		geometry.f.push(f);
+	});
 
-// 	// 	});
-// 	// });
+	iGraph.remove_attribute(vertex, vids);
+	iGraph.remove_attribute(edge, eids);
+	iGraph.remove_attribute(face, fids);
 
-// 	graph.foreach(face, fd => {
-// 		let f = [];
-// 		graph.foreach_dart_of(face, fd, d => {
-// 			f.push(vertex_id[graph.cell(vertex, d)]);
-// 		});
-// 		geometry.f.push(f);
-// 	});
-
-// 	vertex_id.delete();
-
-// 	return geometry;
-// }
+	return geometry;
+}
