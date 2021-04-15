@@ -4,8 +4,8 @@ function CMap1()
 {
 	CMap0.call(this);
 	
-	this.phi1 = this.add_topology_relation("phi1");
-	this.phi_1 = this.add_topology_relation("phi_1");
+	this.phi1 = this.addTopologyRelation("phi1");
+	this.phi_1 = this.addTopologyRelation("phi_1");
 
 	// TOPOLOGY
 	this.sew_phi1 = function(d0, d1){
@@ -28,7 +28,7 @@ function CMap1()
 	};
 
 	/// Traverses and applies func to all darts of face 1 - 2
-	this.foreach_dart_phi1 = function(d0, func){
+	this.foreachDart_phi1 = function(d0, func){
 		let d = d0;
 		do
 		{
@@ -41,37 +41,37 @@ function CMap1()
 	// ORBITS
 	const vertex = this.vertex;
 
-	this.edge = this.add_celltype();
+	this.edge = this.addCelltype();
 	const edge = this.edge;
 
-	this.funcs_foreach_dart_of[edge] = function(ed, func) {func(ed)};
+	this.funcsForeach_dart_of[edge] = function(ed, func) {func(ed)};
 
-	this.face = this.add_celltype();
+	this.face = this.addCelltype();
 	const face = this.face;
 
-	this.funcs_foreach_dart_of[face] = this.foreach_dart_phi1;
+	this.funcsForeach_dart_of[face] = this.foreachDart_phi1;
 
 	// OPERATIONS
-	this.add_face = function(nb_sides, set_embeddings = true){
-		let d0 = this.new_dart();
+	this.addFace = function(nb_sides, setEmbeddings = true){
+		let d0 = this.newDart();
 		for(let i = 1; i < nb_sides; i++){
-			let d1 = this.new_dart();
+			let d1 = this.newDart();
 			this.sew_phi1(d0, d1);
 		}
 
-		if(set_embeddings){
-			if(this.is_embedded(vertex))
-				this.foreach_dart_phi1(d0, d1 => {
-					this.set_embedding(vertex, d1, this.new_cell(vertex));
+		if(setEmbeddings){
+			if(this.isEmbedded(vertex))
+				this.foreachDart_phi1(d0, d1 => {
+					this.setEmbedding(vertex, d1, this.newCell(vertex));
 				});
-			if(this.is_embedded(edge))
-				this.foreach_dart_phi1(d0, d1 => {
-					this.set_embedding(edge, d1, this.new_cell(edge));
+			if(this.isEmbedded(edge))
+				this.foreachDart_phi1(d0, d1 => {
+					this.setEmbedding(edge, d1, this.newCell(edge));
 				});
-			if(this.is_embedded(face)){
-				let fid = this.new_cell(face);
-				this.foreach_dart_phi1(d0, d1 => {
-					this.set_embedding(face, d1, fid);
+			if(this.isEmbedded(face)){
+				let fid = this.newCell(face);
+				this.foreachDart_phi1(d0, d1 => {
+					this.setEmbedding(face, d1, fid);
 				});
 			}
 		}
@@ -79,52 +79,52 @@ function CMap1()
 		return d0;
 	};
 
-	this.cut_edge = function(ed, set_embeddings = true){
+	this.cut_edge = function(ed, setEmbeddings = true){
 		let d0 = ed;
-		let d1 = this.new_dart();
+		let d1 = this.newDart();
 
 		this.sew_phi1(d0, d1);
 
-		if(this.is_boundary(d0))
-			this.mark_as_boundary(d1);
+		if(this.isBoundary(d0))
+			this.markAsBoundary(d1);
 
-		if(set_embeddings){
-			if(this.is_embedded(vertex))
-				this.set_embedding(vertex, d1, this.new_cell(vertex));
-			if(this.is_embedded(edge))
-				this.set_embedding(edge, d1, this.new_cell(edge));
-			if(this.is_embedded(face))
-				this.set_embedding(face, d1, this.new_cell(face));
+		if(setEmbeddings){
+			if(this.isEmbedded(vertex))
+				this.setEmbedding(vertex, d1, this.newCell(vertex));
+			if(this.isEmbedded(edge))
+				this.setEmbedding(edge, d1, this.newCell(edge));
+			if(this.isEmbedded(face))
+				this.setEmbedding(face, d1, this.newCell(face));
 		}
 
 		return d1;
 	};
 
-	this.collapse_edge = function(ed, set_embeddings = true){
+	this.collapse_edge = function(ed, setEmbeddings = true){
 		let d0 = this.phi_1[ed];
 		this.unsew_phi1(d0);
 		let d1 = this.phi1[d0];
 
-		this.delete_dart(ed);
+		this.deleteDart(ed);
 		return d1;
 	};
 
-	this.split_vertex = function(vd, set_embeddings = true){
+	this.split_vertex = function(vd, setEmbeddings = true){
 		let d0 = this.phi_1(vd);
-		let d1 = this.new_dart();
+		let d1 = this.newDart();
 
 		this.sew_phi1(d0, d1);
 
-		if(this.is_boundary(d0))
-			this.mark_as_boundary(d1);
+		if(this.isBoundary(d0))
+			this.markAsBoundary(d1);
 
-		if(set_embeddings){
-			if(this.is_embedded(vertex))
-				this.set_embedding(vertex, d1, this.new_cell(vertex));
-			if(this.is_embedded(edge))
-				this.set_embedding(edge, d1, this.new_cell(edge));
-			if(this.is_embedded(face))
-				this.set_embedding(face, d1, this.cell(face, d0));
+		if(setEmbeddings){
+			if(this.isEmbedded(vertex))
+				this.setEmbedding(vertex, d1, this.newCell(vertex));
+			if(this.isEmbedded(edge))
+				this.setEmbedding(edge, d1, this.newCell(edge));
+			if(this.isEmbedded(face))
+				this.setEmbedding(face, d1, this.cell(face, d0));
 		}
 
 		return d1;

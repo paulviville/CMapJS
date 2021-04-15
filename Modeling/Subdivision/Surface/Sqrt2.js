@@ -4,8 +4,8 @@ import {Vector3} from '../../../Dependencies/three.module.js';
 export function sqrt2(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
-	const pos = cmap.get_attribute(vertex, "position");
-	const delta = cmap.add_attribute(vertex, "delta");
+	const pos = cmap.getAttribute(vertex, "position");
+	const delta = cmap.addAttribute(vertex, "delta");
 
 	let edge_cache = cmap.cache(edge);
 	let vertex_cache = cmap.cache(vertex);
@@ -14,7 +14,7 @@ export function sqrt2(cmap){
 		let degree = 0;
 		let vid = cmap.cell(vertex, vd);
 		pos[vid] = new Vector3;
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			++degree;
 			pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 		});
@@ -27,7 +27,7 @@ export function sqrt2(cmap){
 		sum_Q.set(0,0,0);
 		n = 0;
 		vid = cmap.cell(vertex, vd);
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			sum_Q.add(pos[cmap.cell(vertex, cmap.phi2[cmap.phi1[d]])]);
 			++n;
 		});

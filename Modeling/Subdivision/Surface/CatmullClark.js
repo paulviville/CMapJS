@@ -6,9 +6,9 @@ export function catmull_clark(cmap){
 	const edge = cmap.edge;
 	const face = cmap.face;
 
-	const pos = cmap.get_attribute(vertex, "position");
-	const delta = cmap.add_attribute(vertex, "delta");
-	const incident_f = cmap.add_attribute(vertex, "incident_f");
+	const pos = cmap.getAttribute(vertex, "position");
+	const delta = cmap.addAttribute(vertex, "delta");
+	const incident_f = cmap.addAttribute(vertex, "incident_f");
 
 	const init_vertices_cache = cmap.cache(vertex);
 	const face_vertices_cache = [];
@@ -22,7 +22,7 @@ export function catmull_clark(cmap){
 			pos[vid] = new Vector3;
 			delta[vid] = new Vector3;
 			incident_f[vid] = new Vector3;
-			cmap.foreach_dart_of(vertex, vd, d => {
+			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 				delta[vid].sub(pos[cmap.cell(vertex, cmap.phi2[d])]);
 			})
@@ -35,13 +35,13 @@ export function catmull_clark(cmap){
 			let nb_edges = 0;
 			pos[vid] = new Vector3;
 			delta[vid] = new Vector3;
-			cmap.foreach_dart_of(vertex, vd, d => {
+			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 				++nb_edges;
 			});
 			pos[vid].multiplyScalar(1 / nb_edges);
 
-			cmap.foreach_dart_of(vertex, vd, d => {
+			cmap.foreachDartOf(vertex, vd, d => {
 				delta[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.25);
 				incident_f[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.5);
 			});
@@ -56,7 +56,7 @@ export function catmull_clark(cmap){
 		F.set(0, 0, 0);
 		R.set(0, 0, 0);
 		n = 0;
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			vid2 = cmap.cell(vertex, cmap.phi2[d]);
 			F.add(incident_f[vid2]);
 			R.add(pos[vid2]);
@@ -83,9 +83,9 @@ export function catmull_clark(cmap){
 // 	const edge = cmap.edge;
 // 	const face = cmap.face;
 
-// 	const pos = cmap.get_attribute(vertex, "position");
-// 	const delta = cmap.add_attribute(vertex, "delta");
-// 	const incident_f = cmap.add_attribute(vertex, "incident_f");
+// 	const pos = cmap.getAttribute(vertex, "position");
+// 	const delta = cmap.addAttribute(vertex, "delta");
+// 	const incident_f = cmap.addAttribute(vertex, "incident_f");
 
 // 	const init_vertices_cache = cmap.cache(vertex);
 // 	const face_vertices_cache = [];
@@ -99,7 +99,7 @@ export function catmull_clark(cmap){
 // 			pos[vid] = new Vector3();
 // 			delta[vid] = new Vector3();
 // 			incident_f[vid] = new Vector3();
-// 			cmap.foreach_dart_of(vertex, vd, d => {
+// 			cmap.foreachDartOf(vertex, vd, d => {
 // 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 // 				delta[vid].sub(pos[cmap.cell(vertex, cmap.phi2[d])]);
 // 			})
@@ -112,13 +112,13 @@ export function catmull_clark(cmap){
 // 			let nb_edges = 0;
 // 			pos[vid] = new Vector3();
 // 			delta[vid] = new Vector3();
-// 			cmap.foreach_dart_of(vertex, vd, d => {
+// 			cmap.foreachDartOf(vertex, vd, d => {
 // 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 // 				++nb_edges;
 // 			});
 // 			pos[vid].multiplyScalar(1 / nb_edges);
 
-// 			cmap.foreach_dart_of(vertex, vd, d => {
+// 			cmap.foreachDartOf(vertex, vd, d => {
 // 				delta[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.25);
 // 				incident_f[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.5);
 // 			});
@@ -133,7 +133,7 @@ export function catmull_clark(cmap){
 // 		F.set(0, 0, 0);
 // 		R.set(0, 0, 0);
 // 		n = 0;
-// 		cmap.foreach_dart_of(vertex, vd, d => {
+// 		cmap.foreachDartOf(vertex, vd, d => {
 // 			vid2 = cmap.cell(vertex, cmap.phi2[d]);
 // 			F.add(incident_f[vid2]);
 // 			R.add(pos[vid2]);
@@ -150,7 +150,7 @@ export function catmull_clark(cmap){
 // 	cmap.foreach(vertex, vd => {
 // 		let avg_delta = new Vector3;
 // 		let n = 0;
-// 		cmap.foreach_dart_of(vertex, vd, d => {
+// 		cmap.foreachDartOf(vertex, vd, d => {
 // 			avg_delta.add(delta[cmap.cell(vertex, cmap.phi1[cmap.phi1[d]])]);
 // 			++n;
 // 		});
@@ -162,7 +162,7 @@ export function catmull_clark(cmap){
 // 	cmap.foreach(vertex, vd => {
 // 		let avg_delta = new Vector3;
 // 		let n = 0;
-// 		cmap.foreach_dart_of(vertex, vd, d => {
+// 		cmap.foreachDartOf(vertex, vd, d => {
 // 			avg_delta.add(delta[cmap.cell(vertex, cmap.phi1[cmap.phi1[d]])]);
 // 			++n;
 // 		});
@@ -179,9 +179,9 @@ export function catmull_clark_inter(cmap){
 	const edge = cmap.edge;
 	const face = cmap.face;
 
-	const pos = cmap.get_attribute(vertex, "position");
-	const pos2 = cmap.add_attribute(vertex, "position2");
-	const delta = cmap.add_attribute(vertex, "delta");
+	const pos = cmap.getAttribute(vertex, "position");
+	const pos2 = cmap.addAttribute(vertex, "position2");
+	const delta = cmap.addAttribute(vertex, "delta");
 
 	const init_vertices_cache = cmap.cache(vertex);
 	const init_edges_cache = cmap.cache(edge);
@@ -194,7 +194,7 @@ export function catmull_clark_inter(cmap){
 
 			let vid = cmap.cell(vertex, vd);
 			pos[vid] = new Vector3();
-			cmap.foreach_dart_of(vertex, vd, d => {
+			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 			});
 			pos[vid].multiplyScalar(0.5);
@@ -204,7 +204,7 @@ export function catmull_clark_inter(cmap){
 			let vid = cmap.cell(vertex, vd);
 			let nb_edges = 0;
 			pos[vid] = new Vector3();
-			cmap.foreach_dart_of(vertex, vd, d => {
+			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 				++nb_edges;
 			});
@@ -214,7 +214,7 @@ export function catmull_clark_inter(cmap){
 	cmap.foreach(vertex, vd => {
 		let nb_f = 0;
 		const p2 = new Vector3;
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			p2.add(pos[cmap.cell(vertex, cmap.phi1[cmap.phi1[d]])]);
 			++nb_f;
 		});
@@ -244,7 +244,7 @@ export function catmull_clark_inter(cmap){
 		const sum = new Vector3;
 		const del = new Vector3;
 		let degree = 0;
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			++degree;
 			sum.addScaledVector(pos2[cmap.cell(vertex, cmap.phi1[d])], 2);
 			sum.add(pos2[cmap.cell(vertex, cmap.phi1[cmap.phi1[d]])]);

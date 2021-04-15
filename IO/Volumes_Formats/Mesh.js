@@ -1,4 +1,4 @@
-export function load_mesh(mesh_str) {
+export function loadMesh(mesh_str) {
 	let lines = mesh_str.split("\n");
 	for(let i = 0; i < lines.length; i++)
 	{
@@ -69,6 +69,6 @@ export function load_mesh(mesh_str) {
 }
 
 
-export function export_mesh(geometry){
+export function exportMesh(geometry){
 	
 }

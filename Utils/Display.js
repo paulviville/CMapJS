@@ -1,6 +1,6 @@
-import {geometry_from_str as surface_geometry_from_str} from '../IO/Surface_Formats/CMap2_IO.js';
-import {geometry_from_str as volumes_geometry_from_str} from '../IO/Volumes_Formats/CMap3_IO.js';
-import {compute_hex_scaled_jacobian} from '../Modeling/Quality/Scaled_Jacobians.js';
+import {geometryFromStr as surfaceGeometryFromStr} from '../IO/Surface_Formats/CMap2IO.js';
+import {geometryFromStr as volumesGeometryFromStr} from '../IO/Volumes_Formats/CMap3IO.js';
+import {computeHexScaledJacobian} from '../Modeling/Quality/Scaled_Jacobians.js';
 import * as THREE from '../Dependencies/three.module.js';
 
 const mesh_color = new THREE.Color(0x60c3f4);
@@ -94,8 +94,8 @@ void main(){
 }
 `;
 
-export function load_volumes_view(format, file_str, params = {}){
-	const g = volumes_geometry_from_str(format, file_str);
+export function loadVolumesView(format, file_str, params = {}){
+	const g = volumesGeometryFromStr(format, file_str);
 	const nb_hex = g.hex.length;
 
 	const v_arrays = [
@@ -141,7 +141,7 @@ export function load_volumes_view(format, file_str, params = {}){
 		centers[n++] = center.y;
 		centers[n++] = center.z;
 
-		let qual = compute_hex_scaled_jacobian(P);
+		let qual = computeHexScaledJacobian(P);
 		if(qual > max_quality) max_quality = qual;
 		if(qual < min_quality) min_quality = qual;
 		avg_quality += qual;
@@ -210,8 +210,8 @@ export function load_volumes_view(format, file_str, params = {}){
 	return mesh;
 }
 
-export function load_surface_view(format, file_str, params = {}){
-	let g = surface_geometry_from_str(format, file_str);
+export function loadSurfaceView(format, file_str, params = {}){
+	let g = surfaceGeometryFromStr(format, file_str);
 
 	const geometry = new THREE.Geometry();
 	const position = [];

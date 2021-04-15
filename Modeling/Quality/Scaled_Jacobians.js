@@ -5,18 +5,18 @@ function compute_hex_frames(map){
 	let vertex = map.vertex;
 	let volume = map.volume;
 
-	let vertex2_frame = map.get_attribute(vertex2, "vertex2_frame");
+	let vertex2_frame = map.getAttribute(vertex2, "vertex2_frame");
 	if(!vertex2_frame)
-		vertex2_frame = map.add_attribute(vertex2, "vertex2_frame");
+		vertex2_frame = map.addAttribute(vertex2, "vertex2_frame");
 
-	let volume_frame = map.get_attribute(volume, "volume_frame");
+	let volume_frame = map.getAttribute(volume, "volume_frame");
 	if(!volume_frame)
-		volume_frame = map.add_attribute(volume, "volume_frame");
+		volume_frame = map.addAttribute(volume, "volume_frame");
 
-		let pos = map.get_attribute(vertex, "position");
+		let pos = map.getAttribute(vertex, "position");
 
 	map.foreach(volume, wd => {
-		if(map.is_boundary(wd))
+		if(map.isBoundary(wd))
 			return;
 
 		let D = [];
@@ -95,8 +95,8 @@ export default function compute_scaled_jacobian(map){
 	let vertex2 = map.vertex2;
 	let volume = map.volume;
 
-	let vertex2_frame = map.get_attribute(vertex2, "vertex2_frame");
-	let volume_frame = map.get_attribute(volume, "volume_frame");
+	let vertex2_frame = map.getAttribute(vertex2, "vertex2_frame");
+	let volume_frame = map.getAttribute(volume, "volume_frame");
 
 	if(!vertex2_frame){
 		let frames = compute_hex_frames(map);
@@ -104,16 +104,16 @@ export default function compute_scaled_jacobian(map){
 		volume_frame = frames.volume_frame;
 	}
 
-	let scaled_jacobian = map.get_attribute(volume, "scaled_jacobian");
+	let scaled_jacobian = map.getAttribute(volume, "scaled_jacobian");
 	if(!scaled_jacobian)
-		scaled_jacobian = map.add_attribute(volume, "scaled_jacobian");
+		scaled_jacobian = map.addAttribute(volume, "scaled_jacobian");
 
 	let F = new Matrix3;
 	let U = new Vector3;
 	let V = new Vector3;
 	let W = new Vector3;
 	map.foreach(volume, wd => {
-		if(map.is_boundary(wd))
+		if(map.isBoundary(wd))
 			return;
 			
 		F.copy(volume_frame[map.cell(volume, wd)]);
@@ -122,7 +122,7 @@ export default function compute_scaled_jacobian(map){
 		F.set(U.x, V.x, W.x, U.y, V.y, W.y, U.z, V.z, W.z);
 		let sj = F.determinant();
 
-		map.foreach_incident(vertex2, volume, wd, v2d => {
+		map.foreachIncident(vertex2, volume, wd, v2d => {
 			F.copy(vertex2_frame[map.cell(vertex2, v2d)]);
 			F.extractBasis(U, V, W);
 			U.normalize(); V.normalize(); W.normalize();
@@ -137,7 +137,7 @@ export default function compute_scaled_jacobian(map){
 	return scaled_jacobian;
 }
 
-export function compute_hex_scaled_jacobian(P){
+export function computeHexScaledJacobian(P){
 	let U = new Vector3;
 	let V = new Vector3;
 	let W = new Vector3;

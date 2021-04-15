@@ -1,5 +1,5 @@
-export function load_cg(cg_str){
-	let lines = cg_str.split("\n");
+export function loadCg(cgStr){
+	let lines = cgStr.split("\n");
 	for(let i = 0; i < lines.length; i++)
 	{
 		lines[i] = lines[i].replace(/\s\s+/g, ' ').trim();
@@ -9,19 +9,19 @@ export function load_cg(cg_str){
 	let j = 0;
 	line = lines[j++];
 	let header = line.split(" ");
-	let nb_dims = parseInt(header[1].split(":")[1]);
-	let nb_verts = parseInt(header[2].split(":")[1]);
-	let nb_edges = parseInt(header[3].split(":")[1]);
+	let nbDims = parseInt(header[1].split(":")[1]);
+	let nbVerts = parseInt(header[2].split(":")[1]);
+	let nbEdges = parseInt(header[3].split(":")[1]);
 
 	let vertices = [];
-	for(let i = 0; i < nb_verts; ++i)
+	for(let i = 0; i < nbVerts; ++i)
 	{
 		line = lines[j++];
 		vertices.push(line.slice(2).split(" "));
 	}
 
 	let edges = [];
-	for(let i = 0; i < nb_edges; ++i)
+	for(let i = 0; i < nbEdges; ++i)
 	{
 		line = lines[j++];
 		edges.push(line.slice(2).split(" "));
@@ -33,6 +33,6 @@ export function load_cg(cg_str){
 	return {v: vertices, e:edges};
 };
 
-export function save_cg(geometry){
+export function saveCg(geometry){
 
 };

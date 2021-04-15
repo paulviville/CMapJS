@@ -1,4 +1,4 @@
-export function load_off(off_str) {
+export function loadOff(off_str) {
 	let lines = off_str.split("\n");
 	for(let i = 0; i < lines.length; i++)
 	{
@@ -34,7 +34,7 @@ export function load_off(off_str) {
 	return {v: vertices, f:faces};
 }
 
-export function export_off(geometry){
+export function exportOff(geometry){
 	let str = "OFF\n";
 	str += geometry.v.length + " " + geometry.f.length + " 0\n";
 

@@ -5,7 +5,7 @@ export function butterfly(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
-	const pos = cmap.get_attribute(vertex, "position");
+	const pos = cmap.getAttribute(vertex, "position");
 
 	let vertex_cache = cmap.cache(vertex);
 	let edge_cache = cmap.cache(edge);

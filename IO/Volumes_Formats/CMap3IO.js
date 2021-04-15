@@ -1,19 +1,19 @@
 import {CMap3, CMap2} from '../../CMap/CMap.js';
 import {Vector3} from '../../Dependencies/three.module.js';
-import {load_mesh, export_mesh} from './Mesh.js';
+import {loadMesh, exportMesh} from './Mesh.js';
 
-export function load_cmap3(format, file_str){
-	let geometry = geometry_from_str(format, file_str);
-	let map = map_from_geometry(geometry);
+export function loadCmap3(format, file_str){
+	let geometry = geometryFromStr(format, file_str);
+	let map = mapFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", w:" + geometry.hex.length + ")");
 	return map;
 }
 
-export function geometry_from_str(format, file_str){
+export function geometryFromStr(format, file_str){
 	let geometry;
 	switch(format){
 		case 'mesh':
-			geometry = load_mesh(file_str);
+			geometry = loadMesh(file_str);
 			break;
 		default:
 			break;
@@ -21,25 +21,25 @@ export function geometry_from_str(format, file_str){
 	return geometry;
 }
 
-function map_from_geometry(geometry){
+function mapFromGeometry(geometry){
 	let map = new CMap3;
 	const vertex = map.vertex;
 	const vertex2 = map.vertex2;
 	const face2 = map.face2;
 
-	let position = map.add_attribute(vertex, "position");
-	let dart_per_vertex = map.add_attribute(vertex, "dart_per_vertex");
+	let position = map.addAttribute(vertex, "position");
+	let dart_per_vertex = map.addAttribute(vertex, "dart_per_vertex");
 
 	let vertex_ids = [];
 	geometry.v.forEach(vert => {
-		let i = map.new_cell(vertex);
+		let i = map.newCell(vertex);
 		vertex_ids.push(i);
 		dart_per_vertex[i] = [];
 		position[i] = new Vector3(vert[0], vert[1], vert[2]);
 
 	});
 
-	map.create_embedding(vertex);
+	map.createEmbedding(vertex);
 
 	if(geometry.tet)
 		geometry.tet.forEach(tet => {
@@ -62,8 +62,8 @@ function map_from_geometry(geometry){
 			];
 
 			for(let i = 0; i < hex.length; ++i){
-				map.foreach_dart_of(vertex2, darts_of_hex[i], vd2 => {
-					map.set_embedding(map.vertex, vd2, hex[i]);
+				map.foreachDartOf(vertex2, darts_of_hex[i], vd2 => {
+					map.setEmbedding(map.vertex, vd2, hex[i]);
 					dart_per_vertex[hex[i]].push(vd2);
 				});
 			}
@@ -74,11 +74,11 @@ function map_from_geometry(geometry){
 
 		});
 	
-	let marker = map.new_marker();
+	let marker = map.newMarker();
 	let open_map = false;
-	map.foreach_dart(d0 => {
+	map.foreachDart(d0 => {
 		if(map.phi3[d0] == d0 && !marker.marked(d0)){
-			map.foreach_dart_of(map.face2, d0, d1 => {
+			map.foreachDartOf(map.face2, d0, d1 => {
 				marker.mark(d1)
 			});
 

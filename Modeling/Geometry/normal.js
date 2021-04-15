@@ -11,7 +11,7 @@ export function face_normal(map, fd, position){
 	let center = new Vector3;
 	let degree = 0;
 
-	map.foreach_incident(map.vertex, map.face, fd, vd => {
+	map.foreachIncident(map.vertex, map.face, fd, vd => {
 		++degree;
 		center.add(position[map.cell(map.vertex, vd)]);
 	});
@@ -20,7 +20,7 @@ export function face_normal(map, fd, position){
 	let normal = new Vector3;
 	let v0 = new Vector3;
 	let v1 = new Vector3;
-	map.foreach_incident(map.vertex, map.face, fd, vd0 => {
+	map.foreachIncident(map.vertex, map.face, fd, vd0 => {
 		v0.subVectors(position[map.cell(map.vertex, vd0)], center);
 		v0.normalize();
 		v1.subVectors(position[map.cell(map.vertex, map.phi1[vd0])], center);
@@ -36,7 +36,7 @@ export function face_normal(map, fd, position){
 export function compute_face_normals(map, position, face_normals){
 	console.log(map, position, face_normals)
 	const normals = face_normals ? 
-		face_normals : map.add_attribute(map.face, "face_normals");
+		face_normals : map.addAttribute(map.face, "face_normals");
 	
 	map.foreach(map.face, fd => {
 		normals[map.cell(map.face, fd)] = face_normal(map, fd, position);

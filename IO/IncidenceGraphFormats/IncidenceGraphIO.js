@@ -27,24 +27,24 @@ function incidenceGraphFromGeometry(geometry){
 	const edge = iGraph.edge;
 	const face = iGraph.face;
 
-	const position = iGraph.add_attribute(vertex, "position");
+	const position = iGraph.addAttribute(vertex, "position");
 
 	const vertices = [];
 	geometry.v.forEach(v3 => {
-		const vd = iGraph.add_vertex();
+		const vd = iGraph.addVertex();
 		vertices.push(vd);
 	 	position[vd] = new Vector3().fromArray(v3);
 	});
 
 	const edges = [];
 	geometry.e.forEach(e => {
-		const ed = iGraph.add_edge(vertices[e[0]], vertices[e[1]]);
+		const ed = iGraph.addEdge(vertices[e[0]], vertices[e[1]]);
 		edges.push(ed);
 	});
 
 	geometry.f.forEach(f => {
 		f = f.map(e => edges[e]);
-		const fd = iGraph.add_face(...f);
+		const fd = iGraph.addFace(...f);
 	});
 	return iGraph;
 }
@@ -74,10 +74,10 @@ function geometryFromIncidenceGraph(iGraph){
 	const edge = iGraph.edge;
 	const face = iGraph.face;
 	console.log(iGraph)
-	const position = iGraph.get_attribute(vertex, "position");
-	const vids = iGraph.add_attribute(vertex, "id");
-	const eids = iGraph.add_attribute(edge, "id");
-	const fids = iGraph.add_attribute(face, "id");
+	const position = iGraph.getAttribute(vertex, "position");
+	const vids = iGraph.addAttribute(vertex, "id");
+	const eids = iGraph.addAttribute(edge, "id");
+	const fids = iGraph.addAttribute(face, "id");
 
 	let id = 0;
 	iGraph.foreach(vertex, vd => {
@@ -91,7 +91,7 @@ function geometryFromIncidenceGraph(iGraph){
 	iGraph.foreach(edge, ed => {
 		eids[ed] = id++;
 		const e = []
-		iGraph.foreach_incident(vertex, edge, ed, vd => {
+		iGraph.foreachIncident(vertex, edge, ed, vd => {
 			e.push(vids[vd]);
 		});
 		geometry.e.push(e);
@@ -99,15 +99,15 @@ function geometryFromIncidenceGraph(iGraph){
 
 	iGraph.foreach(face, fd => {
 		let f = [];
-		iGraph.foreach_incident(edge, face, fd, ed => {
+		iGraph.foreachIncident(edge, face, fd, ed => {
 			f.push(eids[ed]);
 		});
 		geometry.f.push(f);
 	});
 
-	iGraph.remove_attribute(vertex, vids);
-	iGraph.remove_attribute(edge, eids);
-	iGraph.remove_attribute(face, fids);
+	iGraph.removeAttribute(vertex, vids);
+	iGraph.removeAttribute(edge, eids);
+	iGraph.removeAttribute(face, fids);
 
 	return geometry;
 }

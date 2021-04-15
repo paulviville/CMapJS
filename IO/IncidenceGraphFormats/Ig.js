@@ -36,6 +36,7 @@ export function importIG(off_str) {
 	{
 		line = lines[j++];
 		let face = line.split(" ");
+		face.shift();
 		faces.push(face);
 	}
 	vertices = vertices.map(x => x.map(y => parseFloat(y)));
@@ -58,6 +59,7 @@ export function exportIG(geometry){
 	});
 
 	geometry.f.forEach( face => {
+		str += face.length + " ";
 		face.forEach(e => {str += e + " "}); 
 		str += "\n";
 	});

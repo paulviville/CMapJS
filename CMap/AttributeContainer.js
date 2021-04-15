@@ -5,7 +5,7 @@ function Attribute(array, attributes_container, name, length){
 
 	/// clears the array and removes it's reference from it's container
 	array.delete = function(){
-		attributes_container.remove_attribute(this.name);
+		attributes_container.removeAttribute(this.name);
 		this.length = 0;
 		delete this.delete;
 		delete this.name;
@@ -16,9 +16,9 @@ function Attribute(array, attributes_container, name, length){
 
 
 /// Attributes containers handle attributes and index setting
-function Attributes_Container(){
+export default function AttributesContainer(){
 	/// creates and stores a new attribute of given name
-	this.create_attribute = function(name = ""){
+	this.createAttribute = function(name = ""){
 		while(name == "" || attributes[name])
 			name += "_";
 
@@ -29,13 +29,13 @@ function Attributes_Container(){
 	};
 
 	/// deletes reference to attribute of given name
-	this.remove_attribute = function(name){
+	this.removeAttribute = function(name){
 		delete attributes[name];
 	};
 
 	/// gets reference to attribute of given name
 	/// returns undefined if attribute doesn't exist
-	this.get_attribute = function(name){
+	this.getAttribute = function(name){
 		// if(!attributes[name])
 		// 	console.warn("No attribute named: ", name);
 
@@ -61,13 +61,13 @@ function Attributes_Container(){
 	};
 
 	/// frees given index
-	this.delete_element = function(index){
+	this.deleteElement = function(index){
 		refs[index] = null;
 		free_indices.add(index);
 	};
 
 	/// returns number of referenced elements
-	this.nb_elements = function(){
+	this.nbElements = function(){
 		return max_id - free_indices.size;
 	};
 
@@ -87,7 +87,7 @@ function Attributes_Container(){
 		if(!refs[index])
 			return; 
 		if(!(--refs[index])) 
-			this.delete_element(index);
+			this.deleteElement(index);
 	};
 
 	/// clears attribute container of all data
@@ -105,7 +105,5 @@ function Attributes_Container(){
 	/// id counter
 	let max_id = 0;
 	/// attribute counting number of references to each element
-	const refs = this.create_attribute("<refs>");
+	const refs = this.createAttribute("<refs>");
 };
-
-export default Attributes_Container;

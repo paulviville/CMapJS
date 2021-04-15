@@ -5,12 +5,12 @@ export function doo_sabin(cmap){
 	const edge = cmap.edge;
 	const face = cmap.face;
 
-	const pos = cmap.get_attribute(vertex, "position");
-	const delta = cmap.add_attribute(vertex, "delta");
+	const pos = cmap.getAttribute(vertex, "position");
+	const delta = cmap.addAttribute(vertex, "delta");
 
 
-	let vertex_marker = cmap.new_fast_marker();
-	let edge_marker = cmap.new_fast_marker();
+	let vertex_marker = cmap.newFastMarker();
+	let edge_marker = cmap.newFastMarker();
 	let edge_cache = cmap.cache(edge);
 	let face_cache = cmap.cache(face);
 	let holes = [];
@@ -26,7 +26,7 @@ export function doo_sabin(cmap){
 		edge_marker.mark(ed0);
 		ed1 = cmap.phi2[ed0];
 		cmap.unsew_phi2(ed0);
-		efd = cmap.add_face(4, false);
+		efd = cmap.addFace(4, false);
 		cmap.sew_phi2(ed0, efd);
 		cmap.sew_phi2(ed1, cmap.phi1[cmap.phi1[efd]]);
 		holes.push(cmap.phi1[efd]);
@@ -44,16 +44,16 @@ export function doo_sabin(cmap){
 	let point;
 	let vid;
 	cmap.foreach(face, fd => {
-		cmap.foreach_dart_of(face, fd, vd => {
+		cmap.foreachDartOf(face, fd, vd => {
 			vid = cmap.cell(vertex, vd);
 			if(!vertex_marker.marked(vd)){
 				point = pos[vid].clone();
-				vid = cmap.new_cell(vertex);
-				cmap.set_embedding(vertex, vd, vid);
+				vid = cmap.newCell(vertex);
+				cmap.setEmbedding(vertex, vd, vid);
 				pos[vid] = point;
 			}
-			cmap.foreach_dart_of(vertex, vd, d => {
-				cmap.set_embedding(vertex, d, vid);
+			cmap.foreachDartOf(vertex, vd, d => {
+				cmap.setEmbedding(vertex, d, vid);
 			});
 		});
 	}, {cache: face_cache});
@@ -63,7 +63,7 @@ export function doo_sabin(cmap){
 	cmap.foreach(face, fd => {
 		barycenter.set(0, 0, 0);
 		nb_vertices = 0;
-		cmap.foreach_dart_of(face, fd, d => {
+		cmap.foreachDartOf(face, fd, d => {
 			++nb_vertices;
 			barycenter.add(pos[cmap.cell(vertex, d)])
 			delta[cmap.cell(vertex, d)] = pos[cmap.cell(vertex, d)]
@@ -74,7 +74,7 @@ export function doo_sabin(cmap){
 		});
 		barycenter.divideScalar(nb_vertices);
 
-		cmap.foreach_dart_of(face, fd, d => {
+		cmap.foreachDartOf(face, fd, d => {
 			delta[cmap.cell(vertex, d)].add(barycenter).divideScalar(4)
 			pos[cmap.cell(vertex, d)].add(delta[cmap.cell(vertex, d)]);
 		});

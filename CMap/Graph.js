@@ -1,25 +1,25 @@
-import CMap_Base from './CMap_Base.js'
+import CMap_Base from './CMapBase.js'
 
 function Graph()
 {
 	CMap_Base.call(this);
 
-	this.alpha0 = this.add_topology_relation("alpha0");
-	this.alpha1 = this.add_topology_relation("alpha1");
-	this.alpha_1 = this.add_topology_relation("alpha_1");
+	this.alpha0 = this.addTopologyRelation("alpha0");
+	this.alpha1 = this.addTopologyRelation("alpha1");
+	this.alpha_1 = this.addTopologyRelation("alpha_1");
 
-	this.sew_alpha0 = function(d0, d1){
+	this.sewAlpha0 = function(d0, d1){
 		this.alpha0[d0] = d1;
 		this.alpha0[d1] = d0;
 	};
 
-	this.unsew_alpha0 = function(d0){
+	this.unsewAlpha0 = function(d0){
 		const d1 = this.alpha0[d0];
 		this.alpha0[d0] = d0;
 		this.alpha0[d1] = d1;
 	};
 
-	this.sew_alpha1 = function(d0, e0){
+	this.sewAlpha1 = function(d0, e0){
 		const d1 = this.alpha1[d0];
 		const e1 = this.alpha1[e0];
 		this.alpha1[d0] = e1;
@@ -28,7 +28,7 @@ function Graph()
 		this.alpha_1[e1] = d0;
 	};
 
-	this.unsew_alpha1 = function(d0){
+	this.unsewAlpha1 = function(d0){
 		const d1 = this.alpha1[d0];
 		const d_1 = this.alpha_1[d0];
 
@@ -38,12 +38,12 @@ function Graph()
 		this.alpha_1[d1] = d_1;
 	};
 
-	this.foreach_dart_alpha0 = function(d0, func){
+	this.foreachDartAlpha0 = function(d0, func){
 		if(!func(d0))
 			func(this.alpha0[d0]);
 	};
 
-	this.foreach_dart_alpha1 = function(d0, func){
+	this.foreachDartAlpha1 = function(d0, func){
 		let d = d0;
 		do{
 			if(func(d)) break;
@@ -51,133 +51,133 @@ function Graph()
 		} while(d != d0)
 	};
 
-	this.vertex = this.add_celltype();
+	this.vertex = this.addCelltype();
 
-	this.funcs_foreach_dart_of[this.vertex] = this.foreach_dart_alpha1;
+	this.funcsForeach_dart_of[this.vertex] = this.foreachDartAlpha1;
 
-	this.edge = this.add_celltype();
+	this.edge = this.addCelltype();
 
-	this.funcs_foreach_dart_of[this.edge] = this.foreach_dart_alpha0;
+	this.funcsForeach_dart_of[this.edge] = this.foreachDartAlpha0;
 
-	this.add_vertex = function(set_embeddings = true){
-		let d = this.new_dart();
-		if(set_embeddings){
-			if(this.is_embedded(this.vertex))
-				this.set_embedding(this.vertex, d, this.new_cell(this.vertex));
+	this.addVertex = function(setEmbeddings = true){
+		let d = this.newDart();
+		if(setEmbeddings){
+			if(this.isEmbedded(this.vertex))
+				this.setEmbedding(this.vertex, d, this.newCell(this.vertex));
 		}
 		return d;
 	};
 
-	this.delete_vertex = function(vd0, set_embeddings = true){
+	this.deleteVertex = function(vd0, setEmbeddings = true){
 		let vd1 = this.alpha1[vd0];
 		while(vd1 != vd0){
 			let vd_1 = vd1;
 			vd1 = this.alpha1[vd1];
-			this.disconnect_vertices(this.alpha0[vd_1], vd_1, set_embeddings);
+			this.disconnectVertices(this.alpha0[vd_1], vd_1, setEmbeddings);
 		}
-		this.disconnect_vertices(this.alpha0[vd0], vd0, set_embeddings);
-		this.delete_dart(vd0);
+		this.disconnectVertices(this.alpha0[vd0], vd0, setEmbeddings);
+		this.deleteDart(vd0);
 	};
 
-	this.connect_vertices = function(d0, e0, set_embeddings = true){
-		let d = (this.alpha0[d0] == d0)? d0 : this.new_dart(); 
-		let e = (this.alpha0[e0] == e0)? e0 : this.new_dart();
-		if(d != d0) this.sew_alpha1(d0, d);
-		if(e != e0) this.sew_alpha1(e0, e);
+	this.connectVertices = function(d0, e0, setEmbeddings = true){
+		let d = (this.alpha0[d0] == d0)? d0 : this.newDart(); 
+		let e = (this.alpha0[e0] == e0)? e0 : this.newDart();
+		if(d != d0) this.sewAlpha1(d0, d);
+		if(e != e0) this.sewAlpha1(e0, e);
 
-		this.sew_alpha0(d, e);
+		this.sewAlpha0(d, e);
 
-		if(set_embeddings){
-			if(this.is_embedded(this.vertex)){
-				if(d != d0) this.set_embedding(this.vertex, d, this.cell(this.vertex, d0));
-				if(e != e0) this.set_embedding(this.vertex, e, this.cell(this.vertex, e0));
+		if(setEmbeddings){
+			if(this.isEmbedded(this.vertex)){
+				if(d != d0) this.setEmbedding(this.vertex, d, this.cell(this.vertex, d0));
+				if(e != e0) this.setEmbedding(this.vertex, e, this.cell(this.vertex, e0));
 			}
-			if(this.is_embedded(this.edge)){
-				let eid = this.new_cell(this.edge);
-				this.set_embedding(this.edge, d, eid);
-				this.set_embedding(this.edge, e, eid);
+			if(this.isEmbedded(this.edge)){
+				let eid = this.newCell(this.edge);
+				this.setEmbedding(this.edge, d, eid);
+				this.setEmbedding(this.edge, e, eid);
 			}
 		}
 
 		return d;
 	};
 	
-	this.disconnect_vertices = function(vd0, vd1, set_embeddings = true){
+	this.disconnectVertices = function(vd0, vd1, setEmbeddings = true){
 		let val0 = 0;
-		this.foreach_dart_alpha1(vd0, d => {if(this.alpha0[d] != vd0) ++val0;});
+		this.foreachDartAlpha1(vd0, d => {if(this.alpha0[d] != vd0) ++val0;});
 		let val1 = 0;
-		this.foreach_dart_alpha1(vd1, d => {if(this.alpha0[d] != vd1) ++val1;});
-		this.unsew_alpha0(vd0);
+		this.foreachDartAlpha1(vd1, d => {if(this.alpha0[d] != vd1) ++val1;});
+		this.unsewAlpha0(vd0);
 
-		if(set_embeddings){
-			if(this.is_embedded(this.edge)){
+		if(setEmbeddings){
+			if(this.isEmbedded(this.edge)){
 				let eid = this.cell(this.edge, d0);
-				this.delete_cell(this.edge, eid);
+				this.deleteCell(this.edge, eid);
 			}
 		}
 
 		if(val0 > 1) {
-				this.unsew_alpha1(vd0);
-				this.delete_dart(vd0);
+				this.unsewAlpha1(vd0);
+				this.deleteDart(vd0);
 			}
 		if(val1 > 1){
-				this.unsew_alpha1(vd1);
-				this.delete_dart(vd1);
+				this.unsewAlpha1(vd1);
+				this.deleteDart(vd1);
 			}
 	};
 
-	this.cut_edge = function(ed, set_embeddings = true){
+	this.cut_edge = function(ed, setEmbeddings = true){
 		let ed0 = ed;
 		let ed1 = this.alpha0[ed];
 
-		let vd0 = this.new_dart();
-		let vd1 = this.new_dart();
+		let vd0 = this.newDart();
+		let vd1 = this.newDart();
 
-		this.sew_alpha1(vd0, vd1);
-		this.unsew_alpha0(ed0);
-		this.sew_alpha0(ed0, vd0);
-		this.sew_alpha0(ed1, vd1);
+		this.sewAlpha1(vd0, vd1);
+		this.unsewAlpha0(ed0);
+		this.sewAlpha0(ed0, vd0);
+		this.sewAlpha0(ed1, vd1);
 
-		if(set_embeddings){
-			if(this.is_embedded(this.vertex)){
-				let vid = this.new_cell(this.vertex);
-				this.set_embedding(this.vertex, vd0, vid);
-				this.set_embedding(this.vertex, vd1, vid);
+		if(setEmbeddings){
+			if(this.isEmbedded(this.vertex)){
+				let vid = this.newCell(this.vertex);
+				this.setEmbedding(this.vertex, vd0, vid);
+				this.setEmbedding(this.vertex, vd1, vid);
 			}
-			if(this.is_embedded(this.edge)){
-				this.set_embedding(this.edge, vd0, this.cell(this.edge, ed0));
-				let eid = this.new_cell(this.edge);
-				this.set_embedding(this.edge, vd1, eid);
-				this.set_embedding(this.edge, ed1, eid);
+			if(this.isEmbedded(this.edge)){
+				this.setEmbedding(this.edge, vd0, this.cell(this.edge, ed0));
+				let eid = this.newCell(this.edge);
+				this.setEmbedding(this.edge, vd1, eid);
+				this.setEmbedding(this.edge, ed1, eid);
 			}
 		}
 
 		return vd0;
 	};
 
-	this.collapse_edge = function(ed, set_embeddings = true){
+	this.collapse_edge = function(ed, setEmbeddings = true){
 		let d0 = this.alpha0[ed];
 		let d1 = this.alpha1[d0];
 		while(d1 != d0){
 			let d2 = this.alpha1[d1];
-			this.unsew_alpha1(d1);
-			this.sew_alpha1(d1, ed);
+			this.unsewAlpha1(d1);
+			this.sewAlpha1(d1, ed);
 			d1 = d2;
 		}
 
-		if(set_embeddings){
-			if(this.is_embedded(this.vertex)){
+		if(setEmbeddings){
+			if(this.isEmbedded(this.vertex)){
 				let eid = this.cell(this.vertex, ed);
-				this.foreach_dart_alpha1(ed, d => {
-					this.set_embedding(this.vertex, d, eid);
+				this.foreachDartAlpha1(ed, d => {
+					this.setEmbedding(this.vertex, d, eid);
 				});
 			}
 		}
-		this.delete_dart(d0);
-		this.delete_dart(ed);
+		this.deleteDart(d0);
+		this.deleteDart(ed);
 	};
 
-	this.merge_edges = function(vd, set_embeddings = true){
+	this.merge_edges = function(vd, setEmbeddings = true){
 		if(this.degree(this.vertex, vd) != 2) 
 			return;
 
@@ -186,17 +186,17 @@ function Graph()
 
 		let e0 = this.alpha0[d0];
 		let e1 = this.alpha0[d1];
-		this.unsew_alpha0(d0);
-		this.unsew_alpha0(d1);
-		this.sew_alpha0(e0, e1);
+		this.unsewAlpha0(d0);
+		this.unsewAlpha0(d1);
+		this.sewAlpha0(e0, e1);
 		
-		this.delete_dart(d0);
-		this.delete_dart(d1);
+		this.deleteDart(d0);
+		this.deleteDart(d1);
 
-		if(set_embeddings){
-			if(this.is_embedded(this.edge)){
+		if(setEmbeddings){
+			if(this.isEmbedded(this.edge)){
 				let eid = this.cell(this.edge, e0);
-				this.set_embedding(this.edge, e1, eid);
+				this.setEmbedding(this.edge, e1, eid);
 			}
 		}
 	};

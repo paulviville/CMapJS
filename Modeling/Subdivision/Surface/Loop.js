@@ -9,8 +9,8 @@ export function loop(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
-	const pos = cmap.get_attribute(vertex, "position");
-	const new_pos = cmap.add_attribute(vertex, "new_pos");
+	const pos = cmap.getAttribute(vertex, "position");
+	const new_pos = cmap.addAttribute(vertex, "new_pos");
 
 	let face_cache = cmap.cache(face);
 
@@ -18,7 +18,7 @@ export function loop(cmap){
 		let degree = 0;
 		let vid = cmap.cell(vertex, vd);
 		new_pos[vid] = new Vector3;
-		cmap.foreach_dart_of(vertex, vd, d => {
+		cmap.foreachDartOf(vertex, vd, d => {
 			++degree;
 			new_pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
 		});
