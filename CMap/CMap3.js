@@ -232,13 +232,13 @@ function CMap3(){
 		} while(volumes.length);
 	};
 
-	this.funcsForeach_dart_of[vertex] = this.foreachDart_phi21_phi31;
+	this.funcsForeachDartOf[vertex] = this.foreachDart_phi21_phi31;
 
-	this.funcsForeach_dart_of[edge] = this.foreachDart_phi2_phi3;
+	this.funcsForeachDartOf[edge] = this.foreachDart_phi2_phi3;
 
-	this.funcsForeach_dart_of[face] = this.foreachDart_phi1_phi3;
+	this.funcsForeachDartOf[face] = this.foreachDart_phi1_phi3;
 
-	this.funcsForeach_dart_of[connex] = this.foreachDart_phi1_phi2_phi3;
+	this.funcsForeachDartOf[connex] = this.foreachDart_phi1_phi2_phi3;
 
 	/// OPERATIONS
 	this.cut_edge2 = this.cut_edge;

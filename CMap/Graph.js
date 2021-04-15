@@ -53,11 +53,11 @@ function Graph()
 
 	this.vertex = this.addCelltype();
 
-	this.funcsForeach_dart_of[this.vertex] = this.foreachDartAlpha1;
+	this.funcsForeachDartOf[this.vertex] = this.foreachDartAlpha1;
 
 	this.edge = this.addCelltype();
 
-	this.funcsForeach_dart_of[this.edge] = this.foreachDartAlpha0;
+	this.funcsForeachDartOf[this.edge] = this.foreachDartAlpha0;
 
 	this.addVertex = function(setEmbeddings = true){
 		let d = this.newDart();

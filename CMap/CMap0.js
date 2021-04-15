@@ -8,7 +8,7 @@ function CMap0()
 	this.vertex = this.addCelltype();
 	const vertex = this.vertex;
 
-	this.funcsForeach_dart_of[vertex] = function(vd, func) {func(vd)};
+	this.funcsForeachDartOf[vertex] = function(vd, func) {func(vd)};
 }
 
 export default CMap0;

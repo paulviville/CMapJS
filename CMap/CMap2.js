@@ -109,11 +109,11 @@ function CMap2(){
 
 	};
 
-	this.funcsForeach_dart_of[vertex] = this.foreachDart_phi21;
+	this.funcsForeachDartOf[vertex] = this.foreachDart_phi21;
 
-	this.funcsForeach_dart_of[edge] = this.foreachDart_phi2;
+	this.funcsForeachDartOf[edge] = this.foreachDart_phi2;
 
-	this.funcsForeach_dart_of[volume] = this.foreachDart_phi1_phi2;
+	this.funcsForeachDartOf[volume] = this.foreachDart_phi1_phi2;
 
 	// OPERATIONS
 	this.cut_edge1 = this.cut_edge;

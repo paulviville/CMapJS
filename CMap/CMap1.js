@@ -44,12 +44,12 @@ function CMap1()
 	this.edge = this.addCelltype();
 	const edge = this.edge;
 
-	this.funcsForeach_dart_of[edge] = function(ed, func) {func(ed)};
+	this.funcsForeachDartOf[edge] = function(ed, func) {func(ed)};
 
 	this.face = this.addCelltype();
 	const face = this.face;
 
-	this.funcsForeach_dart_of[face] = this.foreachDart_phi1;
+	this.funcsForeachDartOf[face] = this.foreachDart_phi1;
 
 	// OPERATIONS
 	this.addFace = function(nb_sides, setEmbeddings = true){

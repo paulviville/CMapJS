@@ -14,7 +14,7 @@ function CMap_Base(){
 	this.storedFastMarkers = [];
 
 	/// All cell types dart traversor functions
-	this.funcsForeach_dart_of = [];
+	this.funcsForeachDartOf = [];
 	/// All cell types incident traversors functions
 	this.funcsForeachIncident = [];
 
@@ -160,7 +160,7 @@ function CMap_Base(){
 
 	/// Traverses and applies func to all darts of a cell 
 	this.foreachDartOf = function(emb, cell, func){
-		this.funcsForeach_dart_of[emb].call(this, cell, func);
+		this.funcsForeachDartOf[emb].call(this, cell, func);
 	};
 
 	/// Traverses incident cells of  given type
@@ -209,7 +209,7 @@ function CMap_Base(){
 
 	this.dart = this.addCelltype();
 
-	this.funcsForeach_dart_of[this.dart] = function(d, func) {func(d);};
+	this.funcsForeachDartOf[this.dart] = function(d, func) {func(d);};
 
 	this.d = this.addTopologyRelation("d");
 
