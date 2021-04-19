@@ -1,5 +1,5 @@
 import {CMap3, CMap2} from '../../CMap/CMap.js';
-import {Vector3} from '../../Dependencies/three.module.js';
+import {Vector3} from '../../Libs/three.module.js';
 import {loadMesh, exportMesh} from './Mesh.js';
 
 export function loadCmap3(format, file_str){

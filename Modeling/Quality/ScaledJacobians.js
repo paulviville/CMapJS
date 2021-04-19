@@ -1,4 +1,4 @@
-import {Vector3, Matrix3} from '../../Dependencies/three.module.js';
+import {Vector3, Matrix3} from '../../Libs/three.module.js';
 
 function compute_hex_frames(map){
 	let vertex2 = map.vertex2;

@@ -1,9 +1,9 @@
 import {geometryFromStr as surfaceGeometryFromStr} from '../IO/Surface_Formats/CMap2IO.js';
 import {geometryFromStr as volumesGeometryFromStr} from '../IO/Volumes_Formats/CMap3IO.js';
-import {computeHexScaledJacobian} from '../Modeling/Quality/Scaled_Jacobians.js';
+import {computeHexScaledJacobian} from '../Modeling/Quality/ScaledJacobians.js';
 import * as THREE from '../Libs/three.module.js';
 
-const mesh_color = new THREE.Color(0x60c3f4);
+const meshColor = new THREE.Color(0x60c3f4);
 
 let v_shader = `
 in vec3 position;
@@ -201,7 +201,7 @@ export function loadVolumesView(format, file_str, params = {}){
 			max_clipping: {value: 0},
 			quality: {value: 0},
 			max_scale: {value: 0.90},
-			mesh_color: {value: mesh_color}
+			mesh_color: {value: meshColor}
 		}
 	} );
 
@@ -215,7 +215,6 @@ export function loadSurfaceView(format, file_str, params = {}){
 
 	const geometry = new THREE.Geometry();
 	const position = [];
-	// const normal = [];
 	const indices = [];
 
 	g.v.forEach(v => {
@@ -233,7 +232,7 @@ export function loadSurfaceView(format, file_str, params = {}){
 	geometry.computeFaceNormals();
 
 	let material = params.material || new THREE.MeshLambertMaterial({
-		color: params.color || mesh_color,
+		color: params.color || meshColor,
 		side: params.side || THREE.FrontSide,
 		transparent: params.transparent || false,
 		opacity: params.opacity || 1

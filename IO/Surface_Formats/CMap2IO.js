@@ -1,8 +1,8 @@
 import {CMap2} from '../../CMap/CMap.js';
-import {Vector3} from '../../Dependencies/three.module.js';
+import {Vector3} from '../../Libs/three.module.js';
 import {loadOff, exportOff} from './Off.js';
 
-export function loadCmap2(format, file_str){
+export function loadCMap2(format, file_str){
 	let geometry = geometryFromStr(format, file_str);
 	let map = mapFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", f:" + geometry.f.length + ")");

@@ -1,4 +1,4 @@
-import * as THREE from '../Dependencies/three.module.js'
+import * as THREE from '../Libs/three.module.js'
 
 let Renderer_Cell_Proto = {
 	mesh: undefined,
@@ -21,17 +21,17 @@ let Renderer_Cell_Proto = {
 	},
 
 	delete: function(){
-		this.remove();
-		// this.attributes.every(attrib => attrib.delete());
-		this.mesh.geometry.dispose();
-		delete this.mesh;
+		if(this.mesh){
+			this.remove();
+			this.mesh.geometry.dispose();
+			delete this.mesh;
+		}
 		return this;
 	},
 
 	update: function(params){
 		let parent = this.parent;
-		if(this.mesh) 
-			this.delete();
+		this.delete();
 		this.create(params || this.params);
 		this.addTo(parent);
 		return this;

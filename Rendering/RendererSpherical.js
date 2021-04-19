@@ -1,4 +1,4 @@
-import * as THREE from '../Dependencies/three.module.js';
+import * as THREE from '../Libs/three.module.js';
 import {Renderer_Cell_Proto} from './Renderer.js';
 import Renderer from './Renderer.js';
 
