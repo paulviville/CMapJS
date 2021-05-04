@@ -152,7 +152,6 @@ function IncidenceGraph(){
 			incident_edges_to_face, incident_edges_to_vertex);
 	};
 
-
 	this.funcsForeachIncident[this.vertex][this.edge] = function (v, func) {
 		incident_edges_to_vertex[v].forEach(e => {func(e);});
 	};
@@ -192,7 +191,6 @@ function IncidenceGraph(){
 				func(incident_vertices_to_edge[e].v1);
 			}
 		});
-	
 	};
 
 	this.funcsForeachIncident[this.face][this.edge] = function (f, func) {
@@ -261,7 +259,6 @@ function IncidenceGraph(){
 	this.addFace = function(...edges) {
 		let sorted = []
 		if(edges.length > 2 && sortEdges(sorted, edges)) {
-			console.log("here")
 			let f = this.newCell(this.face);
 			incident_edges_to_face[f] = sorted;
 			sorted.forEach(e => {incident_faces_to_edge[e].add(f);});
@@ -275,6 +272,26 @@ function IncidenceGraph(){
 		});
 		this.deleteCell(this.face, f);
 	};
+
+	function findCommonVertex(e0 , e1) {
+		if((incident_vertices_to_edge[e0].v0 == incident_vertices_to_edge[e1].v0) ||  
+			(incident_vertices_to_edge[e0].v0 == incident_vertices_to_edge[e1].v1))
+			return incident_vertices_to_edge[e0].v0;
+		if((incident_vertices_to_edge[e0].v1 == incident_vertices_to_edge[e1].v0) ||  
+			(incident_vertices_to_edge[e0].v1 == incident_vertices_to_edge[e1].v1))
+			return incident_vertices_to_edge[e0].v1;
+		return -1;
+	}
+
+	// sorts a loop of edges
+	this.sortedFaceVertices = function (edges) {
+		const sortedVertices = [];
+		for(let i = 0; i < edges.length; ++i) {
+			sortedVertices.push(findCommonVertex(edges[i], edges[(i + 1) % edges.length]));
+		}
+		sortedVertices.unshift(sortedVertices.pop());
+		return sortedVertices;
+	}
 
 	this.cutEdge = function(e0) {
 		const v1 = this.addVertex();
@@ -294,7 +311,40 @@ function IncidenceGraph(){
 	};
 
 	this.cutFace = function(f, v0, v1) {
+		const unsortedEdges = [];
+		this.foreachIncident(this.edge, this.face, f, e => {unsortedEdges.push(e)});
+		const sortedEdges = [];
+		sortEdges(sortedEdges, unsortedEdges);
+		const sortedVertices = this.sortedFaceVertices(sortedEdges);
+		const first = [];
+		const second = [];
+		let inside = false;
+		for(let i = 0; i < sortedEdges.length; ++i) {
+			if(sortedVertices[i] == v0 || sortedVertices[i] == v1) {
+				inside = !inside;
+				console.log(inside)
+			}
+			inside ? second.push(sortedEdges[i]) : first.push(sortedEdges[i]);
+		}
+		let e = this.addEdge(v0, v1);
+		first.push(e);
+		second.push(e);
 
+		console.log(first, second);
+
+		let str1 = "";
+		this.foreach(this.edge, e => {
+			str1 +=  "( " + e + ": " + incident_vertices_to_edge[e].v0 + " - " + incident_vertices_to_edge[e].v1 +" )";
+		}, {cache: first});
+
+		let str2 = "\n";
+		this.foreach(this.edge, e => {
+			str2 += "( "  + e + ": "+ incident_vertices_to_edge[e].v0 + " - " + incident_vertices_to_edge[e].v1 +" )";
+		}, {cache: second});
+
+		this.deleteFace(f);
+		let f0 = this.addFace(...first);
+		let f1 = this.addFace(...second);
 	};
 }
 
