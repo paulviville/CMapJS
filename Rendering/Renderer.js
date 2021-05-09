@@ -53,17 +53,10 @@ function Renderer(cmap){
 		Object.assign(Object.create(Renderer_Cell_Proto), {
 			create: function(params = {}){
 				this.params = params;
-				// this.attributes = {};
-				
-				// this.attributes.instanceId = instanceId;
-				// console.log(Object.entries(this.attributes))
 				
 				const geometry = new THREE.SphereGeometry(1, 32, 32);	
 				
-				const material = params.material || new THREE.MeshLambertMaterial({
-					// opacity: 0.5,
-					// transparent: true
-				});
+				const material = params.material || new THREE.MeshLambertMaterial({});
 
 				/// to handle none contiguous embeddings
 				let max_id = -1;
@@ -94,17 +87,9 @@ function Renderer(cmap){
 				return this;
 			}, 
 
-			// resize: function(size) {
-			// 	const scale = new THREE.Vector3(size, size, size);
-			// 	cmap.foreach(vertex, vd => {
-			// 		const matrix = new THREE.Matrix4();
-			// 		matrix.setPosition(position[cmap.cell(vertex, vd)]);
-			// 		matrix.scale(vec);
-			// 		this.mesh.vd[id] = vd; 
-			// 		this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
-			// 		this.mesh.setMatrixAt(id++, matrix);
-			// 	}, {use_emb: cmap.isEmbedded(vertex)});
-			// }
+			resize: function(size) {
+				this.params.size = size;
+			}
 		});
 
 	if(!this.vertices)
@@ -166,6 +151,10 @@ function Renderer(cmap){
 				}, {use_emb: cmap.isEmbedded(edge)});
 
 				return this;
+			},
+
+			resize: function(size) {
+				this.params.size = size;
 			}
 		});
 
