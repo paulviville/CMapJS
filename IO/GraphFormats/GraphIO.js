@@ -2,18 +2,18 @@ import {Graph} from '../../CMap/CMap.js';
 import {Vector3} from '../../Libs/three.module.js';
 import {loadCg, saveCg} from './Cg.js';
 
-export function loadGraph(format, file_str){
-	let geometry = geometryFromStr(format, file_str);
+export function loadGraph(format, fileStr){
+	let geometry = geometryFromStr(format, fileStr);
 	let graph = graphFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", e:" + geometry.e.length + ")");
 	return graph;
 }
 
-function geometryFromStr(format, file_str){
+function geometryFromStr(format, fileStr){
 	let geometry;
 	switch(format){
 		case 'cg':
-			geometry = loadCg(file_str);
+			geometry = loadCg(fileStr);
 			break;
 		default:
 			break;
@@ -53,7 +53,7 @@ function strFromGeometry(format, geometry){
 	let fileStr;
 	switch(format){
 		case 'cg':
-			// file_str = export_cg(geometry);
+			// fileStr = export_cg(geometry);
 			break;
 		default:
 			break;

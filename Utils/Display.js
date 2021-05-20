@@ -94,8 +94,8 @@ void main(){
 }
 `;
 
-export function loadVolumesView(format, file_str, params = {}){
-	const g = volumesGeometryFromStr(format, file_str);
+export function loadVolumesView(format, fileStr, params = {}){
+	const g = volumesGeometryFromStr(format, fileStr);
 	const nb_hex = g.hex.length;
 
 	const v_arrays = [
@@ -210,8 +210,8 @@ export function loadVolumesView(format, file_str, params = {}){
 	return mesh;
 }
 
-export function loadSurfaceView(format, file_str, params = {}){
-	let g = surfaceGeometryFromStr(format, file_str);
+export function loadSurfaceView(format, fileStr, params = {}){
+	let g = surfaceGeometryFromStr(format, fileStr);
 
 	const geometry = new THREE.Geometry();
 	const position = [];

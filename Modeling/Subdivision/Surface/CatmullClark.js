@@ -1,7 +1,7 @@
-import {cut_all_edges, quadrangulate_all_faces, quadrangulate_face} from '../../../Utils/Subdivision.js';
+import {cutAllEdges, quadrangulateAllFaces, quadrangulateFace} from '../../../Utils/Subdivision.js';
 import {TetrahedronGeometry, Vector3} from '../../../Libs/three.module.js';
 
-export function catmull_clark(cmap){
+export function catmullClark(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
@@ -10,13 +10,13 @@ export function catmull_clark(cmap){
 	const delta = cmap.addAttribute(vertex, "delta");
 	const incident_f = cmap.addAttribute(vertex, "incident_f");
 
-	const init_vertices_cache = cmap.cache(vertex);
-	const face_vertices_cache = [];
-	const edge_vertices_cache = [];
+	const initVerticesCache = cmap.cache(vertex);
+	const faceVerticesCache = [];
+	const edgeVerticesCache = [];
 
-	quadrangulate_all_faces(cmap, 
+	quadrangulateAllFaces(cmap, 
 		vd => {
-			edge_vertices_cache.push(vd);
+			edgeVerticesCache.push(vd);
 
 			let vid = cmap.cell(vertex, vd);
 			pos[vid] = new Vector3;
@@ -30,16 +30,16 @@ export function catmull_clark(cmap){
 			delta[vid].multiplyScalar(0.25);
 		},
 		vd => {
-			face_vertices_cache.push(vd);
+			faceVerticesCache.push(vd);
 			let vid = cmap.cell(vertex, vd);
-			let nb_edges = 0;
+			let nbEdges = 0;
 			pos[vid] = new Vector3;
 			delta[vid] = new Vector3;
 			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
-				++nb_edges;
+				++nbEdges;
 			});
-			pos[vid].multiplyScalar(1 / nb_edges);
+			pos[vid].multiplyScalar(1 / nbEdges);
 
 			cmap.foreachDartOf(vertex, vd, d => {
 				delta[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.25);
@@ -68,7 +68,7 @@ export function catmull_clark(cmap){
 			.addScaledVector(R, 2)
 			.multiplyScalar(1/(n*n));
 
-	}, {cache: init_vertices_cache});
+	}, {cache: initVerticesCache});
 
 	cmap.foreach(vertex, vd => {
 		pos[cmap.cell(vertex, vd)].add(delta[cmap.cell(vertex, vd)]);
@@ -78,7 +78,7 @@ export function catmull_clark(cmap){
 	incident_f.delete();
 }
 
-// export function catmull_clark_inter(cmap){
+// export function catmullClark_inter(cmap){
 // 	const vertex = cmap.vertex;
 // 	const edge = cmap.edge;
 // 	const face = cmap.face;
@@ -87,13 +87,13 @@ export function catmull_clark(cmap){
 // 	const delta = cmap.addAttribute(vertex, "delta");
 // 	const incident_f = cmap.addAttribute(vertex, "incident_f");
 
-// 	const init_vertices_cache = cmap.cache(vertex);
-// 	const face_vertices_cache = [];
-// 	const edge_vertices_cache = [];
+// 	const initVerticesCache = cmap.cache(vertex);
+// 	const faceVerticesCache = [];
+// 	const edgeVerticesCache = [];
 
-// 	quadrangulate_all_faces(cmap, 
+// 	quadrangulateAllFaces(cmap, 
 // 		vd => {
-// 			edge_vertices_cache.push(vd);
+// 			edgeVerticesCache.push(vd);
 
 // 			let vid = cmap.cell(vertex, vd);
 // 			pos[vid] = new Vector3();
@@ -107,16 +107,16 @@ export function catmull_clark(cmap){
 // 			delta[vid].multiplyScalar(0.25);
 // 		},
 // 		vd => {
-// 			face_vertices_cache.push(vd);
+// 			faceVerticesCache.push(vd);
 // 			let vid = cmap.cell(vertex, vd);
-// 			let nb_edges = 0;
+// 			let nbEdges = 0;
 // 			pos[vid] = new Vector3();
 // 			delta[vid] = new Vector3();
 // 			cmap.foreachDartOf(vertex, vd, d => {
 // 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
-// 				++nb_edges;
+// 				++nbEdges;
 // 			});
-// 			pos[vid].multiplyScalar(1 / nb_edges);
+// 			pos[vid].multiplyScalar(1 / nbEdges);
 
 // 			cmap.foreachDartOf(vertex, vd, d => {
 // 				delta[cmap.cell(vertex, cmap.phi2[d])].addScaledVector(pos[vid], 0.25);
@@ -145,7 +145,7 @@ export function catmull_clark(cmap){
 // 			.addScaledVector(R, 2)
 // 			.multiplyScalar(1/(n*n));
 
-// 	}, {cache: init_vertices_cache});
+// 	}, {cache: initVerticesCache});
 
 // 	cmap.foreach(vertex, vd => {
 // 		let avg_delta = new Vector3;
@@ -157,7 +157,7 @@ export function catmull_clark(cmap){
 // 		avg_delta.divideScalar(n);
 // 		console.log(avg_delta)
 // 		pos[cmap.cell(vertex, vd)].sub(avg_delta);
-// 	}, {cache: face_vertices_cache});
+// 	}, {cache: faceVerticesCache});
 
 // 	cmap.foreach(vertex, vd => {
 // 		let avg_delta = new Vector3;
@@ -168,13 +168,13 @@ export function catmull_clark(cmap){
 // 		});
 // 		avg_delta.divideScalar(n);
 // 		pos[cmap.cell(vertex, vd)].sub(avg_delta);
-// 	}, {cache: edge_vertices_cache});
+// 	}, {cache: edgeVerticesCache});
 
 // 	delta.delete();
 // 	incident_f.delete();
 // }
 
-export function catmull_clark_inter(cmap){
+export function catmullClark_inter(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
@@ -183,14 +183,14 @@ export function catmull_clark_inter(cmap){
 	const pos2 = cmap.addAttribute(vertex, "position2");
 	const delta = cmap.addAttribute(vertex, "delta");
 
-	const init_vertices_cache = cmap.cache(vertex);
-	const init_edges_cache = cmap.cache(edge);
-	const face_vertices_cache = [];
-	const edge_vertices_cache = [];
+	const initVerticesCache = cmap.cache(vertex);
+	const initEdgesCache = cmap.cache(edge);
+	const faceVerticesCache = [];
+	const edgeVerticesCache = [];
 
-	quadrangulate_all_faces(cmap, 
+	quadrangulateAllFaces(cmap, 
 		vd => {
-			edge_vertices_cache.push(vd);
+			edgeVerticesCache.push(vd);
 
 			let vid = cmap.cell(vertex, vd);
 			pos[vid] = new Vector3();
@@ -200,15 +200,15 @@ export function catmull_clark_inter(cmap){
 			pos[vid].multiplyScalar(0.5);
 		},
 		vd => {
-			face_vertices_cache.push(vd);
+			faceVerticesCache.push(vd);
 			let vid = cmap.cell(vertex, vd);
-			let nb_edges = 0;
+			let nbEdges = 0;
 			pos[vid] = new Vector3();
 			cmap.foreachDartOf(vertex, vd, d => {
 				pos[vid].add(pos[cmap.cell(vertex, cmap.phi2[d])]);
-				++nb_edges;
+				++nbEdges;
 			});
-			pos[vid].multiplyScalar(1 / nb_edges);
+			pos[vid].multiplyScalar(1 / nbEdges);
 		});
 	
 	cmap.foreach(vertex, vd => {
@@ -219,7 +219,7 @@ export function catmull_clark_inter(cmap){
 			++nb_f;
 		});
 		pos2[cmap.cell(vertex, vd)] = p2.divideScalar(nb_f);
-	}, {cache: init_vertices_cache});
+	}, {cache: initVerticesCache});
 
 	cmap.foreach(vertex, vd => {
 		// let vd = cmap.phi1[ed];
@@ -238,7 +238,7 @@ export function catmull_clark_inter(cmap){
 
 		pos2[cmap.cell(vertex, vd)] = p2.divideScalar(2);
 		delta[cmap.cell(vertex, vd)] = del.divideScalar(4);
-	}, {cache: edge_vertices_cache});
+	}, {cache: edgeVerticesCache});
 
 	cmap.foreach(vertex, vd => {
 		const sum = new Vector3;
@@ -254,16 +254,16 @@ export function catmull_clark_inter(cmap){
 		del.add(sum);
 		del.divideScalar(degree * degree);
 		delta[cmap.cell(vertex, vd)] = del;
-	}, {cache: face_vertices_cache});
+	}, {cache: faceVerticesCache});
 
 
 	cmap.foreach(vertex, vd => {
 		pos[cmap.cell(vertex, vd)].add(delta[cmap.cell(vertex, vd)]);
-	}, {cache: edge_vertices_cache});
+	}, {cache: edgeVerticesCache});
 
 	cmap.foreach(vertex, vd => {
 		pos[cmap.cell(vertex, vd)].sub(delta[cmap.cell(vertex, vd)]);
-	}, {cache: face_vertices_cache});
+	}, {cache: faceVerticesCache});
 
 	pos2.delete();
 	delta.delete();

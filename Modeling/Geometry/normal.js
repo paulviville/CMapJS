@@ -33,7 +33,7 @@ export function face_normal(map, fd, position){
 	return face_normal;
 };
 
-export function compute_face_normals(map, position, face_normals){
+export function computeFace_normals(map, position, face_normals){
 	console.log(map, position, face_normals)
 	const normals = face_normals ? 
 		face_normals : map.addAttribute(map.face, "face_normals");

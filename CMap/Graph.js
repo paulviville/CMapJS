@@ -1,8 +1,8 @@
-import CMap_Base from './CMapBase.js'
+import CMapBase from './CMapBase.js'
 
 function Graph()
 {
-	CMap_Base.call(this);
+	CMapBase.call(this);
 
 	this.alpha0 = this.addTopologyRelation("alpha0");
 	this.alpha1 = this.addTopologyRelation("alpha1");
@@ -126,7 +126,7 @@ function Graph()
 			}
 	};
 
-	this.cut_edge = function(ed, setEmbeddings = true){
+	this.cutEdge = function(ed, setEmbeddings = true){
 		let ed0 = ed;
 		let ed1 = this.alpha0[ed];
 
@@ -155,7 +155,7 @@ function Graph()
 		return vd0;
 	};
 
-	this.collapse_edge = function(ed, setEmbeddings = true){
+	this.collapseEdge = function(ed, setEmbeddings = true){
 		let d0 = this.alpha0[ed];
 		let d1 = this.alpha1[d0];
 		while(d1 != d0){
@@ -177,7 +177,7 @@ function Graph()
 		this.deleteDart(ed);
 	};
 
-	this.merge_edges = function(vd, setEmbeddings = true){
+	this.mergeEdges = function(vd, setEmbeddings = true){
 		if(this.degree(this.vertex, vd) != 2) 
 			return;
 

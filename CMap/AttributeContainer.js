@@ -1,11 +1,11 @@
 /// Attributes are arrays linked to an attribute container
-function Attribute(array, attributes_container, name, length){
+function Attribute(array, attributesContainer, name, length){
 	array.name = name;
 	array.length = length;
 
 	/// clears the array and removes it's reference from it's container
 	array.delete = function(){
-		attributes_container.removeAttribute(this.name);
+		attributesContainer.removeAttribute(this.name);
 		this.length = 0;
 		delete this.delete;
 		delete this.name;
@@ -22,7 +22,7 @@ export default function AttributesContainer(){
 		while(name == "" || attributes[name])
 			name += "_";
 
-		let attribute = new Attribute([], this, name, max_id);
+		let attribute = new Attribute([], this, name, maxId);
 		attributes[name] = attribute;
 		
 		return attribute;
@@ -36,25 +36,22 @@ export default function AttributesContainer(){
 	/// gets reference to attribute of given name
 	/// returns undefined if attribute doesn't exist
 	this.getAttribute = function(name){
-		// if(!attributes[name])
-		// 	console.warn("No attribute named: ", name);
-
 		return attributes[name];
 	};
 
 	/// creates an index for new element in all attributes
-	this.new_element = function(){
+	this.newElement = function(){
 		let index;
-		if(free_indices.size){
-			let id = free_indices.values().next().value;
-			free_indices.delete(id);
+		if(freeIndices.size){
+			let id = freeIndices.values().next().value;
+			freeIndices.delete(id);
 			index = id;
 		}
 		else{
 			Object.values(attributes).forEach(
 				attribute => ++(attribute.length)
 			);
-			index = max_id++;
+			index = maxId++;
 		}
 		refs[index] = 0;
 		return index;
@@ -63,16 +60,16 @@ export default function AttributesContainer(){
 	/// frees given index
 	this.deleteElement = function(index){
 		refs[index] = null;
-		free_indices.add(index);
+		freeIndices.add(index);
 	};
 
 	/// returns number of referenced elements
 	this.nbElements = function(){
-		return max_id - free_indices.size;
+		return maxId - freeIndices.size;
 	};
 
 	/// returns number of attributes in the container
-	this.nb_attributes = function(){
+	this.nbAttributes = function(){
 		return Object.keys(attributes).length;
 	};
 
@@ -92,18 +89,18 @@ export default function AttributesContainer(){
 
 	/// clears attribute container of all data
 	this.delete = function(){
-		free_indices.clear();
-		max_id = 0;
+		freeIndices.clear();
+		maxId = 0;
 		Object.keys(attributes).forEach(attr => attributes[attr].delete());
 		Object.keys(this).forEach(key => delete this[key]);
 	};
 
 	/// Currently unused ids
-	const free_indices = new Set();
+	const freeIndices = new Set();
 	/// All attributes contained by this container
 	const attributes = {};
 	/// id counter
-	let max_id = 0;
+	let maxId = 0;
 	/// attribute counting number of references to each element
 	const refs = this.createAttribute("<refs>");
 };

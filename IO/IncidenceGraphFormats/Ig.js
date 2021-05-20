@@ -11,7 +11,7 @@ export function importIG(off_str) {
 	while(!parseInt(line = lines[j++]) && lines.length)
 	{}
 
-	// get nb_vert nb_face nb_edge(=0)
+	// get nb_vert nbFace nbEdge(=0)
 	let VEF = line.split(" ");
 
 	// get vertices positions

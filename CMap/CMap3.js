@@ -22,19 +22,19 @@ function CMap3(){
 	const volume = this.volume;
 	const connex = this.connex;
 
-	this.sew_phi3 = function(d0, d1){
+	this.sewPhi3 = function(d0, d1){
 		this.phi3[d0] = d1;
 		this.phi3[d1] = d0;
 	};
 
-	this.unsew_phi3 = function(d){
+	this.unsewPhi3 = function(d){
 		let d1 = this.phi3[d];
 		this.phi3[d] = d;
 		this.phi3[d1] = d1;
 	};
 
-	this.close_hole2 = this.close_hole;
-	this.close_hole = function(d0, boundary = false, setEmbeddings = true) {
+	this.closeHole2 = this.closeHole;
+	this.closeHole = function(d0, boundary = false, setEmbeddings = true) {
 		// if(this.phi3[d0] != d0)
 		// 	return;
 
@@ -71,7 +71,7 @@ function CMap3(){
 					else{
 						if(hole.marked(d)){
 							done = true;
-							this.sew_phi2(d, fd_h);
+							this.sewPhi2(d, fd_h);
 						}
 						else{
 							d = this.phi3[this.phi2[d]];
@@ -79,7 +79,7 @@ function CMap3(){
 					}
 				} while (!done);
 
-				this.sew_phi3(fd_h, fd);
+				this.sewPhi3(fd_h, fd);
 				fd_h = this.phi_1[fd_h];
 				fd = this.phi1[fd];
 			} while (fd != fd0);
@@ -154,23 +154,23 @@ function CMap3(){
 	this.close = function(boundary = true, setEmbeddings = true){
 		this.foreachDart(d0 => {
 			if(this.phi3[d0] == d0)
-				this.close_hole(d0, boundary, setEmbeddings);
+				this.closeHole(d0, boundary, setEmbeddings);
 		});
 	};
 
 	/// Traverses and applies func to all darts of face 3
-	this.foreachDart_phi1_phi3 = function(d0, func){
+	this.foreachDartPhi1Phi3 = function(d0, func){
 		let stop;
-		this.foreachDart_phi1(d0, d1 => {
+		this.foreachDartPhi1(d0, d1 => {
 			stop = func(d1);
 			return stop;
 		});
 		if(!stop)
-			this.foreachDart_phi1(this.phi3[d0], func);
+			this.foreachDartPhi1(this.phi3[d0], func);
 	};
 
 	/// Traverses and applies func to all darts of edge 3
-	this.foreachDart_phi2_phi3 = function(d0, func){
+	this.foreachDartPhi2Phi3 = function(d0, func){
 		let d = d0;
 		do {
 			if(func(d)) break;
@@ -182,8 +182,8 @@ function CMap3(){
 	};
 
 	/// Traverses and applies func to all darts of vertex 3
-	this.foreachDart_phi21_phi31 = function(d0, func){
-		let marker = this.newFastMarker();
+	this.foreachDartPhi21Phi31 = function(d0, func){
+		let marker = this.newMarker();
 		let volumes = [d0];
 		marker.mark(d0);
 		do {
@@ -208,8 +208,8 @@ function CMap3(){
 	};
 
 	// Traverses and applies func to all darts of connex
-	this.foreachDart_phi1_phi2_phi3 = function(d0, func){
-		let marker = this.newFastMarker();
+	this.foreachDartPhi1Phi2Phi3 = function(d0, func){
+		let marker = this.newMarker();
 		let volumes = [d0];
 
 		do {
@@ -232,35 +232,35 @@ function CMap3(){
 		} while(volumes.length);
 	};
 
-	this.funcsForeachDartOf[vertex] = this.foreachDart_phi21_phi31;
+	this.funcsForeachDartOf[vertex] = this.foreachDartPhi21Phi31;
 
-	this.funcsForeachDartOf[edge] = this.foreachDart_phi2_phi3;
+	this.funcsForeachDartOf[edge] = this.foreachDartPhi2Phi3;
 
-	this.funcsForeachDartOf[face] = this.foreachDart_phi1_phi3;
+	this.funcsForeachDartOf[face] = this.foreachDartPhi1Phi3;
 
-	this.funcsForeachDartOf[connex] = this.foreachDart_phi1_phi2_phi3;
+	this.funcsForeachDartOf[connex] = this.foreachDartPhi1Phi2Phi3;
 
 	/// OPERATIONS
-	this.cut_edge2 = this.cut_edge;
-	this.cut_edge = function(ed, setEmbeddings = true){
+	this.cutEdge2 = this.cutEdge;
+	this.cutEdge = function(ed, setEmbeddings = true){
 		let d0 = ed;
 		let d23 = this.phi3[this.phi2[d0]];
-		let vd = this.cut_edge2(d0, false);
+		let vd = this.cutEdge2(d0, false);
 
 		let d3;
 		while(d23 != ed){
 			d0 = d23;
 			d23 = this.phi3[this.phi2[d0]];
-			this.cut_edge2(d0, false);
+			this.cutEdge2(d0, false);
 			d3 = this.phi3[d0];
-			this.unsew_phi3(d0);
-			this.sew_phi3(d0, this.phi1[d3]);
-			this.sew_phi3(d3, this.phi1[d0]);
+			this.unsewPhi3(d0);
+			this.sewPhi3(d0, this.phi1[d3]);
+			this.sewPhi3(d3, this.phi1[d0]);
 		}
 		d3 = this.phi3[ed];
-		this.unsew_phi3(ed);
-		this.sew_phi3(ed, this.phi1[d3]);
-		this.sew_phi3(d3, this.phi1[ed]);
+		this.unsewPhi3(ed);
+		this.sewPhi3(ed, this.phi1[d3]);
+		this.sewPhi3(d3, this.phi1[ed]);
 
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex2)){
@@ -303,16 +303,16 @@ function CMap3(){
 		return vd;
 	};
 
-	this.cut_face2 = this.cut_face;
-	this.cut_face = function(fd0, fd1, setEmbeddings = true){
+	this.cutFace2 = this.cutFace;
+	this.cutFace = function(fd0, fd1, setEmbeddings = true){
 		let d0 = this.phi1[this.phi3[fd0]];
 		let d1 = this.phi1[this.phi3[fd1]];
 
-		this.cut_face2(fd0, fd1, false);
-		this.cut_face2(d0, d1, false);
+		this.cutFace2(fd0, fd1, false);
+		this.cutFace2(d0, d1, false);
 
-		this.sew_phi3(this.phi_1[fd0], this.phi_1[d1])
-		this.sew_phi3(this.phi_1[fd1], this.phi_1[d0])
+		this.sewPhi3(this.phi_1[fd0], this.phi_1[d1])
+		this.sewPhi3(this.phi_1[fd1], this.phi_1[d0])
 
 		let ed = this.phi_1[d0];
 
@@ -347,7 +347,7 @@ function CMap3(){
 		return ed;
 	};
 
-	this.cut_volume = function(path, setEmbeddings = true){
+	this.cutVolume = function(path, setEmbeddings = true){
 		let fd0 = this.addFace(path.length, false);
 		let fd1 = this.addFace(path.length, false);
 
@@ -355,11 +355,11 @@ function CMap3(){
 		for(let i = 0; i < path.length; ++i){
 			d0 = path[i];
 			d1 = this.phi2[d0];
-			this.unsew_phi2(d0);
+			this.unsewPhi2(d0);
 
-			this.sew_phi2(d0, fd0);
-			this.sew_phi2(d1, fd1);
-			this.sew_phi3(fd0, fd1);
+			this.sewPhi2(d0, fd0);
+			this.sewPhi2(d1, fd1);
+			this.sewPhi3(fd0, fd1);
 
 			fd0 = this.phi_1[fd0];
 			fd1 = this.phi1[fd1];
@@ -395,9 +395,9 @@ function CMap3(){
 		}
 	};
 
-	this.collapse_edge;
-	this.merge_faces;
-	this.merge_volumes;
+	this.collapseEdge;
+	this.mergeFaces;
+	this.mergeVolumes;
 
 }
 

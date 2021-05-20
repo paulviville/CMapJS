@@ -10,7 +10,7 @@ export function loadOff(off_str) {
 	// skip header
 	while(!parseInt(line = lines[j++]) && lines.length)
 	{}
-	// get nb_vert nb_face nb_edge(=0)
+	// get nb_vert nbFace nbEdge(=0)
 	let v_f_e = line.split(" ");
 	// get vertices positions
 	let vertices = [];

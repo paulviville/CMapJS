@@ -2,18 +2,18 @@ import {CMap2} from '../../CMap/CMap.js';
 import {Vector3} from '../../Libs/three.module.js';
 import {loadOff, exportOff} from './Off.js';
 
-export function loadCMap2(format, file_str){
-	let geometry = geometryFromStr(format, file_str);
+export function loadCMap2(format, fileStr){
+	let geometry = geometryFromStr(format, fileStr);
 	let map = mapFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", f:" + geometry.f.length + ")");
 	return map;
 }
 
-export function geometryFromStr(format, file_str){
+export function geometryFromStr(format, fileStr){
 	let geometry;
 	switch(format){
 		case 'off':
-			geometry = loadOff(file_str);
+			geometry = loadOff(fileStr);
 			break;
 		default:
 			break;
@@ -24,7 +24,7 @@ export function geometryFromStr(format, file_str){
 function mapFromGeometry(geometry){
 	let map = new CMap2;
 	let position = map.addAttribute(map.vertex, "position");
-	let dart_per_vertex = map.addAttribute(map.vertex, "dart_per_vertex");
+	let dartPerVertex = map.addAttribute(map.vertex, "dartPerVertex");
 
 	// let mid = new Vector3(-0.7710000000000008, 0.8262499999999999, 0.2458000000000009);
 	// let str = "";
@@ -32,11 +32,11 @@ function mapFromGeometry(geometry){
 	// let axisY = new Vector3(0, 1 ,0);
 	// let axisZ = new Vector3(0, 0,1);
 
-	let vertex_ids = [];
+	let vertexIds = [];
 	geometry.v.forEach(vertex => {
 		let i = map.newCell(map.vertex);
-		vertex_ids.push(i);
-		dart_per_vertex[i] = [];
+		vertexIds.push(i);
+		dartPerVertex[i] = [];
 		position[i] = new Vector3(vertex[0], vertex[1], vertex[2]);
 
 		// let p = new Vector3(vertex[0], vertex[1], vertex[2]);
@@ -54,7 +54,7 @@ function mapFromGeometry(geometry){
 		let d = map.addFace(face.length, false);
 		for(let i = 0; i < face.length; i++){
 			map.setEmbedding(map.vertex, d, face[i]);
-			dart_per_vertex[face[i]].push(d);
+			dartPerVertex[face[i]].push(d);
 			d = map.phi1[d];
 		}
 	});
@@ -62,15 +62,15 @@ function mapFromGeometry(geometry){
 	let v0 = -1;
 	map.foreachDart(d0 => {
 		v0 = map.cell(map.vertex, d0);
-		dart_per_vertex[map.cell(map.vertex, map.phi1[d0])].forEach(d1 => {
+		dartPerVertex[map.cell(map.vertex, map.phi1[d0])].forEach(d1 => {
 			if(map.cell(map.vertex, map.phi1[d1]) == v0){
-				map.sew_phi2(d0, d1);
+				map.sewPhi2(d0, d1);
 			}
 		});
 	});
 
 	map.close(true);
-	dart_per_vertex.delete();
+	dartPerVertex.delete();
 
 	return map;
 }
@@ -83,15 +83,15 @@ export function exportCmap2(map, format){
 }
 
 function strFromGeometry(format, geometry){
-	let file_str;
+	let fileStr;
 	switch(format){
 		case 'off':
-			file_str = exportOff(geometry);
+			fileStr = exportOff(geometry);
 			break;
 		default:
 			break;
 	}
-	return file_str;
+	return fileStr;
 }
 
 function geometryFromMap(map){
@@ -101,11 +101,11 @@ function geometryFromMap(map){
 	const face = map.face;
 
 	const position = map.getAttribute(vertex, "position");
-	const vertex_id = map.addAttribute(vertex, "id");
+	const vertexId = map.addAttribute(vertex, "id");
 
 	let id = 0;
 	map.foreach(vertex, vd => {
-		vertex_id[map.cell(vertex, vd)] = id++;
+		vertexId[map.cell(vertex, vd)] = id++;
 		const p = position[map.cell(vertex, vd)];
 		geometry.v.push([p.x, p.y, p.z]);
 	});
@@ -113,12 +113,12 @@ function geometryFromMap(map){
 	map.foreach(face, fd => {
 		let f = [];
 		map.foreachDartOf(face, fd, d => {
-			f.push(vertex_id[map.cell(vertex, d)]);
+			f.push(vertexId[map.cell(vertex, d)]);
 		});
 		geometry.f.push(f);
 	});
 
-	vertex_id.delete();
+	vertexId.delete();
 
 	return geometry;
 }
