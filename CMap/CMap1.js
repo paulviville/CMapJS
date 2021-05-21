@@ -7,8 +7,15 @@ function CMap1()
 	this.phi1 = this.addTopologyRelation("phi1");
 	this.phi_1 = this.addTopologyRelation("phi_1");
 
+	this.phis = {"1": this.phi1, "-1": this.phi_1}
+
 	// TOPOLOGY
-	this.sewPhi1 = function(d0, d1){
+	this.phi = function(ops = [], d) {
+		ops.forEach(op => d = this.phis[op][d]);
+		return d;
+	}
+
+	this.sewPhi1 = function(d0, d1) {
 		let e0 = this.phi1[d0];
 		let e1 = this.phi1[d1];
 		this.phi1[d0] = e1;
@@ -17,7 +24,7 @@ function CMap1()
 		this.phi_1[e0] = d1;
 	};
 
-	this.unsewPhi1 = function(d0){
+	this.unsewPhi1 = function(d0) {
 		let d1 = this.phi1[d0];
 		let d2 = this.phi1[d1];
 
@@ -28,7 +35,7 @@ function CMap1()
 	};
 
 	/// Traverses and applies func to all darts of face 1 - 2
-	this.foreachDartPhi1 = function(d0, func){
+	this.foreachDartPhi1 = function(d0, func) {
 		let d = d0;
 		do
 		{
@@ -52,14 +59,14 @@ function CMap1()
 	this.funcsForeachDartOf[face] = this.foreachDartPhi1;
 
 	// OPERATIONS
-	this.addFace = function(nbSides, setEmbeddings = true){
+	this.addFace = function(nbSides, setEmbeddings = true) {
 		let d0 = this.newDart();
 		for(let i = 1; i < nbSides; i++){
 			let d1 = this.newDart();
 			this.sewPhi1(d0, d1);
 		}
 
-		if(setEmbeddings){
+		if(setEmbeddings) {
 			if(this.isEmbedded(vertex))
 				this.foreachDartPhi1(d0, d1 => {
 					this.setEmbedding(vertex, d1, this.newCell(vertex));
@@ -79,7 +86,7 @@ function CMap1()
 		return d0;
 	};
 
-	this.cutEdge = function(ed, setEmbeddings = true){
+	this.cutEdge = function(ed, setEmbeddings = true) {
 		let d0 = ed;
 		let d1 = this.newDart();
 
@@ -88,7 +95,7 @@ function CMap1()
 		if(this.isBoundary(d0))
 			this.markAsBoundary(d1);
 
-		if(setEmbeddings){
+		if(setEmbeddings) {
 			if(this.isEmbedded(vertex))
 				this.setEmbedding(vertex, d1, this.newCell(vertex));
 			if(this.isEmbedded(edge))
@@ -100,7 +107,7 @@ function CMap1()
 		return d1;
 	};
 
-	this.collapseEdge = function(ed, setEmbeddings = true){
+	this.collapseEdge = function(ed, setEmbeddings = true) {
 		let d0 = this.phi_1[ed];
 		this.unsewPhi1(d0);
 		let d1 = this.phi1[d0];
@@ -109,7 +116,7 @@ function CMap1()
 		return d1;
 	};
 
-	this.splitVertex = function(vd, setEmbeddings = true){
+	this.splitVertex = function(vd, setEmbeddings = true) {
 		let d0 = this.phi_1(vd);
 		let d1 = this.newDart();
 
@@ -118,7 +125,7 @@ function CMap1()
 		if(this.isBoundary(d0))
 			this.markAsBoundary(d1);
 
-		if(setEmbeddings){
+		if(setEmbeddings) {
 			if(this.isEmbedded(vertex))
 				this.setEmbedding(vertex, d1, this.newCell(vertex));
 			if(this.isEmbedded(edge))

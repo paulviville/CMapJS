@@ -5,6 +5,7 @@ function CMap2(){
 
 	// TOPOLOGY
 	this.phi2 = this.addTopologyRelation("phi2");
+	this.phis["2"] = this.phi2;
 	
 	const vertex = this.vertex;
 	const edge = this.edge;

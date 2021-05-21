@@ -4,6 +4,7 @@ function CMap3(){
 	CMap2.call(this);
 
 	this.phi3 = this.addTopologyRelation("phi3");
+	this.phis["3"] = this.phi3;
 	
 	this.vertex2 = this.vertex;
 	this.face2 = this.face;
