@@ -13,17 +13,22 @@ function CMap2(){
 	this.volume = this.addCelltype();
 	const volume = this.volume;
 	
+	/// Connects two darts in phi2
 	this.sewPhi2 = function(d0, d1){
 		this.phi2[d0] = d1;
 		this.phi2[d1] = d0;
 	};
 
+	/// Disconnects dart phi2, sets phi2 of dart to identity
 	this.unsewPhi2 = function(d){
 		let d1 = this.phi2[d];
 		this.phi2[d] = d;
 		this.phi2[d1] = d1;
 	};
 
+	/// Inserts a face in a hole incident to d0
+	/// New face can be marked as boundary
+	/// Returns a dart of the new face
 	this.closeHole = function(d0, boundary = false, setEmbeddings = true) {
 		if(this.phi2[d0] != d0)
 			return;
@@ -64,6 +69,7 @@ function CMap2(){
 	}
 	const closeHole = this.closeHole.bind(this);
 
+	/// Closes all holes in the map
 	this.close = function(boundary = false, setEmbeddings = true){
 		this.foreachDart(d0 => {
 			closeHole(d0, boundary, setEmbeddings);
@@ -117,7 +123,10 @@ function CMap2(){
 	this.funcsForeachDartOf[volume] = this.foreachDartPhi1Phi2;
 
 	// OPERATIONS
+
 	this.cutEdge1 = this.cutEdge;
+	/// Cuts given edge in two
+	/// Returns a dart of the newly created vertex
 	this.cutEdge = function(ed, setEmbeddings = true){
 		let d0 = ed;
 		let e0 = this.phi2[d0];
@@ -151,6 +160,8 @@ function CMap2(){
 	};
 
 	this.collapseEdge1 = this.collapseEdge;
+	/// Removes an edge and merges its incident vertices
+	/// Returns a dart to the merged vertex
 	this.collapseEdge = function(ed, setEmbeddings = true){
 		let d0 = ed;
 		let e0 = this.phi2[ed];
@@ -175,6 +186,8 @@ function CMap2(){
 	};
 
 	this.splitVertex1 = this.splitVertex;
+	/// Splits a vertex in two and inserts an edge
+	/// Returns a dart of the new edge
 	this.splitVertex = function(vd0, vd1, setEmbeddings = true){
 		let d0 = this.splitVertex1(vd0, false);
 		let d1 = this.splitVertex1(vd1, false);
@@ -203,6 +216,8 @@ function CMap2(){
 		return d0;
 	};
 
+	/// Cuts face in two between vertices represented by fd0 and fd1
+	/// Returns a dart of the new edge
 	this.cutFace = function(fd0, fd1, setEmbeddings = true){
 		let d0 = this.phi_1[fd0];
 		let d1 = this.phi_1[fd1];
@@ -239,6 +254,7 @@ function CMap2(){
 		return e0;
 	};
 
+	/// Removes edge and merges incident faces
 	this.mergeFaces = function(ed, setEmbeddings = true){
 		let fd = this.phi1[ed];
 		let d0 = ed, 
@@ -260,7 +276,7 @@ function CMap2(){
 		this.deleteDart(d1);
 	};
 
-
+	/// Turns edge counterclockwise in cycle formed by its incident faces
 	this.flipEdge = function(ed, setEmbeddings = true){
 		let d0 = ed,
 			d1 = this.phi1[d0],
@@ -292,6 +308,8 @@ function CMap2(){
 
 	// }
 
+	/// Creates a prism made of 2 polygons of degree n and n quads
+	/// Returns a dart from the base
 	this.addPrism = function(size = 3, setEmbeddings = true) {
 		let d0 = this.addFace(4, false);
 		let d1 = d0;
@@ -344,6 +362,8 @@ function CMap2(){
 		return d_base;
 	};
 
+	/// Creates a pyramid made of n triangles and a polygon of degree n
+	/// Returns a dart from the base
 	this.addPyramid = function(size = 3, setEmbeddings = true) {
 		let d0 = this.addFace(3, false);
 		let d1 = d0;

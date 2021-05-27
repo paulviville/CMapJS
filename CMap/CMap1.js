@@ -9,12 +9,13 @@ function CMap1()
 
 	this.phis = {"1": this.phi1, "-1": this.phi_1}
 
-	// TOPOLOGY
+	/// TOPOLOGY
 	this.phi = function(ops = [], d) {
 		ops.forEach(op => d = this.phis[op][d]);
 		return d;
 	}
 
+	/// Insert a dart in a cycle || merge 2 cycles
 	this.sewPhi1 = function(d0, d1) {
 		let e0 = this.phi1[d0];
 		let e1 = this.phi1[d1];
@@ -24,6 +25,7 @@ function CMap1()
 		this.phi_1[e0] = d1;
 	};
 
+	/// Removes dart from cycle
 	this.unsewPhi1 = function(d0) {
 		let d1 = this.phi1[d0];
 		let d2 = this.phi1[d1];
@@ -34,7 +36,7 @@ function CMap1()
 		this.phi_1[d1] = d1;
 	};
 
-	/// Traverses and applies func to all darts of face 1 - 2
+	/// Traverses and applies func to all darts of face 1
 	this.foreachDartPhi1 = function(d0, func) {
 		let d = d0;
 		do
@@ -45,7 +47,7 @@ function CMap1()
 	};
 
 
-	// ORBITS
+	/// ORBITS
 	const vertex = this.vertex;
 
 	this.edge = this.addCelltype();
@@ -58,7 +60,9 @@ function CMap1()
 
 	this.funcsForeachDartOf[face] = this.foreachDartPhi1;
 
-	// OPERATIONS
+	/// OPERATIONS
+	/// Adds a cycle of darts connected in phi1
+	/// Returns first dart of the cycle
 	this.addFace = function(nbSides, setEmbeddings = true) {
 		let d0 = this.newDart();
 		for(let i = 1; i < nbSides; i++){
@@ -86,6 +90,8 @@ function CMap1()
 		return d0;
 	};
 
+	/// Cuts given edge in two
+	/// Returns a dart of the newly created vertex
 	this.cutEdge = function(ed, setEmbeddings = true) {
 		let d0 = ed;
 		let d1 = this.newDart();
@@ -107,6 +113,8 @@ function CMap1()
 		return d1;
 	};
 
+	/// Removes an edge and merges its incident vertices
+	/// Returns a dart to the merged vertex
 	this.collapseEdge = function(ed, setEmbeddings = true) {
 		let d0 = this.phi_1[ed];
 		this.unsewPhi1(d0);
@@ -116,6 +124,8 @@ function CMap1()
 		return d1;
 	};
 
+	/// Splits a vertex in two and inserts an edge
+	/// Returns a dart of the new edge
 	this.splitVertex = function(vd, setEmbeddings = true) {
 		let d0 = this.phi_1(vd);
 		let d1 = this.newDart();
