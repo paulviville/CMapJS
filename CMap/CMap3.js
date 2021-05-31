@@ -241,6 +241,55 @@ function CMap3(){
 
 	this.funcsForeachDartOf[connex] = this.foreachDartPhi1Phi2Phi3;
 
+
+	this.degree = function(emb, cd) {
+		let degree = 0;
+		switch(emb) {
+			case this.vertex: 
+				this.foreachIncident(this.edge, this.vertex, cd, ed => {
+					++degree;
+				});
+				break;
+			case this.edge:
+				this.foreachIncident(this.face, this.edge, cd, fd => {
+					++degree;
+				});
+				break;
+			case this.face:
+				if(this.isBoundary(cd) || this.isBoundary(this.phi3[cd]))
+					degree = 1;
+				else 
+					degree = 2;
+				break;
+			default:
+		}
+		return degree;
+	}
+
+	this.codegree = function(emb, cd) {
+		let codegree = 0;
+		switch(emb) {
+			case this.edge: 
+				this.foreachIncident(this.vertex, this.edge, cd, vd => {
+					++codegree;
+				});
+				break;
+			case this.face: 
+				this.foreachIncident(this.edge, this.face, cd, ed => {
+					++codegree;
+				});
+				break;
+			case this.volume:
+				this.foreachIncident(this.face, this.volume, cd, fd => {
+					++codegree;
+				});
+				break;
+			default:
+		}
+		return codegree;
+	}
+
+
 	/// OPERATIONS
 	this.cutEdge2 = this.cutEdge;
 	this.cutEdge = function(ed, setEmbeddings = true){

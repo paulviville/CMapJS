@@ -1,5 +1,4 @@
 import CMap1 from './CMap1.js';
-
 function CMap2(){
 	CMap1.call(this);
 
@@ -121,6 +120,53 @@ function CMap2(){
 	this.funcsForeachDartOf[edge] = this.foreachDartPhi2;
 
 	this.funcsForeachDartOf[volume] = this.foreachDartPhi1Phi2;
+
+
+
+	this.degree = function(emb, cd) {
+		let degree = 0;
+		switch(emb) {
+			case this.vertex: 
+				this.foreachIncident(this.edge, this.vertex, cd, ed => {
+					++degree;
+				});
+				break;
+			case this.edge:
+				if(this.isBoundary(cd) || this.isBoundary(this.phi2[cd]))
+					degree = 1;
+				else 
+					degree = 2;
+				break;
+			case this.face:
+				degree = 1; 
+				break;
+			default:
+		}
+		return degree;
+	}
+
+	this.codegree = function(emb, cd) {
+		let codegree = 0;
+		switch(emb) {
+			case this.edge: 
+				this.foreachIncident(this.vertex, this.edge, cd, vd => {
+					++codegree;
+				});
+				break;
+			case this.face: 
+				this.foreachIncident(this.edge, this.face, cd, ed => {
+					++codegree;
+				});
+				break;
+			case this.volume:
+				this.foreachIncident(this.face, this.volume, cd, fd => {
+					++codegree;
+				});
+				break;
+			default:
+		}
+		return codegree;
+	}
 
 	// OPERATIONS
 

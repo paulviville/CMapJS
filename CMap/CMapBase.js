@@ -158,9 +158,18 @@ function CMapBase(){
 	};
 
 	/// Traverses and applies func to all darts of a cell 
-	this.foreachDartOf = function(emb, cell, func){
-		this.funcsForeachDartOf[emb].call(this, cell, func);
+	this.foreachDartOf = function(emb, cd, func){
+		this.funcsForeachDartOf[emb].call(this, cd, func);
 	};
+
+	/// Counts number of dart of given cell
+	this.nbDartsOfOrbit = function(emb, cd) {
+		let count = 0;
+		this.foreachDartOf(emb, cd, d => {
+			++count;
+		});
+		return count;
+	}
 
 	/// Traverses incident cells of  given type
 	/// incEmb : incident cell type
@@ -250,14 +259,14 @@ function CMapBase(){
 		return boundaryMarker.markedCell(emb, cd);
 	};
 
-	// Garbage to fix
-	this.degree = function(emb, cd) {
-		let deg = 0;
-		this.foreachDartOf(emb, cd, d => {
-			++deg;
-		});
-		return deg;
-	};
+	// // Garbage to fix
+	// this.degree = function(emb, cd) {
+	// 	let deg = 0;
+	// 	this.foreachDartOf(emb, cd, d => {
+	// 		++deg;
+	// 	});
+	// 	return deg;
+	// };
 
 	this.debug = function(){
 		console.log(attributeContainers, topology, embeddings);

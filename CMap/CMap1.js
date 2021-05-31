@@ -60,6 +60,35 @@ function CMap1()
 
 	this.funcsForeachDartOf[face] = this.foreachDartPhi1;
 
+
+	this.degree = function(emb, cd) {
+		let degree = 0;
+		switch(emb) {
+			case this.vertex: 
+				degree = 1 + (this.phi_1[cd] != cd ? 1 : 0);
+				break;
+			case this.edge:
+				degree = 1; 
+				break;
+			default:
+		}
+		return degree;
+	}
+
+	this.codegree = function(emb, cd) {
+		let codegree = 0;
+		switch(emb) {
+			case this.edge: 
+				codegree = 1 + (this.phi_1[cd] != cd ? 1 : 0);
+				break;
+			case this.face: 
+				codegree = this.nbDartsOfOrbit(this.face, cd);
+				break;
+			default:
+		}
+		return codegree;
+	}
+
 	/// OPERATIONS
 	/// Adds a cycle of darts connected in phi1
 	/// Returns first dart of the cycle
