@@ -54,6 +54,7 @@ function CMap2(){
 
 		if(setEmbeddings){
 			let fid = this.isEmbedded(face)? this.newCell(face) : undefined;
+			let wid = this.isEmbedded(volume)? this.newCell(volume) : undefined;
 			this.foreachDartOf(face, fd, d => {
 				if(this.isEmbedded(vertex))
 					this.setEmbedding(vertex, d, this.cell(vertex, this.phi1[this.phi2[d]]));
@@ -61,6 +62,8 @@ function CMap2(){
 					this.setEmbedding(edge, d, this.cell(edge, this.phi2[d]));
 				if(this.isEmbedded(face))
 					this.setEmbedding(face, d, fid);
+				if(this.isEmbedded(volume))
+					this.setEmbedding(volume, d, wid);
 			});
 		}
 
