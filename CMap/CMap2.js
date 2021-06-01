@@ -200,6 +200,11 @@ function CMap2(){
 				this.setEmbedding(face, d1, this.cell(face, d0));
 				this.setEmbedding(face, e1, this.cell(face, e0));
 			}
+			if(this.isEmbedded(volume)){
+				let wid = this.cell(volume, ed)
+				this.setEmbedding(volume, d1, wid);
+				this.setEmbedding(volume, e1, wid);
+			}
 		}
 
 		return d1;
@@ -257,6 +262,10 @@ function CMap2(){
 				this.setEmbedding(face, d0, this.cell(face, vd0));
 				this.setEmbedding(face, d1, this.cell(face, vd1));
 			}
+			if(this.isEmbedded(volume)){
+				this.setEmbedding(volume, d0, this.cell(volume, vd0));
+				this.setEmbedding(volume, d1, this.cell(volume, vd1));
+			}
 		}
 
 		return d0;
@@ -294,6 +303,11 @@ function CMap2(){
 				this.foreachDartPhi1(e1, d => {
 					this.setEmbedding(face, d, fid);
 				});
+			}
+			if(this.isEmbedded(volume)){
+				let wid = this.cell(volume, fd0);
+				this.setEmbedding(volume, e0, wid);
+				this.setEmbedding(volume, e1, wid);
 			}
 		}
 
