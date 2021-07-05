@@ -52,7 +52,7 @@ function IncidenceGraph(){
 	/// Counts cells of given type
 	this.nbCells = function(emb){
 		let i = 0;
-		this.foreach(emb, c => {++i}, {use_emb: this.isEmbedded(emb)});
+		this.foreach(emb, c => {++i}, {useEmb: this.isEmbedded(emb)});
 		return i;
 	};
 
@@ -79,7 +79,7 @@ function IncidenceGraph(){
 	};
 
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
-	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
+	this.foreach = function(emb, func, {cache, useEmb} =  {cache: undefined, useEmb: undefined}){
 		if(cache){
 			cache.forEach(c => func(c));
 			return;
@@ -89,15 +89,24 @@ function IncidenceGraph(){
 	};
 
 	// /// Traverses incident cells of  given type
-	// /// inc_emb : incident cell type
-	// /// cell_emb : targete cell type
+	// /// incEmb : incident cell type
+	// /// cellEmb : targete cell type
 	// /// c : target cell
-	this.foreachIncident = function(inc_emb, cell_emb, c, func){
-		this.funcsForeachIncident[cell_emb][inc_emb](c, func);
+	this.foreachIncident = function (incEmb, cellEmb, c, func){
+		this.funcsForeachIncident[cellEmb][incEmb](c, func);
 	};
 
+	// /// Returns array|cache of incident cells of given type
+	this.incident = function (incEmb, cellEmb, c, func) {
+		const incidentCells = [];
+		this.foreachIncident(incEmb, cellEmb, c, ic => {
+			incidentCells.push(ic);
+		});
+		return incidentCells;
+	}
+
 	/// Stores all cells of given type in an array
-	this.cache = function(emb, cond){
+	this.cache = function (emb, cond){
 		let cache = [];
 
 		if(!cond)
@@ -115,22 +124,15 @@ function IncidenceGraph(){
 	};
 
 
-	// /// Returns a dart marker or a cell marker of given embedding 
-	// this.newMarker = function(used_emb){
-	// 	if(this.storedMarkers[used_emb? used_emb : this.dart].length)
-	// 		return this.storedMarkers[used_emb? used_emb : this.dart].pop();
+	/// Returns a dart marker or a cell marker of given embedding 
+	this.newMarker = function(usedEmb){
+		if(this.storedMarkers[usedEmb].length)
+			return this.storedMarkers[usedEmb].pop();
 
-	// 	return new Marker(this, used_emb);
-	// };
+		return new Marker(this, usedEmb);
+	};
 
-	// // Garbage to fix
-	// this.degree = function(emb, cd){
-	// 	let deg = 0;
-	// 	this.foreachDartOf(emb, cd, d => {
-	// 		++deg;
-	// 	});
-	// 	return deg;
-	// };
+
 
 
 	this.vertex = this.addCelltype();
@@ -196,6 +198,21 @@ function IncidenceGraph(){
 	this.funcsForeachIncident[this.face][this.edge] = function (f, func) {
 		incident_edges_to_face[f].forEach(e => {func(e)});
 	};
+
+	/// Foreach each adjacent currEmb through thruEmb of c
+	this.foreachAdjacent = function (thruEmb, currEmb, c, func) {
+		const marker = this.newMarker(currEmb);
+		marker.mark(c);
+
+		this.foreachIncident(thruEmb, currEmb, c, thruc => {
+			this.foreachIncident(currEmb, thruEmb, thruc, adjc => {
+				if(!marker.marked(adjc)) {
+					func(adjc);
+					marker.mark(adjc);
+				}
+			});
+		});
+	}
 
 	this.addVertex = function () {
 		let v = this.newCell(this.vertex);
@@ -346,32 +363,35 @@ function IncidenceGraph(){
 		let f0 = this.addFace(...first);
 		let f1 = this.addFace(...second);
 	};
+
+
+	let CellMarkerProto = {
+		ig: undefined, 
+		emb: undefined,
+	
+		mark: function(c) {this[this.ig.cell(this.emb, c)] = true},
+		unmark: function(c) {this[this.ig.cell(this.emb, c)] = false},
+		marked: function(c) {return this[this.ig.cell(this.emb, c)]},
+	};
+	
+	let MarkerRemover = {
+		remove: function(){
+			this.fill(null);
+			this.ig.storedMarkers[this.emb].push(this);
+		}
+	};
+	
+	function Marker(ig, usedEmb){
+		let marker;
+		marker = Object.assign([], CellMarkerProto);
+		marker.emb = usedEmb;
+		marker.ig = ig;
+		Object.assign(marker, MarkerRemover);
+		return marker;
+	}
+	
+	
 }
-
-// let CellMarkerProto = {
-// 	cmap: undefined, 
-// 	emb: undefined,
-
-// 	mark: function(d) {this[this.cmap.cell(this.emb, d)] = true},
-// 	unmark: function(d) {this[this.cmap.cell(this.emb, d)] = false},
-// 	marked: function(d) {return this[this.cmap.cell(this.emb, d)]},
-// };
-
-// let MarkerRemover = {
-// 	remove: function(){
-// 		this.fill(null);
-// 		this.cmap.storedMarkers[this.emb].push(this);
-// 	}
-// };
-
-// function Marker(cmap, used_emb){
-// 	let marker;
-// 	marker = Object.assign([], CellMarkerProto);
-// 	marker.emb = used_emb;
-// 	marker.cmap = cmap;
-// 	Object.assign(marker, MarkerRemover);
-// 	return marker;
-// }
 
 
 
