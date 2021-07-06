@@ -1,7 +1,7 @@
 import AttributesContainer from './AttributeContainer.js';
 
 /// Base Structure for CMaps, further extended and specialized later
-function CMap_Base(){
+function CMapBase(){
 
 	/// Attribute containers for all cell types
 	const attributeContainers = [];
@@ -11,7 +11,7 @@ function CMap_Base(){
 	const embeddings = [];
 	/// stored markers
 	this.storedMarkers = [];
-	this.storedFastMarkers = [];
+	this.storedMarkers = [];
 
 	/// All cell types dart traversor functions
 	this.funcsForeachDartOf = [];
@@ -50,13 +50,13 @@ function CMap_Base(){
 
 	/// Creates a new cell of given embedding
 	this.newCell = function(emb){	
-		return attributeContainers[emb].new_element();	
+		return attributeContainers[emb].newElement();	
 	};
 
 	/// Counts cells of given type
 	this.nbCells = function(emb){
 		let i = 0;
-		this.foreach(emb, c => {++i}, {use_emb: this.isEmbedded(emb)});
+		this.foreach(emb, c => {++i}, {useEmb: this.isEmbedded(emb)});
 		return i;
 	};
 
@@ -103,10 +103,10 @@ function CMap_Base(){
 
 	/// Creates a new dart in the map
 	this.newDart = function(){
-		let new_id = this.newCell(this.dart);
-		attributeContainers[this.dart].ref(new_id);
-		Object.values(topology).forEach(relation => relation[new_id] = new_id);
-		return new_id;
+		let newId = this.newCell(this.dart);
+		attributeContainers[this.dart].ref(newId);
+		Object.values(topology).forEach(relation => relation[newId] = newId);
+		return newId;
 	};
 
 	/// Deletes given dart
@@ -121,6 +121,7 @@ function CMap_Base(){
 	};
 
 	/// Traverses all darts in the map
+	/// interupts if func returns true
 	this.foreachDart = function(func){
 		topology.d.some( d => (d != -1) ? func(d) : undefined );
 	};
@@ -131,16 +132,14 @@ function CMap_Base(){
 	};
 	
 	/// Traverses and applies func to all cells (of map or cache) of given celltype
-	this.foreach = function(emb, func, {cache, use_emb} =  {cache: undefined, use_emb: undefined}){
-		// if(use_emb == undefined) use_emb = this.isEmbedded(emb);
-
+	this.foreach = function(emb, func, {cache, useEmb} =  {cache: undefined, useEmb: undefined}){
 		if(cache){
 			cache.forEach(cd => func(cd));
 			return;
 		}
 
-		let marker = this.newFastMarker(use_emb? emb : undefined);
-		if(use_emb)
+		let marker = this.newMarker(useEmb? emb : undefined);
+		if(useEmb)
 			this.foreachDart(d => {
 				if(marker.marked(d))
 					return;
@@ -159,41 +158,51 @@ function CMap_Base(){
 	};
 
 	/// Traverses and applies func to all darts of a cell 
-	this.foreachDartOf = function(emb, cell, func){
-		this.funcsForeachDartOf[emb].call(this, cell, func);
+	this.foreachDartOf = function(emb, cd, func){
+		this.funcsForeachDartOf[emb].call(this, cd, func);
 	};
 
+	/// Counts number of dart of given cell
+	this.nbDartsOfOrbit = function(emb, cd) {
+		let count = 0;
+		this.foreachDartOf(emb, cd, d => {
+			++count;
+		});
+		return count;
+	}
+
 	/// Traverses incident cells of  given type
-	/// inc_emb : incident cell type
-	/// cell_emb : targete cell type
+	/// incEmb : incident cell type
+	/// cellEmb : targete cell type
 	/// cd : target cell
-	/// Use_embedding switches to cell marker instead of darts
-	this.foreachIncident = function(inc_emb, cell_emb, cd, func, use_embeddings = false){
-		let marker = this.newFastMarker(use_embeddings ? inc_emb : undefined);
-		if(use_embeddings)
-			this.foreachDartOf(cell_emb, cd, d0 => {
+	/// useEmbedding switches to cell marker instead of darts
+	this.foreachIncident = function(incEmb, cellEmb, cd, func, useEmbeddings = false){
+		let marker = this.newMarker(useEmbeddings ? incEmb : undefined);
+		if(useEmbeddings)
+			this.foreachDartOf(cellEmb, cd, d0 => {
 				if(!marker.marked(d0)){
 					marker.mark(d0);
 					return func(d0);
 				}
 			});
 		else
-			this.foreachDartOf(cell_emb, cd, d0 => {
+			this.foreachDartOf(cellEmb, cd, d0 => {
 				if(!marker.marked(d0)){
-					marker.markCell(inc_emb, d0);
+					marker.markCell(incEmb, d0);
 					return func(d0);
 				}
 			});
 	};
 
 	/// Stores all cells of given type in an array
+	/// cond : condition for adding to the cache
 	this.cache = function(emb, cond){
 		let cache = [];
 
 		if(!cond)
-			this.foreach(emb, cd => { cache.push(cd) },  {use_emb: this.isEmbedded(emb)});
+			this.foreach(emb, cd => { cache.push(cd) },  {useEmb: this.isEmbedded(emb)});
 		else
-			this.foreach(emb, cd => { if(cond(cd)) cache.push(cd) },  {use_emb: this.isEmbedded(emb)});
+			this.foreach(emb, cd => { if(cond(cd)) cache.push(cd) },  {useEmb: this.isEmbedded(emb)});
 			
 		return cache;
 	};
@@ -214,15 +223,15 @@ function CMap_Base(){
 	this.d = this.addTopologyRelation("d");
 
 	/// Returns a dart marker or a cell marker of given embedding 
-	this.newMarker = function(used_emb) {
-		if(this.storedMarkers[used_emb? used_emb : this.dart].length)
-			return this.storedMarkers[used_emb? used_emb : this.dart].pop();
+	this.newMarker = function(usedEmb) {
+		if(this.storedMarkers[usedEmb? usedEmb : this.dart].length)
+			return this.storedMarkers[usedEmb? usedEmb : this.dart].pop();
 
-		return new Marker(this, used_emb);
+		return new Marker(this, usedEmb);
 	};
 
-	this.newFastMarker = function(used_emb) {
-		return new FastMarker(this, used_emb);
+	this.newMarker = function(usedEmb) {
+		return new Marker(this, usedEmb);
 	};
 
 	let boundaryMarker = this.newMarker();
@@ -250,21 +259,21 @@ function CMap_Base(){
 		return boundaryMarker.markedCell(emb, cd);
 	};
 
-	// Garbage to fix
-	this.degree = function(emb, cd) {
-		let deg = 0;
-		this.foreachDartOf(emb, cd, d => {
-			++deg;
-		});
-		return deg;
-	};
+	// // Garbage to fix
+	// this.degree = function(emb, cd) {
+	// 	let deg = 0;
+	// 	this.foreachDartOf(emb, cd, d => {
+	// 		++deg;
+	// 	});
+	// 	return deg;
+	// };
 
 	this.debug = function(){
 		console.log(attributeContainers, topology, embeddings);
 	}
 }
 
-let Dart_Marker_Proto = {
+let DartMarkerProto = {
 	cmap: undefined,
 
 	mark: function(d) {	this[d] = true;	},
@@ -298,32 +307,18 @@ let MarkerRemover = {
 	}
 };
 
-function Marker(cmap, used_emb) {
+function Marker(cmap, usedEmb) {
 	let marker;
-	if(used_emb){
+	if(usedEmb){
 		marker = Object.assign([], CellMarkerProto);
-		marker.emb = used_emb;
+		marker.emb = usedEmb;
 	}
 	else
-		marker = Object.assign([], Dart_Marker_Proto);
+		marker = Object.assign([], DartMarkerProto);
 	marker.cmap = cmap;
 	Object.assign(marker, MarkerRemover);
 	return marker;
 }
 
-function FastMarker(cmap, used_emb){
-	let marker;
-	if(used_emb){
-		marker = Object.assign([], CellMarkerProto);
-		marker.emb = used_emb;
-	}
-	else
-		marker = Object.assign([], Dart_Marker_Proto);
-	marker.cmap = cmap;
 
-	return marker;
-}
-
-
-
-export default CMap_Base;
+export default CMapBase;

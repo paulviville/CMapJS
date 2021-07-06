@@ -1,10 +1,10 @@
 import CMap1 from './CMap1.js';
-
 function CMap2(){
 	CMap1.call(this);
 
 	// TOPOLOGY
 	this.phi2 = this.addTopologyRelation("phi2");
+	this.phis["2"] = this.phi2;
 	
 	const vertex = this.vertex;
 	const edge = this.edge;
@@ -12,18 +12,23 @@ function CMap2(){
 	this.volume = this.addCelltype();
 	const volume = this.volume;
 	
-	this.sew_phi2 = function(d0, d1){
+	/// Connects two darts in phi2
+	this.sewPhi2 = function(d0, d1){
 		this.phi2[d0] = d1;
 		this.phi2[d1] = d0;
 	};
 
-	this.unsew_phi2 = function(d){
+	/// Disconnects dart phi2, sets phi2 of dart to identity
+	this.unsewPhi2 = function(d){
 		let d1 = this.phi2[d];
 		this.phi2[d] = d;
 		this.phi2[d1] = d1;
 	};
 
-	this.close_hole = function(d0, boundary = false, setEmbeddings = true) {
+	/// Inserts a face in a hole incident to d0
+	/// New face can be marked as boundary
+	/// Returns a dart of the new face
+	this.closeHole = function(d0, boundary = false, setEmbeddings = true) {
 		if(this.phi2[d0] != d0)
 			return;
 
@@ -43,12 +48,13 @@ function CMap2(){
 		if(boundary)
 			this.markCellAsBoundary(face, fd);
 		for(let i = 0; i < path.length; ++i){
-			this.sew_phi2(fd, path[i]);
+			this.sewPhi2(fd, path[i]);
 			fd = this.phi_1[fd];
 		}
 
 		if(setEmbeddings){
 			let fid = this.isEmbedded(face)? this.newCell(face) : undefined;
+			let wid = this.isEmbedded(volume)? this.newCell(volume) : undefined;
 			this.foreachDartOf(face, fd, d => {
 				if(this.isEmbedded(vertex))
 					this.setEmbedding(vertex, d, this.cell(vertex, this.phi1[this.phi2[d]]));
@@ -56,28 +62,31 @@ function CMap2(){
 					this.setEmbedding(edge, d, this.cell(edge, this.phi2[d]));
 				if(this.isEmbedded(face))
 					this.setEmbedding(face, d, fid);
+				if(this.isEmbedded(volume))
+					this.setEmbedding(volume, d, wid);
 			});
 		}
 
 		return fd;
 	}
-	const close_hole = this.close_hole.bind(this);
+	const closeHole = this.closeHole.bind(this);
 
+	/// Closes all holes in the map
 	this.close = function(boundary = false, setEmbeddings = true){
 		this.foreachDart(d0 => {
-			close_hole(d0, boundary, setEmbeddings);
+			closeHole(d0, boundary, setEmbeddings);
 		});
 	};
 
 	// ORBITS
 	/// Traverses and applies func to all darts of edge 2
-	this.foreachDart_phi2 = function(d, func){
+	this.foreachDartPhi2 = function(d, func){
 		if(!func(d))
 			func(this.phi2[d]);	
 	};
 
 	/// Traverses and applies func to all darts of vertex 2
-	this.foreachDart_phi21 = function(d0, func){
+	this.foreachDartPhi21 = function(d0, func){
 		let d = d0;
 		do {
 			if(func(d)) break;
@@ -86,8 +95,8 @@ function CMap2(){
 	};
 
 	/// Traverses and applies func to all darts of volume
-	this.foreachDart_phi1_phi2 = function(d0, func){
-		let marker = this.newFastMarker();
+	this.foreachDartPhi1Phi2 = function(d0, func){
+		let marker = this.newMarker();
 		let faces = [d0];
 		do {
 			let fd = faces.shift();
@@ -109,24 +118,74 @@ function CMap2(){
 
 	};
 
-	this.funcsForeachDartOf[vertex] = this.foreachDart_phi21;
+	this.funcsForeachDartOf[vertex] = this.foreachDartPhi21;
 
-	this.funcsForeachDartOf[edge] = this.foreachDart_phi2;
+	this.funcsForeachDartOf[edge] = this.foreachDartPhi2;
 
-	this.funcsForeachDartOf[volume] = this.foreachDart_phi1_phi2;
+	this.funcsForeachDartOf[volume] = this.foreachDartPhi1Phi2;
+
+
+
+	this.degree = function(emb, cd) {
+		let degree = 0;
+		switch(emb) {
+			case this.vertex: 
+				this.foreachIncident(this.edge, this.vertex, cd, ed => {
+					++degree;
+				});
+				break;
+			case this.edge:
+				if(this.isBoundary(cd) || this.isBoundary(this.phi2[cd]))
+					degree = 1;
+				else 
+					degree = 2;
+				break;
+			case this.face:
+				degree = 1; 
+				break;
+			default:
+		}
+		return degree;
+	}
+
+	this.codegree = function(emb, cd) {
+		let codegree = 0;
+		switch(emb) {
+			case this.edge: 
+				this.foreachIncident(this.vertex, this.edge, cd, vd => {
+					++codegree;
+				});
+				break;
+			case this.face: 
+				this.foreachIncident(this.edge, this.face, cd, ed => {
+					++codegree;
+				});
+				break;
+			case this.volume:
+				this.foreachIncident(this.face, this.volume, cd, fd => {
+					++codegree;
+				});
+				break;
+			default:
+		}
+		return codegree;
+	}
 
 	// OPERATIONS
-	this.cut_edge1 = this.cut_edge;
-	this.cut_edge = function(ed, setEmbeddings = true){
+
+	this.cutEdge1 = this.cutEdge;
+	/// Cuts given edge in two
+	/// Returns a dart of the newly created vertex
+	this.cutEdge = function(ed, setEmbeddings = true){
 		let d0 = ed;
 		let e0 = this.phi2[d0];
-		this.unsew_phi2(d0);
+		this.unsewPhi2(d0);
 
-		let d1 = this.cut_edge1(d0, false);
-		let e1 = this.cut_edge1(e0, false);
+		let d1 = this.cutEdge1(d0, false);
+		let e1 = this.cutEdge1(e0, false);
 
-		this.sew_phi2(d0, e1);
-		this.sew_phi2(e0, d1);	
+		this.sewPhi2(d0, e1);
+		this.sewPhi2(e0, d1);	
 
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex)){
@@ -144,26 +203,33 @@ function CMap2(){
 				this.setEmbedding(face, d1, this.cell(face, d0));
 				this.setEmbedding(face, e1, this.cell(face, e0));
 			}
+			if(this.isEmbedded(volume)){
+				let wid = this.cell(volume, ed)
+				this.setEmbedding(volume, d1, wid);
+				this.setEmbedding(volume, e1, wid);
+			}
 		}
 
 		return d1;
 	};
 
-	this.collapse_edge1 = this.collapse_edge;
-	this.collapse_edge = function(ed, setEmbeddings = true){
+	this.collapseEdge1 = this.collapseEdge;
+	/// Removes an edge and merges its incident vertices
+	/// Returns a dart to the merged vertex
+	this.collapseEdge = function(ed, setEmbeddings = true){
 		let d0 = ed;
 		let e0 = this.phi2[ed];
 		// let eid = this.cell(edge, ed);
 		
-		this.unsew_phi2(d0);
-		let d1 = this.collapse_edge1(d0, false);
-		let e1 = this.collapse_edge1(e0, false);
+		this.unsewPhi2(d0);
+		let d1 = this.collapseEdge1(d0, false);
+		let e1 = this.collapseEdge1(e0, false);
 		
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex)){
 				let vid0 = this.cell(vertex, d1);
 				let vid1 = this.cell(vertex, e1);
-				this.foreachDart_phi21(e1,d => {
+				this.foreachDartPhi21(e1,d => {
 					this.setEmbedding(vertex, d, vid0);
 				});
 				this.deleteCell(vertex, vid1); // should remove this and test
@@ -173,12 +239,14 @@ function CMap2(){
 		return d1;
 	};
 
-	this.split_vertex1 = this.split_vertex;
-	this.split_vertex = function(vd0, vd1, setEmbeddings = true){
-		let d0 = this.split_vertex1(vd0, false);
-		let d1 = this.split_vertex1(vd1, false);
+	this.splitVertex1 = this.splitVertex;
+	/// Splits a vertex in two and inserts an edge
+	/// Returns a dart of the new edge
+	this.splitVertex = function(vd0, vd1, setEmbeddings = true){
+		let d0 = this.splitVertex1(vd0, false);
+		let d1 = this.splitVertex1(vd1, false);
 
-		this.sew_phi2(d0, d1);
+		this.sewPhi2(d0, d1);
 
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex)){
@@ -197,21 +265,27 @@ function CMap2(){
 				this.setEmbedding(face, d0, this.cell(face, vd0));
 				this.setEmbedding(face, d1, this.cell(face, vd1));
 			}
+			if(this.isEmbedded(volume)){
+				this.setEmbedding(volume, d0, this.cell(volume, vd0));
+				this.setEmbedding(volume, d1, this.cell(volume, vd1));
+			}
 		}
 
 		return d0;
 	};
 
-	this.cut_face = function(fd0, fd1, setEmbeddings = true){
+	/// Cuts face in two between vertices represented by fd0 and fd1
+	/// Returns a dart of the new edge
+	this.cutFace = function(fd0, fd1, setEmbeddings = true){
 		let d0 = this.phi_1[fd0];
 		let d1 = this.phi_1[fd1];
 
 		let e0 = this.newDart();
 		let e1 = this.newDart();
-		this.sew_phi2(e0, e1);
-		this.sew_phi1(d0, e0);
-		this.sew_phi1(d1, e1);
-		this.sew_phi1(e0, e1);
+		this.sewPhi2(e0, e1);
+		this.sewPhi1(d0, e0);
+		this.sewPhi1(d1, e1);
+		this.sewPhi1(e0, e1);
 
 		if(this.isBoundaryCell(face, fd0))
 			this.markCellAsBoundary(edge, e0);
@@ -229,22 +303,28 @@ function CMap2(){
 			if(this.isEmbedded(face)){
 				this.setEmbedding(face, e0, this.cell(face, this.phi1[e0]));
 				let fid = this.newCell(face);
-				this.foreachDart_phi1(e1, d => {
+				this.foreachDartPhi1(e1, d => {
 					this.setEmbedding(face, d, fid);
 				});
+			}
+			if(this.isEmbedded(volume)){
+				let wid = this.cell(volume, fd0);
+				this.setEmbedding(volume, e0, wid);
+				this.setEmbedding(volume, e1, wid);
 			}
 		}
 
 		return e0;
 	};
 
-	this.merge_faces = function(ed, setEmbeddings = true){
+	/// Removes edge and merges incident faces
+	this.mergeFaces = function(ed, setEmbeddings = true){
 		let fd = this.phi1[ed];
 		let d0 = ed, 
 			d1 = this.phi2[ed];
 
-		this.sew_phi1(this.phi_1[d0], d1);
-		this.sew_phi1(this.phi_1[d1], d0);
+		this.sewPhi1(this.phi_1[d0], d1);
+		this.sewPhi1(this.phi_1[d1], d0);
 
 		if(setEmbeddings){
 			if(this.isEmbedded(face)){
@@ -259,18 +339,18 @@ function CMap2(){
 		this.deleteDart(d1);
 	};
 
-
-	this.flip_edge = function(ed, setEmbeddings = true){
+	/// Turns edge counterclockwise in cycle formed by its incident faces
+	this.flipEdge = function(ed, setEmbeddings = true){
 		let d0 = ed,
 			d1 = this.phi1[d0],
 			e0 = this.phi2[ed],
 			e1 = this.phi1[e0];
 
-		this.sew_phi1(this.phi_1[d0], e0);
-		this.sew_phi1(this.phi_1[e0], d0);
+		this.sewPhi1(this.phi_1[d0], e0);
+		this.sewPhi1(this.phi_1[e0], d0);
 
-		this.sew_phi1(e0, e1);
-		this.sew_phi1(d0, d1);
+		this.sewPhi1(e0, e1);
+		this.sewPhi1(d0, d1);
 
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex)){
@@ -287,21 +367,23 @@ function CMap2(){
 	};
 
 	this.addFace1 = this.addFace;
-	// this.addFace = function(nb_sides, setEmbeddings = true){
+	// this.addFace = function(nbSides, setEmbeddings = true){
 
 	// }
 
-	this.add_prism = function(size = 3, setEmbeddings = true) {
+	/// Creates a prism made of 2 polygons of degree n and n quads
+	/// Returns a dart from the base
+	this.addPrism = function(size = 3, setEmbeddings = true) {
 		let d0 = this.addFace(4, false);
 		let d1 = d0;
 		for(let i = 1; i < size; ++i){
 			let fd = this.addFace(4, false);
-			this.sew_phi2(this.phi1[d1], this.phi_1[fd]);
+			this.sewPhi2(this.phi1[d1], this.phi_1[fd]);
 			d1 = fd;
 		}
-		this.sew_phi2(this.phi_1[d0], this.phi1[d1]);
-		let d_base = close_hole(d0, false, false);
-		close_hole(this.phi1[this.phi1[d0]]);
+		this.sewPhi2(this.phi_1[d0], this.phi1[d1]);
+		let d_base = closeHole(d0, false, false);
+		closeHole(this.phi1[this.phi1[d0]]);
 
 		if(setEmbeddings){
 			this.foreachDartOf(volume, d_base, d => {
@@ -343,16 +425,18 @@ function CMap2(){
 		return d_base;
 	};
 
-	this.add_pyramid = function(size = 3, setEmbeddings = true) {
+	/// Creates a pyramid made of n triangles and a polygon of degree n
+	/// Returns a dart from the base
+	this.addPyramid = function(size = 3, setEmbeddings = true) {
 		let d0 = this.addFace(3, false);
 		let d1 = d0;
 		for(let i = 1; i < size; ++i){
 			let fd = this.addFace(3, false);
-			this.sew_phi2(this.phi1[d1], this.phi_1[fd]);
+			this.sewPhi2(this.phi1[d1], this.phi_1[fd]);
 			d1 = fd;
 		}
-		this.sew_phi2(this.phi_1[d0], this.phi1[d]);
-		let d_base = this.close_hole(d0, false, false);
+		this.sewPhi2(this.phi_1[d0], this.phi1[d]);
+		let d_base = this.closeHole(d0, false, false);
 
 		if(setEmbeddings){
 			this.foreachDartOf(volume, d_base, d => {

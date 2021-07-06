@@ -1,4 +1,4 @@
-import {triangulate_all_faces} from '../../../Utils/Subdivision.js';
+import {triangulateAllFaces} from '../../../Utils/Subdivision.js';
 import {Vector3} from '../../../Libs/three.module.js';
 
 function alpha(n){
@@ -14,10 +14,10 @@ export function sqrt3(cmap){
 	const pos = cmap.getAttribute(vertex, "position");
 	const delta = cmap.addAttribute(vertex, "delta");
 
-	let edge_cache = cmap.cache(edge);
-	let vertex_cache = cmap.cache(vertex);
+	let edgeCache = cmap.cache(edge);
+	let vertexCache = cmap.cache(vertex);
 
-	triangulate_all_faces(cmap, vd => {
+	triangulateAllFaces(cmap, vd => {
 		let degree = 0;
 		let vid = cmap.cell(vertex, vd);
 		pos[vid] = new Vector3;
@@ -29,8 +29,8 @@ export function sqrt3(cmap){
 	});
 
 	cmap.foreach(edge, ed => {
-		cmap.flip_edge(ed);
-	}, {cache: edge_cache});
+		cmap.flipEdge(ed);
+	}, {cache: edgeCache});
 
 	let vd1, n, vid;
 	let sum_Q = new Vector3;
@@ -48,13 +48,13 @@ export function sqrt3(cmap){
 		delta[vid] = new Vector3;
 		delta[vid].addScaledVector(pos[vid], -alph);
 		delta[vid].addScaledVector(sum_Q, alph);
-	}, {cache: vertex_cache});
+	}, {cache: vertexCache});
 
 	cmap.foreach(vertex, vd0 => {
 		vd1 = cmap.phi_1[vd0];
 		vid = cmap.cell(vertex, vd1);
 		pos[vid].add(delta[vid]);
-	}, {cache: vertex_cache});
+	}, {cache: vertexCache});
 
 	delta.delete();
 }

@@ -1,5 +1,5 @@
 import * as THREE from '../Libs/three.module.js';
-import {Renderer_Cell_Proto} from './Renderer.js';
+import {RendererCellProto} from './Renderer.js';
 import Renderer from './Renderer.js';
 
 function slerp(A, B, alpha, out = false)
@@ -37,7 +37,7 @@ function newGeodesic(A, B, nb_divs = 200, out = false)
 	return geodesic;
 }
 
-function subdivide_triangle(A, B, C, divs)
+function subdivideTriangle(A, B, C, divs)
 {
 	if(divs < 2) 
 		return [A, B, C];
@@ -58,13 +58,13 @@ function subdivide_triangle(A, B, C, divs)
 }
 
 
-export default function Renderer_Spherical(cmap){
+export default function RendererSpherical(cmap){
 	Renderer.call(this, cmap);
 	const position = cmap.getAttribute(cmap.vertex, "position");
 
 	let vertex = cmap.vertex;
 	let edge = cmap.edge;
-	this.geodesics = (!edge) ? undefined : Object.assign(Object.create(Renderer_Cell_Proto), {
+	this.geodesics = (!edge) ? undefined : Object.assign(Object.create(RendererCellProto), {
 		create: function(params = {}){
 			this.params = params;
 			const geometry = new THREE.Geometry();
@@ -77,7 +77,7 @@ export default function Renderer_Spherical(cmap){
 					geometry.vertices.push(geodesic[i - 1], geodesic[i]);
 				}
 				
-			}, {use_emb: cmap.isEmbedded(edge)});
+			}, {useEmb: cmap.isEmbedded(edge)});
 
 			const material = params.material || new THREE.LineBasicMaterial({
 				color: params.color || 0x000000,
@@ -93,5 +93,5 @@ export default function Renderer_Spherical(cmap){
 	});
 
 	let face = cmap.face;
-	this.curved_faces = (!face) ? undefined : true;
+	this.curvedFaces = (!face) ? undefined : true;
 }

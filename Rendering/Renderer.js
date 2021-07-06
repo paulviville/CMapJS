@@ -1,6 +1,6 @@
 import * as THREE from '../Libs/three.module.js'
 
-let Renderer_Cell_Proto = {
+let RendererCellProto = {
 	mesh: undefined,
 	params: undefined,
 	create: undefined,
@@ -50,7 +50,7 @@ function Renderer(cmap){
 
 	let vertex = cmap.vertex;
 	this.vertices = (vertex == undefined) ? undefined :
-		Object.assign(Object.create(Renderer_Cell_Proto), {
+		Object.assign(Object.create(RendererCellProto), {
 			create: function(params = {}){
 				this.params = params;
 				
@@ -59,12 +59,12 @@ function Renderer(cmap){
 				const material = params.material || new THREE.MeshLambertMaterial({});
 
 				/// to handle none contiguous embeddings
-				let max_id = -1;
+				let maxId = -1;
 				cmap.foreach(vertex, vd => {
-					max_id = max_id < cmap.cell(vertex, vd) ? cmap.cell(vertex, vd) : max_id;
-				}, {use_emb: cmap.isEmbedded(vertex)});
+					maxId = maxId < cmap.cell(vertex, vd) ? cmap.cell(vertex, vd) : maxId;
+				}, {useEmb: cmap.isEmbedded(vertex)});
 
-				this.mesh = new THREE.InstancedMesh(geometry, material, max_id + 1);
+				this.mesh = new THREE.InstancedMesh(geometry, material, maxId + 1);
 				this.mesh.vd = []; 
 				this.mesh.instanceId = cmap.getAttribute(vertex, "instanceId")
 				|| cmap.addAttribute(vertex, "instanceId");
@@ -81,7 +81,7 @@ function Renderer(cmap){
 					this.mesh.instanceId[cmap.cell(vertex, vd)] = id;
 					this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
 					this.mesh.setMatrixAt(id++, matrix);
-				}, {use_emb: cmap.isEmbedded(vertex)});
+				}, {useEmb: cmap.isEmbedded(vertex)});
 
 				this.mesh.layers.set(params.layer || 0);
 				return this;
@@ -99,7 +99,7 @@ function Renderer(cmap){
 
 	let edge = cmap.edge;
 	this.edges = (edge == undefined) ? undefined :
-		Object.assign(Object.create(Renderer_Cell_Proto), {
+		Object.assign(Object.create(RendererCellProto), {
 			create: function(params = {}){
 				this.params = params;
 
@@ -124,12 +124,18 @@ function Renderer(cmap){
 				const scale = new THREE.Vector3();
 				const p = [0, 0];
 				cmap.foreach(edge, ed => {
-					let i = 0;
-					cmap.foreachIncident(vertex, edge, ed, vd => {
-						p[i++] = position[cmap.cell(vertex, vd)];
-					});
+					if(!cmap.phi1) {
+						let i = 0;
+						cmap.foreachIncident(vertex, edge, ed, vd => {
+							p[i++] = position[cmap.cell(vertex, vd)];
+						});
+					}
+					else {
+						p[0] = position[cmap.cell(vertex, ed)];
+						p[1] = position[cmap.cell(vertex, cmap.phi1[ed])];
+					}
+
 					let dir = new THREE.Vector3().subVectors(p[0], p[1]);
-		
 					let len = dir.length();
 					let dirx = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0.0001,0,1));
 					let dirz = new THREE.Vector3().crossVectors(dirx, dir);
@@ -148,7 +154,7 @@ function Renderer(cmap){
 					this.mesh.setColorAt(id, new THREE.Color(params.color || 0x000000));
 					this.mesh.instanceId[cmap.cell(edge, ed)] = id;
 					this.mesh.ed[id++] = ed;
-				}, {use_emb: cmap.isEmbedded(edge)});
+				}, {useEmb: cmap.isEmbedded(edge)});
 
 				return this;
 			},
@@ -165,7 +171,7 @@ function Renderer(cmap){
 
 	let face = cmap.face;
 	this.faces = (face == undefined) ? undefined :
-		Object.assign(Object.create(Renderer_Cell_Proto), {
+		Object.assign(Object.create(RendererCellProto), {
 			create: function(params = {}){
 				this.params = params;
 				if(cmap.nbCells(face) == 0)
@@ -196,7 +202,7 @@ function Renderer(cmap){
 						if(cmap.isEmbedded(face))
 							f.id = cmap.cell(face, fd);
 					}
-				}, {use_emb: cmap.isEmbedded(face)});
+				}, {useEmb: cmap.isEmbedded(face)});
 
 				if(!params.normals) 
 					geometry.computeFaceNormals();
@@ -224,7 +230,7 @@ function Renderer(cmap){
 
 	let volume = cmap.volume;
 	this.volumes = (!volume) ? undefined :
-		Object.assign(Object.create(Renderer_Cell_Proto), {
+		Object.assign(Object.create(RendererCellProto), {
 			create: function(params = {}){
 				this.params = params;
 
@@ -251,8 +257,8 @@ function Renderer(cmap){
 
 				let v2_id = cmap.addAttribute(cmap.vertex2, "v2_id");
 				let mesh_center = new THREE.Vector3();
-				let marker_vertices = cmap.newMarker(cmap.vertex2);
-				let marker_faces = cmap.newMarker();
+				let markerVertices = cmap.newMarker(cmap.vertex2);
+				let markerFaces = cmap.newMarker();
 				let id = 0;
 				let center = new THREE.Vector3();
 				cmap.foreach(volume, wd => {
@@ -277,13 +283,13 @@ function Renderer(cmap){
 				
 					/// replace with foreach incident face
 					cmap.foreachDartOf(volume, wd, fd => {
-						if(marker_faces.marked(fd))
+						if(markerFaces.marked(fd))
 							return;
 
 						let f_ids = [];
-						cmap.foreachDart_phi1(fd, vd => {
+						cmap.foreachDartPhi1(fd, vd => {
 							f_ids.push(v2_id[cmap.cell(cmap.vertex2, vd)]);
-							marker_faces.mark(vd);
+							markerFaces.mark(vd);
 						});
 
 						for(let i = 2; i < f_ids.length; i++){
@@ -307,10 +313,10 @@ function Renderer(cmap){
 					vol.layers.set(params.layer || 0);
 					this.mesh.add(vol);
 					mesh_center.add(center);
-				}, {use_emb: cmap.isEmbedded(volume)});
+				}, {useEmb: cmap.isEmbedded(volume)});
 				this.mesh.layers.set(params.layer || 0);
-				marker_faces.remove();
-				marker_vertices.remove();
+				markerFaces.remove();
+				markerVertices.remove();
 				v2_id.delete();
 				// mesh_center.divideScalar(this.mesh.children.length);
 				// this.mesh.position.copy(mesh_center.negate());
@@ -344,4 +350,4 @@ function Renderer(cmap){
 }
 
 export default Renderer;
-export {Renderer_Cell_Proto};
+export {RendererCellProto};

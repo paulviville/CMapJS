@@ -2,18 +2,18 @@ import {CMap3, CMap2} from '../../CMap/CMap.js';
 import {Vector3} from '../../Libs/three.module.js';
 import {loadMesh, exportMesh} from './Mesh.js';
 
-export function loadCmap3(format, file_str){
-	let geometry = geometryFromStr(format, file_str);
+export function loadCmap3(format, fileStr){
+	let geometry = geometryFromStr(format, fileStr);
 	let map = mapFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", w:" + geometry.hex.length + ")");
 	return map;
 }
 
-export function geometryFromStr(format, file_str){
+export function geometryFromStr(format, fileStr){
 	let geometry;
 	switch(format){
 		case 'mesh':
-			geometry = loadMesh(file_str);
+			geometry = loadMesh(fileStr);
 			break;
 		default:
 			break;
@@ -28,13 +28,13 @@ function mapFromGeometry(geometry){
 	const face2 = map.face2;
 
 	let position = map.addAttribute(vertex, "position");
-	let dart_per_vertex = map.addAttribute(vertex, "dart_per_vertex");
+	let dartPerVertex = map.addAttribute(vertex, "dartPerVertex");
 
-	let vertex_ids = [];
+	let vertexIds = [];
 	geometry.v.forEach(vert => {
 		let i = map.newCell(vertex);
-		vertex_ids.push(i);
-		dart_per_vertex[i] = [];
+		vertexIds.push(i);
+		dartPerVertex[i] = [];
 		position[i] = new Vector3(vert[0], vert[1], vert[2]);
 
 	});
@@ -48,7 +48,7 @@ function mapFromGeometry(geometry){
 
 	if(geometry.hex)
 		geometry.hex.forEach(hex => {
-			let d0 = map.add_prism(4, false);
+			let d0 = map.addPrism(4, false);
 			let d1 = map.phi2[map.phi1[map.phi1[map.phi2[d0]]]];
 			let darts_of_hex = [
 				d0,
@@ -64,7 +64,7 @@ function mapFromGeometry(geometry){
 			for(let i = 0; i < hex.length; ++i){
 				map.foreachDartOf(vertex2, darts_of_hex[i], vd2 => {
 					map.setEmbedding(map.vertex, vd2, hex[i]);
-					dart_per_vertex[hex[i]].push(vd2);
+					dartPerVertex[hex[i]].push(vd2);
 				});
 			}
 		});
@@ -87,7 +87,7 @@ function mapFromGeometry(geometry){
 			do {
 				let vid0 = map.cell(vertex, d1);
 				let vid1 = map.cell(vertex, map.phi1[map.phi1[d1]]);
-				let v_darts = dart_per_vertex[map.cell(vertex, map.phi1[d1])];
+				let v_darts = dartPerVertex[map.cell(vertex, map.phi1[d1])];
 				v_darts.forEach(d => {
 					if(map.cell(vertex, map.phi1[d]) == vid0 && map.cell(vertex, map.phi_1[d]) == vid1){
 						target_d = d;
@@ -103,7 +103,7 @@ function mapFromGeometry(geometry){
 				do {
 					d1 = map.phi1[d1];
 					d2 = map.phi_1[d2];
-					map.sew_phi3(d1, d2);
+					map.sewPhi3(d1, d2);
 				} while(d1 != d0);
 
 			}
@@ -115,7 +115,7 @@ function mapFromGeometry(geometry){
 	// if(open_map)
 		map.close();
 
-	dart_per_vertex.delete();
+	dartPerVertex.delete();
 
 	return map;
 }

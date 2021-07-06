@@ -1,4 +1,4 @@
-import {cut_all_edges} from '../../../Utils/Subdivision.js';
+import {cutAllEdges} from '../../../Utils/Subdivision.js';
 import {Vector3} from '../../../Libs/three.module.js';
 
 export function butterfly(cmap){
@@ -7,13 +7,13 @@ export function butterfly(cmap){
 	const face = cmap.face;
 	const pos = cmap.getAttribute(vertex, "position");
 
-	let vertex_cache = cmap.cache(vertex);
-	let edge_cache = cmap.cache(edge);
-	let face_cache = cmap.cache(face);
+	let vertexCache = cmap.cache(vertex);
+	let edgeCache = cmap.cache(edge);
+	let faceCache = cmap.cache(face);
 
-	let edge_mid_cache = [];
-	cut_all_edges(cmap, vd => {
-		edge_mid_cache.push(vd);
+	let edgeMidCache = [];
+	cutAllEdges(cmap, vd => {
+		edgeMidCache.push(vd);
 		pos[cmap.cell(vertex, vd)] = new Vector3;
 	});
 
@@ -36,20 +36,20 @@ export function butterfly(cmap){
 		d = cmap.phi1[cmap.phi1[cmap.phi1[cmap.phi2[cmap.phi1[cmap.phi1[cmap.phi1[vd]]]]]]]
 		pos[cmap.cell(vertex, vd)].addScaledVector(pos[cmap.cell(vertex, d)], -1 / 16);
 		
-	}, {cache: edge_mid_cache});
+	}, {cache: edgeMidCache});
 
 	let d0, d1;
 	cmap.foreach(face, fd => {
 		d0 = cmap.phi1[fd];
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
+		cmap.cutFace(d0, d1);
 
 		d0 = d1;
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
+		cmap.cutFace(d0, d1);
 		
 		d0 = d1;
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
-	}, {cache: face_cache});
+		cmap.cutFace(d0, d1);
+	}, {cache: faceCache});
 };

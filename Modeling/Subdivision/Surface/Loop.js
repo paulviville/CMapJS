@@ -1,4 +1,4 @@
-import {cut_all_edges} from '../../../Utils/Subdivision.js';
+import {cutAllEdges} from '../../../Utils/Subdivision.js';
 import {Vector3} from '../../../Libs/three.module.js';
 
 function beta(n){
@@ -12,7 +12,7 @@ export function loop(cmap){
 	const pos = cmap.getAttribute(vertex, "position");
 	const new_pos = cmap.addAttribute(vertex, "new_pos");
 
-	let face_cache = cmap.cache(face);
+	let faceCache = cmap.cache(face);
 
 	cmap.foreach(vertex, vd => {
 		let degree = 0;
@@ -27,9 +27,9 @@ export function loop(cmap){
 		new_pos[vid].addScaledVector(pos[cmap.cell(vertex, vd)], 1 - degree *b);
 	});
 
-	let edge_mid_cache = [];
-	cut_all_edges(cmap, vd => {
-		edge_mid_cache.push(vd);
+	let edgeMidCache = [];
+	cutAllEdges(cmap, vd => {
+		edgeMidCache.push(vd);
 		new_pos[cmap.cell(vertex, vd)] = new Vector3;
 	});
 
@@ -44,22 +44,22 @@ export function loop(cmap){
 		d = cmap.phi1[cmap.phi1[d]];
 		new_pos[cmap.cell(vertex, vd)].add(pos[cmap.cell(vertex, d)])
 		new_pos[cmap.cell(vertex, vd)].divideScalar(8);
-	}, {cache: edge_mid_cache});
+	}, {cache: edgeMidCache});
 
 	let d0, d1;
 	cmap.foreach(face, fd => {
 		d0 = cmap.phi1[fd];
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
+		cmap.cutFace(d0, d1);
 
 		d0 = d1;
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
+		cmap.cutFace(d0, d1);
 		
 		d0 = d1;
 		d1 = cmap.phi1[cmap.phi1[d0]];
-		cmap.cut_face(d0, d1);
-	}, {cache: face_cache});
+		cmap.cutFace(d0, d1);
+	}, {cache: faceCache});
 
 	cmap.foreach(vertex, vd => {
 		pos[cmap.cell(vertex, vd)] = new_pos[cmap.cell(vertex, vd)];
