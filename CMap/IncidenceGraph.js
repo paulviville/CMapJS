@@ -146,7 +146,8 @@ function IncidenceGraph(){
 	
 	this.face = this.addCelltype();
 	this.createEmbedding(this.face);
-	const incidentEdgesToFace = this.addAttribute(this.face, "incidentEdges"); 
+	const incidentEdgesToFace = this.addAttribute(this.face, "incidentEdges");
+	const incidentEdgesToFaceDir = this.addAttribute(this.face, "incidentEdgesDir");
 
 	this.debug = function(){
 		console.log(attributeContainers, embeddings);
@@ -280,7 +281,17 @@ function IncidenceGraph(){
 		if(edges.length > 2 && sortEdges(sorted, edges)) {
 			let f = this.newCell(this.face);
 			incidentEdgesToFace[f] = sorted;
+			incidentEdgesToFaceDir[f] = new Array(sorted.length);
 			sorted.forEach(e => {incidentFacesToEdge[e].add(f);});
+			for(let i = 0; i < sorted.length; ++i) {
+				const v0 = incidentVerticesToEdge[sorted[i]].v0;
+				const vs = incidentVerticesToEdge[sorted[(i + 1) % sorted.length]];
+				if(v0 == vs.v0 || v0 == vs.v1)
+					incidentEdgesToFaceDir[f][i] = 1;
+				else
+					incidentEdgesToFaceDir[f][i] = 0;
+			}
+
 			return f;
 		}
 	};
