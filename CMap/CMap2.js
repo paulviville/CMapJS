@@ -229,10 +229,11 @@ function CMap2(){
 			if(this.isEmbedded(vertex)){
 				let vid0 = this.cell(vertex, d1);
 				let vid1 = this.cell(vertex, e1);
-				this.foreachDartPhi21(e1,d => {
+				this.foreachDartPhi21(e1, d => {
 					this.setEmbedding(vertex, d, vid0);
+					console.log(d, vid0);
 				});
-				this.deleteCell(vertex, vid1); // should remove this and test
+				// this.deleteCell(vertex, vid1); // should remove this and test
 			}
 		}
 		

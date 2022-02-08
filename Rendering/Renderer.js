@@ -74,7 +74,7 @@ function Renderer(cmap){
 				
 				let id = 0;
 				cmap.foreach(vertex, vd => {
-					const matrix = new THREE.Matrix4();
+					let matrix = new THREE.Matrix4();
 					matrix.setPosition(position[cmap.cell(vertex, vd)]);
 					matrix.scale(scale);
 					this.mesh.vd[id] = vd; 
@@ -89,7 +89,17 @@ function Renderer(cmap){
 
 			resize: function(size) {
 				this.params.size = size;
-			}
+			},
+
+			move: function(vd) {
+				const id = this.mesh.instanceId[cmap.cell(vertex, vd)];
+				let matrix = new THREE.Matrix4();
+				this.mesh.getMatrixAt(id, matrix);
+				matrix.setPosition(position[cmap.cell(vertex, vd)]);
+				// matrix.scale(scale);
+				this.mesh.setMatrixAt(id, matrix);
+				this.mesh.instanceMatrix.needsUpdate = true;
+			},
 		});
 
 	if(!this.vertices)

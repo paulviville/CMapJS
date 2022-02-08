@@ -173,26 +173,45 @@ function CMapBase(){
 
 	/// Traverses incident cells of  given type
 	/// incEmb : incident cell type
-	/// cellEmb : targete cell type
+	/// cellEmb : target cell type
 	/// cd : target cell
 	/// useEmbedding switches to cell marker instead of darts
 	this.foreachIncident = function(incEmb, cellEmb, cd, func, useEmbeddings = false){
 		let marker = this.newMarker(useEmbeddings ? incEmb : undefined);
-		if(useEmbeddings)
+		// if(useEmbeddings)
 			this.foreachDartOf(cellEmb, cd, d0 => {
 				if(!marker.marked(d0)){
-					marker.mark(d0);
+					useEmbeddings ? marker.mark(d0) : marker.markCell(incEmb, d0);;
 					return func(d0);
 				}
 			});
-		else
-			this.foreachDartOf(cellEmb, cd, d0 => {
-				if(!marker.marked(d0)){
-					marker.markCell(incEmb, d0);
-					return func(d0);
-				}
-			});
+		// else
+		// 	this.foreachDartOf(cellEmb, cd, d0 => {
+		// 		if(!marker.marked(d0)){
+		// 			marker.markCell(incEmb, d0);
+		// 			return func(d0);
+		// 		}
+		// 	});
 	};
+
+	/// Traverses adjacent cells of  given type
+	/// thruEmb : incident cell type
+	/// currEmb : target cell type
+	/// cd : target cell
+	/// useEmbedding switches to cell marker instead of darts
+	this.foreachAdjacent = function (thruEmb, currEmb, cd, func, useEmbeddings = false) {
+		const marker = this.newMarker(useEmbeddings ? currEmb : undefined);
+		useEmbeddings ? marker.mark(cd) : marker.markCell(currEmb, cd);
+
+		this.foreachIncident(thruEmb, currEmb, cd, thruc => {
+			this.foreachIncident(currEmb, thruEmb, thruc, adjc => {
+				if(!marker.marked(adjc)) {
+					func(adjc);
+					useEmbeddings ? marker.mark(cd) : marker.markCell(currEmb, cd);
+				}
+			});
+		});
+	}
 
 	/// Stores all cells of given type in an array
 	/// cond : condition for adding to the cache
@@ -203,6 +222,8 @@ function CMapBase(){
 			this.foreach(emb, cd => { cache.push(cd) },  {useEmb: this.isEmbedded(emb)});
 		else
 			this.foreach(emb, cd => { if(cond(cd)) cache.push(cd) },  {useEmb: this.isEmbedded(emb)});
+
+		// this.foreach(emb, cd => {if(cond?.(cd) ?? true) cache.push(cd)}, {useEmb: this.isEmbedded(emb)});
 			
 		return cache;
 	};
@@ -210,8 +231,11 @@ function CMapBase(){
 	/// Clears all data
 	this.deleteMap = function(){
 		attributeContainers.forEach(ac => ac.delete());
-		Object.keys(this).forEach(key => delete this[key]);
+		// Object.keys(this).forEach(key => delete this[key]);
+		this.debug();
 	};
+
+	// this.clearMap = function
 
 	/// Closes topology into manifold
 	this.close = function() {}
@@ -258,15 +282,6 @@ function CMapBase(){
 	this.isBoundaryCell = function(emb, cd) {
 		return boundaryMarker.markedCell(emb, cd);
 	};
-
-	// // Garbage to fix
-	// this.degree = function(emb, cd) {
-	// 	let deg = 0;
-	// 	this.foreachDartOf(emb, cd, d => {
-	// 		++deg;
-	// 	});
-	// 	return deg;
-	// };
 
 	this.debug = function(){
 		console.log(attributeContainers, topology, embeddings);
