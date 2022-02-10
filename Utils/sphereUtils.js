@@ -47,19 +47,39 @@ export function distanceToGeodesic(P, A, B, out = false) {
 	const planeNormal = A.clone().cross(B);
 	const projP = P.clone().projectOnPlane(planeNormal);
 
-	let AP = A.clone().cross(P);
-	let PB = P.clone().cross(B);
-	let inside = ((AP.dot(PB) > 0) && (!out));
+	// let AP = A.clone().cross(P);
+	// let PB = P.clone().cross(B);
+	// let inside = ((AP.dot(PB) > 0) && (!out));
+	let ab = A.angleTo(B);
+	let ap = A.angleTo(projP);
+	let bp = B.angleTo(projP);
+	let inside = ap < ab && bp < ab;
 
+	// console.log(inside)
+	// console.log(ab, ap, bp);
 	let dist = inside ? Math.abs(P.angleTo(projP)) : Math.min(onSphereDistance(A, P), onSphereDistance(B, P));
-
+	// console.log(dist);
 	return dist;
 }
 
-export function sphereBarycenter(points)
-{
+function contractPolygon(points, iterations) {
+	let pts0 = points.map(x => x);
+	for(let i = 0; i < iterations; ++i) {
+		let pts1 = [];
+		for(let i = 0; i < pts0.length; ++i)
+        {
+            pts1.push(pts0[i].clone().add(pts0[(i+1) % pts0.length]).multiplyScalar(0.5).normalize());
+        }
+        pts0 = pts1;
+	}
+	return pts0;
+}
+
+export function sphereBarycenter(points) {
 	let bary = new THREE.Vector3;
-	points.forEach(p => {
+	let pts = contractPolygon(points, 5);
+
+	pts.forEach(p => {
 			bary.add(p)
 		});
 
@@ -87,4 +107,43 @@ export function sphereBarycenter(points)
 
 export function onSphereDistance(A, B) {
 	return Math.abs(A.angleTo(B));
+}
+
+function triangleArea(A, B, C) {
+	let AB = B.clone().sub(A);
+	let AC = C.clone().sub(A);
+	return (AB.cross(AC).length())/2;
+}
+
+export function onSphereSubdivideTriangle(A, B, C, n = 2) {
+	const newVerts = [[A.clone()]];
+	let str = `(${A.x}/${A.y}/${A.z})\n`;
+	for(let i = 1; i <= n; ++i) {
+		const alpha = 1 - (n - i)/n;
+		const Bi = slerp(A, B, alpha);
+		const Ci = slerp(A, C, alpha);
+		const vertsi = [];
+		for(let j = 0; j <= i; ++j) {
+			const beta = j / i;
+			const Xi = slerp(Bi, Ci, beta);
+			str += `(${Xi.x}/${Xi.y}/${Xi.z}) `;
+			vertsi.push(Xi);
+		}
+		newVerts.push(vertsi);
+		str+=`\n`;
+	}
+	console.log(str);
+	console.table(newVerts)
+}
+
+export function onSpherePolygonArea(points) {
+	if(points.length == 2)
+		return 0;
+		
+	const bary = sphereBarycenter(points);
+	let area = 0;
+
+
+
+	return area;
 }

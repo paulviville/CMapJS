@@ -21,7 +21,7 @@ export function geometryFromStr(format, fileStr){
 	return geometry;
 }
 
-function mapFromGeometry(geometry){
+export function mapFromGeometry(geometry){
 	let map = new CMap2;
 	let position = map.addAttribute(map.vertex, "position");
 	let dartPerVertex = map.addAttribute(map.vertex, "dartPerVertex");
