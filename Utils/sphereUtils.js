@@ -40,7 +40,22 @@ export function sphereAngle(A, B, C) {
 	const sC = slerp(A, C, 0.01);
 	sB.sub(A);
 	sC.sub(A);
-	return sB.angleTo(sC);
+	let angle = sB.angleTo(sC);
+	if(A.dot(sB.cross(sC)) < 0)
+		angle = 2* Math.PI - angle;
+	return angle;
+}
+
+export function sphereSignedAngle(A, B, C){
+    const sB = slerp(A, B, 0.01);
+    const sC = slerp(A, C, 0.01);
+    let AB = (sB.clone().sub(A)).normalize();
+    let AC = (sC.clone().sub(A)).normalize();
+    let X = AB.clone().cross(AC).normalize();
+    let a = AB.angleTo(AC);
+    if(A.dot(X) < 0)
+        a = -a;
+    return a;
 }
 
 export function distanceToGeodesic(P, A, B, out = false) {
@@ -116,8 +131,7 @@ function triangleArea(A, B, C) {
 }
 
 export function onSphereSubdivideTriangle(A, B, C, n = 2) {
-	const newVerts = [[A.clone()]];
-	let str = `(${A.x}/${A.y}/${A.z})\n`;
+	const vertices = [A.clone()];
 	for(let i = 1; i <= n; ++i) {
 		const alpha = 1 - (n - i)/n;
 		const Bi = slerp(A, B, alpha);
@@ -126,14 +140,24 @@ export function onSphereSubdivideTriangle(A, B, C, n = 2) {
 		for(let j = 0; j <= i; ++j) {
 			const beta = j / i;
 			const Xi = slerp(Bi, Ci, beta);
-			str += `(${Xi.x}/${Xi.y}/${Xi.z}) `;
-			vertsi.push(Xi);
+			vertices.push(Xi);
 		}
-		newVerts.push(vertsi);
-		str+=`\n`;
 	}
-	console.log(str);
-	console.table(newVerts)
+
+	const triangles = [];
+	let sumi = 0;
+	let sumi_1 = 0;
+	for(let i = 1; i <= n; ++i) {
+		sumi += i;
+		for(let j = 0; j < i; ++j) {
+			triangles.push(sumi_1 + j, sumi + j, sumi + j + 1);
+
+			if(j != 0 )
+				triangles.push(sumi_1 + j - 1, sumi + j, sumi_1 + j);
+		}	
+		sumi_1 = sumi;
+	}
+	return {triangles: triangles, vertices: vertices}
 }
 
 export function onSpherePolygonArea(points) {
@@ -142,8 +166,16 @@ export function onSpherePolygonArea(points) {
 		
 	const bary = sphereBarycenter(points);
 	let area = 0;
-
-
-
+	for(let i = 0; i < points.length; ++i){
+		let geo = onSphereSubdivideTriangle(bary, points[i], points[(i+1)%points.length], 10);
+		for(let t = 0; t < geo.triangles.length; t += 3){
+			area += triangleArea(
+				geo.vertices[geo.triangles[t]], 
+				geo.vertices[geo.triangles[t+1]], 
+				geo.vertices[geo.triangles[t+2]]
+			);
+		}
+	}
 	return area;
 }
+

@@ -31,9 +31,10 @@ export function mapFromGeometry(geometry){
 	// let axisX = new Vector3(1, 0 ,0);
 	// let axisY = new Vector3(0, 1 ,0);
 	// let axisZ = new Vector3(0, 0,1);
-
+	console.table(geometry.v)
 	let vertexIds = [];
 	geometry.v.forEach(vertex => {
+		console.log(vertex)
 		let i = map.newCell(map.vertex);
 		vertexIds.push(i);
 		dartPerVertex[i] = [];
@@ -46,7 +47,7 @@ export function mapFromGeometry(geometry){
 		// .applyAxisAngle(axisY, Math.PI / 2);
 		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
 	});
-
+	console.table(position)
 	// console.log(str);
 
 	map.setEmbeddings(map.vertex);
@@ -70,6 +71,7 @@ export function mapFromGeometry(geometry){
 	});
 
 	map.close(true);
+	map.debug()
 	dartPerVertex.delete();
 
 	return map;
