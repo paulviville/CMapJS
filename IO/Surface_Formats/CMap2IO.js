@@ -31,10 +31,10 @@ export function mapFromGeometry(geometry){
 	// let axisX = new Vector3(1, 0 ,0);
 	// let axisY = new Vector3(0, 1 ,0);
 	// let axisZ = new Vector3(0, 0,1);
-	console.table(geometry.v)
+	// console.table(geometry.v)
 	let vertexIds = [];
 	geometry.v.forEach(vertex => {
-		console.log(vertex)
+		// console.log(vertex)
 		let i = map.newCell(map.vertex);
 		vertexIds.push(i);
 		dartPerVertex[i] = [];

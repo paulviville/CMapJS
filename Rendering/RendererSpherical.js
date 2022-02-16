@@ -72,7 +72,7 @@ export default function RendererSpherical(cmap){
 			this.params = params;
 			const geometry = new THREE.Geometry();
 			cmap.foreach(edge, ed => {
-				console.log("geodesic: " + ed + " " + cmap.cell(vertex, ed) + " ** " + cmap.phi1[ed] + " " + cmap.cell(vertex, cmap.phi1[ed]))
+				// console.log("geodesic: " + ed + " " + cmap.cell(vertex, ed) + " ** " + cmap.phi1[ed] + " " + cmap.cell(vertex, cmap.phi1[ed]))
 				let geodesic = newGeodesic(
 					position[cmap.cell(vertex, ed)],
 					position[cmap.cell(vertex, cmap.phi1[ed])]
