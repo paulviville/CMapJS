@@ -26,7 +26,7 @@ export function inSphereTriangle(P, U, V, W)
 export function inSphereFace(P, points)
 {
 	const bary = sphereBarycenter(points);
-
+	console.log(P, points)
 	let inside = false;
 	for(let i = 0; i < points.length && !inside; ++i) {
 		inside = inSphereTriangle(P, points[i], points[(i + 1) % points.length], bary);
@@ -62,18 +62,12 @@ export function distanceToGeodesic(P, A, B, out = false) {
 	const planeNormal = A.clone().cross(B);
 	const projP = P.clone().projectOnPlane(planeNormal);
 
-	// let AP = A.clone().cross(P);
-	// let PB = P.clone().cross(B);
-	// let inside = ((AP.dot(PB) > 0) && (!out));
 	let ab = A.angleTo(B);
 	let ap = A.angleTo(projP);
 	let bp = B.angleTo(projP);
 	let inside = ap < ab && bp < ab;
 
-	// console.log(inside)
-	// console.log(ab, ap, bp);
 	let dist = inside ? Math.abs(P.angleTo(projP)) : Math.min(onSphereDistance(A, P), onSphereDistance(B, P));
-	// console.log(dist);
 	return dist;
 }
 
@@ -160,14 +154,14 @@ export function onSphereSubdivideTriangle(A, B, C, n = 2) {
 	return {triangles: triangles, vertices: vertices}
 }
 
-export function onSpherePolygonArea(points) {
+export function onSpherePolygonArea(points, n = 10) {
 	if(points.length == 2)
 		return 0;
 		
 	const bary = sphereBarycenter(points);
 	let area = 0;
 	for(let i = 0; i < points.length; ++i){
-		let geo = onSphereSubdivideTriangle(bary, points[i], points[(i+1)%points.length], 10);
+		let geo = onSphereSubdivideTriangle(bary, points[i], points[(i+1)%points.length], n);
 		for(let t = 0; t < geo.triangles.length; t += 3){
 			area += triangleArea(
 				geo.vertices[geo.triangles[t]], 
@@ -179,3 +173,23 @@ export function onSpherePolygonArea(points) {
 	return area;
 }
 
+export function onSpherePolygonSignedArea(points) {
+	if(points.length == 2)
+		return 0;
+		
+	const bary = sphereBarycenter(points);
+	let area = 0;
+	for(let i = 0; i < points.length; ++i){
+		let geo = onSphereSubdivideTriangle(bary, points[i], points[(i+1)%points.length], 10);
+		let sign = sphereSignedAngle(bary, points[i], points[(i+1)%points.length]) > 0 ? 1 : -1;
+		for(let t = 0; t < geo.triangles.length; t += 3){
+			let triArea = triangleArea(
+				geo.vertices[geo.triangles[t]], 
+				geo.vertices[geo.triangles[t+1]], 
+				geo.vertices[geo.triangles[t+2]]
+			);
+			area += sign * triArea;
+		}
+	}
+	return area;
+}
