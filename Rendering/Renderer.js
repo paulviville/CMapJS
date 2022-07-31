@@ -54,7 +54,7 @@ function Renderer(cmap){
 			create: function(params = {}){
 				this.params = params;
 				
-				const geometry = new THREE.SphereGeometry(1, 32, 32);	
+				const geometry = new THREE.SphereGeometry(1, 10, 10);	
 				
 				const material = params.material || new THREE.MeshLambertMaterial({color:(params.color || new THREE.Color(0xFF0000)) });
 
