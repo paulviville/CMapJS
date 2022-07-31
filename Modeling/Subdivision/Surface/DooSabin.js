@@ -1,6 +1,6 @@
 import {Vector3} from '../../../Libs/three.module.js';
 
-export function dooSabin(cmap){
+export default function dooSabin(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
@@ -57,6 +57,12 @@ export function dooSabin(cmap){
 			});
 		});
 	}, {cache: faceCache});
+
+	cmap.foreach(edge, ed => {
+		const eid = cmap.newCell(edge);
+		cmap.setEmbedding(edge, ed, eid);
+		cmap.setEmbedding(edge, cmap.phi2[ed], eid);
+	});
 
 	let barycenter = new Vector3;
 	let nbVertices;

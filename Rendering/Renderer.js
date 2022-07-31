@@ -56,7 +56,7 @@ function Renderer(cmap){
 				
 				const geometry = new THREE.SphereGeometry(1, 32, 32);	
 				
-				const material = params.material || new THREE.MeshLambertMaterial({});
+				const material = params.material || new THREE.MeshLambertMaterial({color:(params.color || new THREE.Color(0xFF0000)) });
 
 				/// to handle none contiguous embeddings
 				let maxId = -1;
@@ -79,7 +79,8 @@ function Renderer(cmap){
 					matrix.scale(scale);
 					this.mesh.vd[id] = vd; 
 					this.mesh.instanceId[cmap.cell(vertex, vd)] = id;
-					this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
+					if(params.perInstanceColor) 
+						this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
 					this.mesh.setMatrixAt(id++, matrix);
 				}, {useEmb: cmap.isEmbedded(vertex)});
 
@@ -115,7 +116,7 @@ function Renderer(cmap){
 
 				const geometry = new THREE.CylinderGeometry(0.0025, 0.0025, 1, 8);
 				const material = params.material || new THREE.MeshBasicMaterial({
-					// color: params.color || 0x000000,
+					color: params.color || 0x000000,
 				});
 
 				this.mesh = new THREE.InstancedMesh(geometry, material, cmap.nbCells(edge));
@@ -161,7 +162,8 @@ function Renderer(cmap){
 					pos.addVectors(p[0], p[1]).divideScalar(2);
 					matrix.compose(pos, quat, scale);
 					this.mesh.setMatrixAt(id, matrix);
-					this.mesh.setColorAt(id, new THREE.Color(params.color || 0x000000));
+					if(params.perInstanceColor) 
+						this.mesh.setColorAt(id, new THREE.Color(params.color || 0x000000));
 					this.mesh.instanceId[cmap.cell(edge, ed)] = id;
 					this.mesh.ed[id++] = ed;
 				}, {useEmb: cmap.isEmbedded(edge)});
@@ -205,7 +207,7 @@ function Renderer(cmap){
 					let normal = params.normals? params.normals[cmap.cell(face, fd)] : undefined;
 					for(let i = 2; i < f_ids.length; i++){
 						let f = new THREE.Face3(f_ids[0],f_ids[i-1],f_ids[i], normal);
-						f.color = fcolor;
+						// f.color = fcolor;
 						geometry.faces.push(f);
 						fds.push(fd);
 
@@ -218,7 +220,7 @@ function Renderer(cmap){
 					geometry.computeFaceNormals();
 
 				let material = params.material || new THREE.MeshLambertMaterial({
-					// color:params.color || 0xBBBBBB,
+					color:params.color || 0xBBBBBB,
 					side: params.side || THREE.FrontSide,
 					transparent: params.transparent || false,
 					opacity: params.opacity || 1,

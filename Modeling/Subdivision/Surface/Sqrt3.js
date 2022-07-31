@@ -8,7 +8,7 @@ function alpha(n){
 	return alph;
 }
 
-export function sqrt3(cmap){
+export default function sqrt3(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const pos = cmap.getAttribute(vertex, "position");

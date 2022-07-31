@@ -1,7 +1,7 @@
 import {cutAllEdges} from '../../../Utils/Subdivision.js';
 import {Vector3} from '../../../Libs/three.module.js';
 
-export function butterfly(cmap){
+export default function butterfly(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;
