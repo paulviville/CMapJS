@@ -4,7 +4,6 @@ import {importIG, exportIG} from './Ig.js';
 
 export function loadIncidenceGraph(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
-	console.log(geometry);
 	let iGraph = incidenceGraphFromGeometry(geometry);
 	return iGraph;
 }

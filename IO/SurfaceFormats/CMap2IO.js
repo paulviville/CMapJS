@@ -47,7 +47,7 @@ export function mapFromGeometry(geometry){
 		// .applyAxisAngle(axisY, Math.PI / 2);
 		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
 	});
-	console.table(position)
+	// console.table(position)
 	// console.log(str);
 
 	map.setEmbeddings(map.vertex);
@@ -71,7 +71,7 @@ export function mapFromGeometry(geometry){
 	});
 
 	map.close(true);
-	map.debug()
+	// map.debug()
 	dartPerVertex.delete();
 
 	return map;
