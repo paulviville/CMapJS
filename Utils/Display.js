@@ -109,7 +109,7 @@ void main(){
 		if(x < eps)	v = 1.-pow((width - min(y,z))/width, 0.45);
 		if(y < eps)	v = 1.-pow((width - min(x,z))/width, 0.45);
 		if(z < eps)	v = 1.-pow((width - min(y,x))/width, 0.45);
-		fragColor *= vec4(vec3(v), 1.0);
+		fragColor *= vec4(vec3(clamp(v, 0.4, 1.0)), 1.0);
 	}
 	// else {
 
