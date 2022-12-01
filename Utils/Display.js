@@ -32,6 +32,7 @@ uniform float max_scale;
 
 out vec3 pos;
 out vec3 col;
+out vec3 corner;
 
 void main() {
 	vec3 p = position; // useless but firefox needs it
@@ -54,8 +55,6 @@ void main() {
 	value = clamp((value - min_clipping)/(max_clipping - min_clipping), 0.0, 1.0);
 	scale *= (value);
 	if(clipping == 1){
-		// c -= (max_scale - scale)  * 0.2 * plane;
-		// c = vec3(inverse(modelMatrix) * vec4(c, 1.0));
 		p = (p * scale) + center;
 	}
 	else
@@ -66,6 +65,7 @@ void main() {
 	gl_Position = projectionMatrix * mvPosition;
 	pos = vec3(modelMatrix * vec4( p, 1.0));
 	col = quality == 1 ? quality_color : mesh_color;
+	corner = position;
 }
 `;
 
@@ -74,8 +74,10 @@ precision highp float;
 
 in vec3 pos;
 in vec3 col;
+in vec3 corner;
 
 out vec4 fragColor;
+uniform float width;
 
 void main(){
 	vec3 light_pos = vec3(10.0, 8.0, 15.0);
@@ -83,14 +85,37 @@ void main(){
 	float specular = 0.3;
 	float shine = 0.1;
 	
+	
 	vec3 N = normalize(cross(dFdx(pos),dFdy(pos)));
-	 vec3 L = normalize(light_pos - pos);
+	vec3 L = normalize(light_pos - pos);
 	float lamb = clamp(dot(N, L), 0.2, 1.0);
 	vec3 E = normalize(-pos);
 	vec3 R = reflect(-L, N);
 	float spec = pow(max(dot(R,E), 0.0), specular);
 	vec3 specCol = mix(col, vec3(0.0), shine);
 	fragColor = vec4(mix(col * lamb, specCol, spec), 1.0);
+
+	float eps = 0.001;
+	// float width = 0.075;
+	float x = 1.0-abs(corner.x);
+	float y = 1.0-abs(corner.y);
+	float z = 1.0-abs(corner.z);
+	if(
+		(x < eps && ( y < width || z < width)) ||
+		(y < eps && ( x < width || z < width)) ||
+		(z < eps && ( x < width || y < width))
+	){
+		float v;
+		if(x < eps)	v = 1.-pow((width - min(y,z))/width, 0.45);
+		if(y < eps)	v = 1.-pow((width - min(x,z))/width, 0.45);
+		if(z < eps)	v = 1.-pow((width - min(y,x))/width, 0.45);
+		fragColor *= vec4(vec3(v), 1.0);
+	}
+	// else {
+
+	// }
+		// discard;
+
 }
 `;
 
@@ -166,8 +191,8 @@ export function loadVolumesView(format, fileStr, params = {}){
 
 	const geometry = new THREE.BufferGeometry();
 	const pos = [
-		0.1, -0.1, -0.1,	-0.1, -0.1, -0.1,	-0.1, 0.1, -0.1,	0.1, 0.1, -0.1,
-		0.1, -0.1, 0.1,		-0.1, -0.1, 0.1,	-0.1, 0.1, 0.1,		0.1, 0.1, 0.1
+		1.0, -1.0, -1.0,	-1.0, -1.0, -1.0,	-1.0, 1.0, -1.0,	1.0, 1.0, -1.0,
+		1.0, -1.0, 1.0,		-1.0, -1.0, 1.0,	-1.0, 1.0, 1.0,		1.0, 1.0, 1.0
 	]; // not actually used but here because firefox needs it
 
 	const indices = [
@@ -200,7 +225,8 @@ export function loadVolumesView(format, fileStr, params = {}){
 			min_clipping: {value: -0.01},
 			max_clipping: {value: 0},
 			quality: {value: 0},
-			max_scale: {value: 0.90},
+			width: {value: 0.15},
+			max_scale: {value:0.9},
 			mesh_color: {value: mesh_color}
 		}
 	} );
