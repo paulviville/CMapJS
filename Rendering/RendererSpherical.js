@@ -85,7 +85,7 @@ export default function RendererSpherical(cmap){
 
 			const material = params.material || new THREE.LineBasicMaterial({
 				color: params.color || 0x000000,
-				linewidth: params.width || 2,
+				linewidth: params.width || 5,
 				polygonOffset: true,
 				polygonOffsetFactor: -0.5
 			});
