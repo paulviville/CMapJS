@@ -5,7 +5,7 @@ function beta(n){
 	return n == 3? 3/16 : 3/(8*n);
 }
 
-export function loop(cmap){
+export default function loop(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const face = cmap.face;

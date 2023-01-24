@@ -229,10 +229,11 @@ function CMap2(){
 			if(this.isEmbedded(vertex)){
 				let vid0 = this.cell(vertex, d1);
 				let vid1 = this.cell(vertex, e1);
-				this.foreachDartPhi21(e1,d => {
+				this.foreachDartPhi21(e1, d => {
 					this.setEmbedding(vertex, d, vid0);
+					console.log(d, vid0);
 				});
-				this.deleteCell(vertex, vid1); // should remove this and test
+				// this.deleteCell(vertex, vid1); // should remove this and test
 			}
 		}
 		
@@ -476,6 +477,51 @@ function CMap2(){
 		}
 
 		return d_base;
+	};
+
+	this.getDual = function(funcVertexPos) {
+		const dualMap = new CMap2;
+		
+		const pos = this.getAttribute(this.vertex, "position");
+		if(!this.isEmbedded(this.face))
+			this.setEmbeddings(this.face);
+		let faceDualPos = this.addAttribute(this.face, "faceDualPos");
+		let dualDart = this.addAttribute(this.dart, "dualDart");
+
+		this.foreach(this.face, fd => {
+			const points = [];
+			this.foreachIncident(this.vertex, this.face, fd, vd => {
+				points.push(pos[this.cell(this.vertex, vd)]);
+			})
+			faceDualPos[this.cell(this.face, fd)] = funcVertexPos(points);
+		});
+
+		this.foreach(this.vertex, vd => {
+			let fd = dualMap.addFace(this.degree(this.vertex, vd), false);
+			this.foreachDartOf(this.vertex, vd, d => {
+				dualDart[this.phi2[d]] = fd;
+				fd = dualMap.phi_1[fd];
+			});
+		});
+
+		this.foreach(this.edge, ed => {
+			const d0 = dualDart[ed];
+			const d1 = dualDart[this.phi2[ed]];
+			dualMap.sewPhi2(d0, d1);
+		});
+
+		dualMap.close();
+		dualMap.setEmbeddings(dualMap.vertex);
+		const dualPos = dualMap.addAttribute(dualMap.vertex, "position");
+
+		this.foreach(this.face, fd => {
+			const p = faceDualPos[this.cell(this.face, fd)];
+			dualPos[dualMap.cell(dualMap.vertex, dualDart[fd])] = p;	
+		});
+
+		faceDualPos.delete();
+		dualDart.delete();
+		return dualMap;
 	};
 }
 

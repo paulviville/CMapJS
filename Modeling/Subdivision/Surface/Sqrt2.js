@@ -1,7 +1,7 @@
 import {triangulateAllFaces} from '../../../Utils/Subdivision.js';
 import {Vector3} from '../../../Libs/three.module.js';
 
-export function sqrt2(cmap){
+export default function sqrt2(cmap){
 	const vertex = cmap.vertex;
 	const edge = cmap.edge;
 	const pos = cmap.getAttribute(vertex, "position");

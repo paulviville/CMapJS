@@ -81,14 +81,14 @@ void main(){
 	vec3 light_pos = vec3(10.0, 8.0, 15.0);
 
 	float specular = 0.3;
-	float shine = 0.1;
+	float shine = 0.2;
 	
 	vec3 N = normalize(cross(dFdx(pos),dFdy(pos)));
 	 vec3 L = normalize(light_pos - pos);
-	float lamb = clamp(dot(N, L), 0.2, 1.0);
+	float lamb = clamp(dot(N, L), 0.3, 1.0);
 	vec3 E = normalize(-pos);
 	vec3 R = reflect(-L, N);
-	float spec = pow(max(dot(R,E), 0.0), specular);
+	float spec = pow(max(dot(R,E), 0.2), specular);
 	vec3 specCol = mix(col, vec3(0.0), shine);
 	fragColor = vec4(mix(col * lamb, specCol, spec), 1.0);
 }

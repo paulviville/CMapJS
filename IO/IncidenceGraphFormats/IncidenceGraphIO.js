@@ -3,9 +3,8 @@ import {Vector3} from '../../Libs/three.module.js';
 import {importIG, exportIG} from './Ig.js';
 import {importCG, exportCG} from '../GraphFormats/Cg.js';
 
-export function importIncidenceGraph(format, fileStr){
+export function loadIncidenceGraph(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
-	console.log(geometry);
 	let iGraph = incidenceGraphFromGeometry(geometry);
 	return iGraph;
 }

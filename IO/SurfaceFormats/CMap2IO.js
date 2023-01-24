@@ -25,19 +25,20 @@ export function geometryFromStr(format, fileStr){
 	return geometry;
 }
 
-function mapFromGeometry(geometry){
+export function mapFromGeometry(geometry){
 	let map = new CMap2;
 	let position = map.addAttribute(map.vertex, "position");
 	let dartPerVertex = map.addAttribute(map.vertex, "dartPerVertex");
 
 	// let mid = new Vector3(-0.7710000000000008, 0.8262499999999999, 0.2458000000000009);
-	let str = "";
-	let axisX = new Vector3(1, 0 ,0);
-	let axisY = new Vector3(0, 1 ,0);
-	let axisZ = new Vector3(0, 0,1);
-
+	// let str = "";
+	// let axisX = new Vector3(1, 0 ,0);
+	// let axisY = new Vector3(0, 1 ,0);
+	// let axisZ = new Vector3(0, 0,1);
+	// console.table(geometry.v)
 	let vertexIds = [];
 	geometry.v.forEach(vertex => {
+		// console.log(vertex)
 		let i = map.newCell(map.vertex);
 		vertexIds.push(i);
 		dartPerVertex[i] = [];
@@ -50,8 +51,8 @@ function mapFromGeometry(geometry){
 		// .applyAxisAngle(axisY, Math.PI / 2);
 		str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
 	});
-
-	console.log(str);
+	// console.table(position)
+	// console.log(str);
 
 	map.setEmbeddings(map.vertex);
 	geometry.f.forEach(face => {
@@ -74,6 +75,7 @@ function mapFromGeometry(geometry){
 	});
 
 	map.close(true);
+	// map.debug()
 	dartPerVertex.delete();
 
 	return map;

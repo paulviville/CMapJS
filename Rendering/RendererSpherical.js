@@ -17,6 +17,7 @@ function slerp(A, B, alpha, out = false)
 
 function newGeodesic(A, B, nb_divs = 200, out = false)
 {
+	// console.log(A, B);
 	let geodesic = [];
 	let phi = A.angleTo(B);
 	if(out) phi -= 2*Math.PI;
@@ -58,6 +59,8 @@ function subdivideTriangle(A, B, C, divs)
 }
 
 
+
+
 export default function RendererSpherical(cmap){
 	Renderer.call(this, cmap);
 	const position = cmap.getAttribute(cmap.vertex, "position");
@@ -69,6 +72,7 @@ export default function RendererSpherical(cmap){
 			this.params = params;
 			const geometry = new THREE.Geometry();
 			cmap.foreach(edge, ed => {
+				// console.log("geodesic: " + ed + " " + cmap.cell(vertex, ed) + " ** " + cmap.phi1[ed] + " " + cmap.cell(vertex, cmap.phi1[ed]))
 				let geodesic = newGeodesic(
 					position[cmap.cell(vertex, ed)],
 					position[cmap.cell(vertex, cmap.phi1[ed])]
@@ -81,7 +85,7 @@ export default function RendererSpherical(cmap){
 
 			const material = params.material || new THREE.LineBasicMaterial({
 				color: params.color || 0x000000,
-				linewidth: params.width || 2,
+				linewidth: params.width || 5,
 				polygonOffset: true,
 				polygonOffsetFactor: -0.5
 			});
