@@ -1,6 +1,7 @@
 import {CMap2} from '../../CMap/CMap.js';
-import {Vector3} from '../../Libs/three.module.js';
+import {TetrahedronGeometry, Vector3} from '../../Libs/three.module.js';
 import {loadOff, exportOff} from './Off.js';
+import {loadWrl} from './Wrl.js';
 
 export function loadCMap2(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
@@ -15,6 +16,9 @@ export function geometryFromStr(format, fileStr){
 		case 'off':
 			geometry = loadOff(fileStr);
 			break;
+		case 'wrl':
+			geometry = loadWrl(fileStr);
+			break;
 		default:
 			break;
 	}
@@ -27,10 +31,10 @@ function mapFromGeometry(geometry){
 	let dartPerVertex = map.addAttribute(map.vertex, "dartPerVertex");
 
 	// let mid = new Vector3(-0.7710000000000008, 0.8262499999999999, 0.2458000000000009);
-	// let str = "";
-	// let axisX = new Vector3(1, 0 ,0);
-	// let axisY = new Vector3(0, 1 ,0);
-	// let axisZ = new Vector3(0, 0,1);
+	let str = "";
+	let axisX = new Vector3(1, 0 ,0);
+	let axisY = new Vector3(0, 1 ,0);
+	let axisZ = new Vector3(0, 0,1);
 
 	let vertexIds = [];
 	geometry.v.forEach(vertex => {
@@ -38,16 +42,16 @@ function mapFromGeometry(geometry){
 		vertexIds.push(i);
 		dartPerVertex[i] = [];
 		position[i] = new Vector3(vertex[0], vertex[1], vertex[2]);
-
-		// let p = new Vector3(vertex[0], vertex[1], vertex[2]);
-		// p.sub(mid)
-		// p.divideScalar(57);
-		// p.applyAxisAngle(axisY, Math.PI)
+		// position[i].applyAxisAngle(axisY, Math.PI)
+		let p = new Vector3(vertex[0], vertex[1], vertex[2]);
+		// p.sub(new Vector3(0, 2, 0))
+		// p.divideScalar(10);
+		// p.applyAxisAngle(axisX, Math.PI)
 		// .applyAxisAngle(axisY, Math.PI / 2);
-		// str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
+		str += p.x.toFixed(6) + " " + p.y.toFixed(6) + " " + p.z.toFixed(6) + "\n";
 	});
 
-	// console.log(str);
+	console.log(str);
 
 	map.setEmbeddings(map.vertex);
 	geometry.f.forEach(face => {
@@ -82,7 +86,7 @@ export function exportCmap2(map, format){
 	return str;
 }
 
-function strFromGeometry(format, geometry){
+export function strFromGeometry(format, geometry){
 	let fileStr;
 	switch(format){
 		case 'off':
