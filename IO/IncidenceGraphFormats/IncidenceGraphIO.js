@@ -1,6 +1,7 @@
 import IncidenceGraph from '../../CMap/IncidenceGraph.js';
 import {Vector3} from '../../Libs/three.module.js';
 import {importIG, exportIG} from './Ig.js';
+import {importCG, exportCG} from '../GraphFormats/Cg.js';
 
 export function importIncidenceGraph(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
@@ -14,6 +15,9 @@ function geometryFromStr(format, fileStr){
 	switch(format){
 		case 'ig':
 			geometry = importIG(fileStr);
+			break;
+		case 'cg':
+			geometry = importCG(fileStr);
 			break;
 		default:
 			break;
@@ -42,7 +46,7 @@ function incidenceGraphFromGeometry(geometry){
 		edges.push(ed);
 	});
 
-	geometry.f.forEach(f => {
+	geometry.f?.forEach(f => {
 		f = f.map(e => edges[e]);
 		const fd = iGraph.addFace(...f);
 	});
@@ -62,6 +66,9 @@ function strFromGeometry(format, geometry){
 		case 'ig':
 			fileStr = exportIG(geometry);
 			break;
+		case 'cg':
+			fileStr = exportCG(geometry);
+			break;
 		default:
 			break;
 	}
@@ -80,11 +87,14 @@ function geometryFromIncidenceGraph(iGraph){
 	const fids = iGraph.addAttribute(face, "id");
 
 	let id = 0;
+	let vids2 = [];
 	iGraph.foreach(vertex, vd => {
 		vids[vd] = id++;
 		const p = position[iGraph.cell(vertex, vd)];
 		geometry.v.push(p.toArray());
 	});
+
+
 
 	id = 0;
 	const verts = [];

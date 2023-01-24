@@ -1,4 +1,4 @@
-export function loadCg(cgStr){
+export function importCG(cgStr){
 	let lines = cgStr.split("\n");
 	for(let i = 0; i < lines.length; i++)
 	{
@@ -28,11 +28,21 @@ export function loadCg(cgStr){
 	}
 
 	vertices = vertices.map(x => x.map(y => parseFloat(y)));
-	edges = edges.map(x => x.map(y => (parseInt(y) - 1)));
+	edges = edges.map(x => x.map(y => (parseInt(y))));
 	
 	return {v: vertices, e:edges};
 };
 
-export function saveCg(geometry){
+export function exportCG(geometry){
+	let str = "# D:3 NV:" + geometry.v.length + " NE:" + geometry.e.length + "\n";
+	console.log(geometry)
+	geometry.v.forEach( v => {
+		str += "v " + v[0] + " " + v[1] + " " + v[2] + "\n";
+	});
 
+	geometry.e.forEach( e => {
+		str += "e " + e[0] + " " + e[1] + "\n";
+	});
+	console.log(str);
+	return str;
 };

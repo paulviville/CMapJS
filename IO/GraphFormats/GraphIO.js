@@ -1,8 +1,8 @@
 import {Graph} from '../../CMap/CMap.js';
 import {Vector3} from '../../Libs/three.module.js';
-import {loadCg, saveCg} from './Cg.js';
+import {importCG, exportCG} from './Cg.js';
 
-export function loadGraph(format, fileStr){
+export function importGraph(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
 	let graph = graphFromGeometry(geometry);
 	console.log("loaded file: " + format + " (v:" + geometry.v.length + ", e:" + geometry.e.length + ")");
@@ -13,7 +13,7 @@ function geometryFromStr(format, fileStr){
 	let geometry;
 	switch(format){
 		case 'cg':
-			geometry = loadCg(fileStr);
+			geometry = importCG(fileStr);
 			break;
 		default:
 			break;
@@ -53,7 +53,7 @@ function strFromGeometry(format, geometry){
 	let fileStr;
 	switch(format){
 		case 'cg':
-			// fileStr = export_cg(geometry);
+			fileStr = exportCG(geometry);
 			break;
 		default:
 			break;
@@ -65,7 +65,6 @@ function geometryFromGraph(graph){
 	let geometry = {v: [], e: [], f: []};
 	const vertex = graph.vertex;
 	const edge = graph.edge;
-	const face = graph.face;
 
 	const position = graph.getAttribute(vertex, "position");
 	const vertexId = graph.addAttribute(vertex, "id");
@@ -74,21 +73,15 @@ function geometryFromGraph(graph){
 	graph.foreach(vertex, vd => {
 		vertexId[graph.cell(vertex, vd)] = id++;
 		const p = position[graph.cell(vertex, vd)];
-		geometry.v.push(p.x, p.y, p.z);
+		geometry.v.push(p.toArray());
 	});
-
-	// graph.foreach(edge, ed => {
-	// 	graph.foreachDartOf(edge, ed, d => {
-
-	// 	});
-	// });
-
-	graph.foreach(face, fd => {
-		let f = [];
-		graph.foreachDartOf(face, fd, d => {
-			f.push(vertexId[graph.cell(vertex, d)]);
+	console.log(geometry.v)
+	graph.foreach(edge, ed => {
+		let e = [];
+		graph.foreachDartOf(edge, ed, d => {
+			e.push(vertexId[graph.cell(vertex, d)]);
 		});
-		geometry.f.push(f);
+		geometry.e.push(e);
 	});
 
 	vertexId.delete();
