@@ -1,5 +1,5 @@
-import {geometryFromStr as surfaceGeometryFromStr} from '../IO/Surface_Formats/CMap2IO.js';
-import {geometryFromStr as volumesGeometryFromStr} from '../IO/Volumes_Formats/CMap3IO.js';
+import {geometryFromStr as surfaceGeometryFromStr} from '../IO/SurfaceFormats/CMap2IO.js';
+import {geometryFromStr as volumesGeometryFromStr} from '../IO/VolumesFormats/CMap3IO.js';
 import {computeHexScaledJacobian} from '../Modeling/Quality/ScaledJacobians.js';
 import * as THREE from '../Libs/three.module.js';
 
