@@ -104,7 +104,7 @@ function Renderer(cmap){
 				this.params = params;
 
 				const geometry = new THREE.CylinderGeometry(0.0025, 0.0025, 1, 8);
-				const material = params.material || new THREE.MeshBasicMaterial({
+				const material = params.material || new THREE.MeshLambertMaterial({
 					// color: params.color || 0x000000,
 				});
 
