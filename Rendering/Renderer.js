@@ -23,7 +23,7 @@ let RendererCellProto = {
 	delete: function(){
 		if(this.mesh){
 			this.remove();
-			this.mesh.geometry.dispose();
+			this.mesh?.geometry?.dispose();
 			delete this.mesh;
 		}
 		return this;
