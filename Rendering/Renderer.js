@@ -313,7 +313,8 @@ function Renderer(cmap){
 					vol.layers.set(params.layer || 0);
 					this.mesh.add(vol);
 					mesh_center.add(center);
-				}, {useEmb: cmap.isEmbedded(volume)});
+				// }, {useEmb: cmap.isEmbedded(volume)});
+				});
 				this.mesh.layers.set(params.layer || 0);
 				markerFaces.remove();
 				markerVertices.remove();

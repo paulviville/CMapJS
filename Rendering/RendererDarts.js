@@ -18,8 +18,8 @@ let darts_fs = `
 varying vec3 uv_and_l0;
 
 /////// parameters, these should maybe be uniforms instead
-const float line_width = 0.015;           // line width
-const float distance_from_edge = 0.02;   // distance from lower edge
+const float line_width = 0.0015;           // line width
+const float distance_from_edge = 0.002;   // distance from lower edge
 const float tip_width = 8. * line_width;
 const float tip_slope = 0.3;             // smaller values are more pointy
 
@@ -78,13 +78,13 @@ varying vec3 uv_and_l0;
 
 /////// parameters, these should maybe be uniforms instead
 const float line_width = 0.01;           // line width
-const float distance_from_edge = 0.02;   // distance from lower edge
-const float tip_width = 8. * line_width;
-const float tip_slope = 0.3;             // smaller values are more pointy
+const float distance_from_edge = 0.002;   // distance from lower edge
+const float tip_width =  line_width;
+const float tip_slope = 0.03;             // smaller values are more pointy
 
 // relative to edge length:
-const float rel_start = 0.15;             // tip position
-const float rel_end = 0.85;               // tail position
+const float rel_start = 0.05;             // tip position
+const float rel_end = 0.085;               // tail position
 ///////
 //
 

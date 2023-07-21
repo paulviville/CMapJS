@@ -279,6 +279,7 @@ function CMapBase(){
 		return boundaryMarker.marked(d);
 	};
 
+	// FIX: broken while modifying topology
 	this.isBoundaryCell = function(emb, cd) {
 		return boundaryMarker.markedCell(emb, cd);
 	};

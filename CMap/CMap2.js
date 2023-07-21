@@ -288,8 +288,11 @@ function CMap2(){
 		this.sewPhi1(d1, e1);
 		this.sewPhi1(e0, e1);
 
-		if(this.isBoundaryCell(face, fd0))
+		// if(this.isBoundaryCell(face, fd0))
+		// 	this.markCellAsBoundary(edge, e0);
+		if(this.isBoundary(fd0)) {
 			this.markCellAsBoundary(edge, e0);
+		}
 
 		if(setEmbeddings){
 			if(this.isEmbedded(vertex)){

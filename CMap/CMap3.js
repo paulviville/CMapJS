@@ -335,7 +335,17 @@ function CMap3(){
 
 			}
 			if(this.isEmbedded(volume)){
+				let d = vd;
+				const path21 = [2, 1];
+				const path32 = [3, 2];
+				do {
+					const wid = this.cell(volume, this.phi_1[d])
 
+					this.setEmbedding(volume, d, wid);
+					this.setEmbedding(volume, this.phi(path21, d), wid);
+
+					d = this.phi(path32, d);
+				} while (d != vd);
 			}
 			if(this.isEmbedded(vertex)){
 				let vid = this.newCell(vertex);
@@ -355,8 +365,8 @@ function CMap3(){
 
 	this.cutFace2 = this.cutFace;
 	this.cutFace = function(fd0, fd1, setEmbeddings = true){
-		let d0 = this.phi1[this.phi3[fd0]];
-		let d1 = this.phi1[this.phi3[fd1]];
+		const d0 = this.phi1[this.phi3[fd0]];
+		const d1 = this.phi1[this.phi3[fd1]];
 
 		this.cutFace2(fd0, fd1, false);
 		this.cutFace2(d0, d1, false);
@@ -377,7 +387,14 @@ function CMap3(){
 
 			}
 			if(this.isEmbedded(volume)){
+				const wid0 = this.cell(volume, fd0);
+				const wid1 = this.cell(volume, d0);
 
+				this.setEmbedding(volume, this.phi_1[fd0], wid0);
+				this.setEmbedding(volume, this.phi2[this.phi_1[fd0]], wid0);
+
+				this.setEmbedding(volume, this.phi_1[d0], wid1);
+				this.setEmbedding(volume, this.phi2[this.phi_1[d0]], wid1);
 			}
 			if(this.isEmbedded(vertex)){
 				this.setEmbedding(vertex, this.phi_1[d1], this.cell(vertex, fd0))
@@ -427,7 +444,7 @@ function CMap3(){
 
 			}
 			if(this.isEmbedded(volume)){
-
+				// const wid0 = 
 			}
 			if(this.isEmbedded(vertex)){
 				this.foreachDartOf(face, fd0, d => {
