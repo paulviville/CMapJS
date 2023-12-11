@@ -350,7 +350,7 @@ export default function RendererDarts(cmap) {
 			marker_vertices.remove();
 			v2_id.delete();
 			mesh_center.divideScalar(this.mesh.children.length);
-			// this.mesh.position.copy(mesh_center.negate());
+			this.mesh.position.copy(mesh_center.negate());
 			this.mesh.children.forEach(vol => vol.position.sub(mesh_center));
 			return this;
 		},
