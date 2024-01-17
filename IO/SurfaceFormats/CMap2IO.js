@@ -40,7 +40,7 @@ export function mapFromGeometry(geometry){
 
 	map.setEmbeddings(map.vertex);
 	geometry.f.forEach(face => {
-		let d = map.addFace(face.length, false);
+		let d = map.addFace1(face.length, false);
 		for(let i = 0; i < face.length; i++){
 			map.setEmbedding(map.vertex, d, face[i]);
 			dartPerVertex[face[i]].push(d);

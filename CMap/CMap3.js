@@ -54,7 +54,7 @@ function CMap3(){
 				visited.mark(d);
 			});
 
-			let fd_h = this.addFace(codegree, false);
+			let fd_h = this.addFace1(codegree, false);
 			hole.markCell(face2, fd_h)
 
 			let fd = fd0;
@@ -415,8 +415,8 @@ function CMap3(){
 	};
 
 	this.cutVolume = function(path, setEmbeddings = true){
-		let fd0 = this.addFace(path.length, false);
-		let fd1 = this.addFace(path.length, false);
+		let fd0 = this.addFace1(path.length, false);
+		let fd1 = this.addFace1(path.length, false);
 
 		let d0, d1;
 		for(let i = 0; i < path.length; ++i){

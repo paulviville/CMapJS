@@ -44,7 +44,7 @@ function CMap2(){
 			path.push(d1);
 		} while(d1 != d0);
 		
-		let fd = this.addFace(path.length, false);
+		let fd = this.addFace1(path.length, false);
 		if(boundary)
 			this.markCellAsBoundary(face, fd);
 		for(let i = 0; i < path.length; ++i){
@@ -371,17 +371,84 @@ function CMap2(){
 	};
 
 	this.addFace1 = this.addFace;
-	// this.addFace = function(nbSides, setEmbeddings = true){
 
-	// }
+	/// Creates a new double sided face of given degree
+	this.addFace = function(nbSides, setEmbeddings = true){
+		let fd0 = this.addFace1(nbSides, false);
+		let fd1 = this.addFace1(nbSides, false);
+		for(let i = 0; i < nbSides; ++i) {
+			this.sewPhi2(fd0, fd1);
+
+			fd0 = this.phi_1[fd0];
+			fd1 = this.phi1[fd1];
+		}
+
+		if(setEmbeddings){
+			if(this.isEmbedded(vertex)){
+				let d0 = fd0;
+				let d1 = this.phi2[d0];
+				for(let i = 0; i < nbSides; ++i) {
+					d1 = this.phi1[d1];
+
+					const vid = this.newCell(vertex);
+					this.setEmbedding(vertex, d0, vid);
+					this.setEmbedding(vertex, d1, vid);
+					
+					d0 = this.phi1[d0];
+					d1 = this.phi2[d0];
+				}
+			}
+			if(this.isEmbedded(edge)){
+				let d0 = fd0;
+				let d1 = this.phi2[d0];
+				for(let i = 0; i < nbSides; ++i) {
+					const eid = this.newCell(edge);
+					this.setEmbedding(edge, d0, eid);
+					this.setEmbedding(edge, d1, eid);
+					
+					d0 = this.phi1[d0];
+					d1 = this.phi2[d0];
+				}
+			}
+			if(this.isEmbedded(face)){
+				let d0 = fd0;
+				let d1 = this.phi2[d0];
+				const fid0 = this.newCell(face);
+				const fid1 = this.newCell(face);
+
+				for(let i = 0; i < nbSides; ++i) {
+					this.setEmbedding(face, d0, fid0);
+					this.setEmbedding(face, d1, fid1);
+					
+					d0 = this.phi1[d0];
+					d1 = this.phi2[d0];
+				}
+			}
+			if(this.isEmbedded(volume)){
+				let d0 = fd0;
+				let d1 = this.phi2[d0];
+				const wid = this.newCell(volume);
+
+				for(let i = 0; i < nbSides; ++i) {
+					this.setEmbedding(face, d0, wid);
+					this.setEmbedding(face, d1, wid);
+					
+					d0 = this.phi1[d0];
+					d1 = this.phi2[d0];
+				}
+			}
+		}
+
+		return fd0;
+	}
 
 	/// Creates a prism made of 2 polygons of degree n and n quads
 	/// Returns a dart from the base
 	this.addPrism = function(size = 3, setEmbeddings = true) {
-		let d0 = this.addFace(4, false);
+		let d0 = this.addFace1(4, false);
 		let d1 = d0;
 		for(let i = 1; i < size; ++i){
-			let fd = this.addFace(4, false);
+			let fd = this.addFace1(4, false);
 			this.sewPhi2(this.phi1[d1], this.phi_1[fd]);
 			d1 = fd;
 		}
@@ -432,10 +499,10 @@ function CMap2(){
 	/// Creates a pyramid made of n triangles and a polygon of degree n
 	/// Returns a dart from the base
 	this.addPyramid = function(size = 3, setEmbeddings = true) {
-		let d0 = this.addFace(3, false);
+		let d0 = this.addFace1(3, false);
 		let d1 = d0;
 		for(let i = 1; i < size; ++i){
-			let fd = this.addFace(3, false);
+			let fd = this.addFace1(3, false);
 			this.sewPhi2(this.phi1[d1], this.phi_1[fd]);
 			d1 = fd;
 		}
@@ -500,7 +567,7 @@ function CMap2(){
 		});
 
 		this.foreach(this.vertex, vd => {
-			let fd = dualMap.addFace(this.degree(this.vertex, vd), false);
+			let fd = dualMap.addFace1(this.degree(this.vertex, vd), false);
 			this.foreachDartOf(this.vertex, vd, d => {
 				dualDart[this.phi2[d]] = fd;
 				fd = dualMap.phi_1[fd];
