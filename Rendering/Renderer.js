@@ -72,11 +72,21 @@ function Renderer(cmap){
 				const size = params.size || 0.00625;
 				const scale = new THREE.Vector3(size, size, size);
 				
+				const radius = cmap.getAttribute(vertex, "radius");
+
 				let id = 0;
 				cmap.foreach(vertex, vd => {
 					const matrix = new THREE.Matrix4();
 					matrix.setPosition(position[cmap.cell(vertex, vd)]);
-					matrix.scale(scale);
+					
+					if(radius) {
+						const r = radius[cmap.cell(vertex, vd)];
+						const scaleR = new THREE.Vector3(r, r, r);
+						matrix.scale(scaleR)
+					}
+					else
+						matrix.scale(scale);
+
 					this.mesh.vd[id] = vd; 
 					this.mesh.instanceId[cmap.cell(vertex, vd)] = id;
 					this.mesh.setColorAt(id, (params.color || new THREE.Color(0xFF0000)))
