@@ -549,6 +549,62 @@ function CMap2(){
 		return d_base;
 	};
 
+
+	this.addTetrahedron = function(setEmbeddings = true) {
+		let d0 = this.addFace1(3, false);
+		for(let i = 0; i < 3; ++i) {
+			let d1 = this.addFace1(3, false);
+			this.sewPhi2(d0, d1);
+			d0 = this.phi1[d0];
+		}
+
+		for(let i = 0; i < 3; ++i) {
+			let d1 = this.phi1[d0];
+			this.sewPhi2(this.phi([2, -1], d0), this.phi([2, 1], d1));
+			d0 = d1;
+		}
+
+		if(setEmbeddings){
+			this.foreachDartOf(volume, d_base, d => {
+				if(this.isEmbedded(vertex)){
+					if(this.cell(vertex, d) == undefined){
+						let vid = this.newCell(vertex);
+						this.foreachDartOf(vertex, d, d2 => {
+							this.setEmbedding(vertex, d2, vid);
+						});
+					}
+				}
+				if(this.isEmbedded(edge)){
+					if(this.cell(edge, d) == undefined){
+						let eid = this.newCell(edge);
+						this.foreachDartOf(edge, d, d2 => {
+							this.setEmbedding(edge, d2, eid);
+						});
+					}
+				}
+				if(this.isEmbedded(face)){
+					if(this.cell(face, d) == undefined){
+						let fid = this.newCell(face);
+						this.foreachDartOf(face, d, d2 => {
+							this.setEmbedding(face, d2, fid);
+						});
+					}
+				}
+				if(this.isEmbedded(volume)){
+					if(this.cell(volume, d) == undefined){
+						let wid = this.newCell(volume);
+						this.foreachDartOf(volume, d, d2 => {
+							this.setEmbedding(volume, d2, wid);
+						});
+					}
+				}
+			});
+		}
+
+		return d0;
+	}
+
+
 	this.getDual = function(funcVertexPos) {
 		const dualMap = new CMap2;
 		

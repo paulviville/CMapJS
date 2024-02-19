@@ -21,7 +21,7 @@ export function geometryFromStr(format, fileStr){
 	return geometry;
 }
 
-function mapFromGeometry(geometry){
+export function mapFromGeometry(geometry){
 	let map = new CMap3;
 	const vertex = map.vertex;
 	const vertex2 = map.vertex2;
@@ -43,7 +43,20 @@ function mapFromGeometry(geometry){
 
 	if(geometry.tet)
 		geometry.tet.forEach(tet => {
+			const d0 = map.addTetrahedron(false);
+			const dartsOfTet = [
+				d0,
+				map.phi_1[d0],
+				map.phi1[d0],
+				map.phi_1[map.phi2[d0]]
+			];
 
+			for(let i = 0; i < tet.length; ++i){
+				map.foreachDartOf(vertex2, dartsOfTet[i], vd2 => {
+					map.setEmbedding(map.vertex, vd2, tet[i]);
+					dartPerVertex[tet[i]].push(vd2);
+				});
+			}
 		});
 
 	if(geometry.hex)
