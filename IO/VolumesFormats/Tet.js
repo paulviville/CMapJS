@@ -28,34 +28,25 @@ export function loadTet(tetStr) {
 		line.shift();
 		tets.push(line);
 	}            
-	// // get faces id
-	// let faces = [];
-	// for(let i = 0; i < v_f_e[1]; i++)
-	// {
-	// 	line = lines[j++];
-	// 	let face0 = line.split(" ");
-	// 	let v_nb = face0.shift();
-	// 	faces.push(face0);
-	// }
-	// vertices = vertices.map(x => x.map(y => parseFloat(y)));
-	// faces = faces.map(x => x.map(y => parseInt(y)));
-	console.log(vertices)
+
 	return {v: vertices, tet:tets};
 }
 
 export function exportTet(geometry){
-	// let str = "OFF\n";
-	// str += geometry.v.length + " " + geometry.f.length + " 0\n";
+	let str = ``;
+	str += `${geometry.v.length} vertices\n`;
+	str += `${geometry.tet.length} tets\n`;
 
-	// geometry.v.forEach(
-	// 	vert => {
-	// 		str += vert[0] + " " + vert[1] + " " + vert[2] + "\n";
-	// });
-	// geometry.f.forEach(
-	// 	face => {
-	// 		str += face.length + " ";
-	// 		face.forEach(vert => {str += vert + " "}); 
-	// 		str += "\n";
-	// 	});
+	geometry.v.forEach(
+		vert => {
+			str += vert[0] + " " + vert[1] + " " + vert[2] + "\n";
+	});
+
+	geometry.tet.forEach(
+		t => {
+			str += t.length + " ";
+			t.forEach(vert => {str += vert + " "}); 
+			str += "\n";
+		});
 	return str;
 }
