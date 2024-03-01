@@ -1,6 +1,7 @@
 import {CMap3, CMap2} from '../../CMap/CMap.js';
 import {Vector3} from '../../Libs/three.module.js';
 import {loadMesh, exportMesh} from './Mesh.js';
+import { loadTet } from './Tet.js';
 
 export function loadCmap3(format, fileStr){
 	let geometry = geometryFromStr(format, fileStr);
@@ -14,6 +15,9 @@ export function geometryFromStr(format, fileStr){
 	switch(format){
 		case 'mesh':
 			geometry = loadMesh(fileStr);
+			break;
+		case 'tet':
+			geometry = loadTet(fileStr);
 			break;
 		default:
 			break;
